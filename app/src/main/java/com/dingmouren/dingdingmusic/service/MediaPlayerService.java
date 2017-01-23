@@ -410,8 +410,12 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
      * 将正在播放的歌曲名称发送给PlayingActivity
      */
     private void  updateSongName(){
-        if (null != mMessengerPlayingActivity) {
-            Message msgToCLient = Message.obtain(null, Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING, bean== null ? "" :bean.getTitle());
+        if (null != mMessengerPlayingActivity && null != this.bean) {
+            Message msgToCLient = Message.obtain();
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING,this.bean);
+            msgToCLient.setData(bundle);
+            msgToCLient.what = Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING;
             try {
                 mMessengerPlayingActivity.send(msgToCLient);
             } catch (RemoteException e) {
@@ -424,8 +428,12 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
      * 将正在播放的歌曲的position发送给LocalMusicActivity
      */
     private void updateSongPosition(){
-        if (null != mMessengerLocalMusicActivity){
-            Message msgToCLient = Message.obtain(null, Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING, this.position );
+        if (null != mMessengerLocalMusicActivity && null != this.bean){
+            Message msgToCLient = Message.obtain();
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING,this.bean);
+            msgToCLient.setData(bundle);
+            msgToCLient.what = Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING;
             try {
                 mMessengerLocalMusicActivity.send(msgToCLient);
             } catch (RemoteException e) {

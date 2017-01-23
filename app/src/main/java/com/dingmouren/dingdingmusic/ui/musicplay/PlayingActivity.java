@@ -195,7 +195,9 @@ public class PlayingActivity extends BaseActivity {
                     mSeekBar.setProgress(position * 100 /duration);
                     break;
                 case Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING:
-                    mTvSongName.setText((CharSequence) msgFromService.obj);
+                    Bundle bundle = msgFromService.getData();
+                    LocalMusicBean bean = (LocalMusicBean) bundle.getSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING);
+                    mTvSongName.setText(bean.getTitle());
                     break;
             }
             super.handleMessage(msgFromService);

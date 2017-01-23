@@ -119,9 +119,10 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
         @Override
         public void handleMessage(Message msgFromService) {
             switch (msgFromService.what){
-                case Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING:
-                    TextView tv = (TextView) mRecycler.getChildAt((Integer) msgFromService.obj).findViewById(R.id.tv_song_name);
-                    tv.setTextColor(getResources().getColor(android.R.color.holo_red_light));
+                case Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING://通过Bundle传递对象
+                    Bundle bundle = msgFromService.getData();
+                    mAdapter.showPlaying((LocalMusicBean) bundle.getSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING));
+                    mAdapter.notifyDataSetChanged();
                     break;
             }
             super.handleMessage(msgFromService);

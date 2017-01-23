@@ -28,6 +28,7 @@ public class LocalMusicAdapter extends RecyclerView.Adapter<LocalMusicAdapter.Vi
     private List<LocalMusicBean> mList;
     private Context mContext;
     private OnItemClickListener onItemClickListener;
+    private LocalMusicBean playingBean;//正在播放的歌曲
     public LocalMusicAdapter(Context context) {
         this.mContext = context;
     }
@@ -39,6 +40,11 @@ public class LocalMusicAdapter extends RecyclerView.Adapter<LocalMusicAdapter.Vi
     public void setOnItemClickListener(OnItemClickListener listener){
         this.onItemClickListener = listener;
     }
+
+    public void showPlaying(LocalMusicBean bean){
+        this.playingBean = bean;
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.item_local_music,parent,false);
@@ -48,7 +54,7 @@ public class LocalMusicAdapter extends RecyclerView.Adapter<LocalMusicAdapter.Vi
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.bindData(mList.get(position));
+        holder.bindData(mList.get(position),playingBean);
         holder.cardView.setOnClickListener((view -> {
             if (null != onItemClickListener){
                 onItemClickListener.onItemClickListener(holder.cardView,position);
@@ -72,10 +78,20 @@ public class LocalMusicAdapter extends RecyclerView.Adapter<LocalMusicAdapter.Vi
             singer = (TextView) itemView.findViewById(R.id.tv_singer);
         }
 
-        private void bindData(LocalMusicBean bean){
+        private void bindData(LocalMusicBean bean,LocalMusicBean playingBean){
             if (null != bean){
                 songName.setText(bean.getTitle());
                 singer.setText(bean.getArtist());
+
+            }
+            if (null != bean && null != playingBean) {
+                if (!bean.getTitle().equals(playingBean.getTitle()) && bean.getId() != (playingBean.getId())) {//先设置没有播放的歌曲的样式，随后设置正在播放歌曲的样式，有点覆盖的意思
+                    songName.setTextColor(itemView.getResources().getColor(android.R.color.black));
+                }else if (bean.getId() == playingBean.getId()
+                        && bean.getTitle().equals(playingBean.getTitle())
+                        && bean.getDuration() == playingBean.getDuration()){
+                    songName.setTextColor(itemView.getResources().getColor(android.R.color.holo_red_light));
+                }
             }
         }
     }

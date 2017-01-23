@@ -18,9 +18,10 @@ public class  Constant {
 
     //MediaPlayerService的message.what的属性值
     public static final int MEDIA_PLAYER_SERVICE_PROGRESS = 0x20001;
-    public static final int MEDIA_PLAYER_SERVICE_SONG_PLAYING = 0x20002;//服务端正在播放的歌曲
+    public static final int MEDIA_PLAYER_SERVICE_SONG_PLAYING = 0x20002;
     public static final int MEDIA_PLAYER_PLAY_SINGLEONE = 0x20003;//单曲循环
     public static final int MEDIA_PLAYER_PLAY_ALL = 0x20004;//循环播放
+    public static final String MEDIA_PLAYER_SERVICE_MODEL_PLAYING = "song_playing";//服务端正在播放的歌曲
     //LocalMusicActivity
     public static final int LOCAL_MUSIC_ACTIVITY = 0x30001;
     public static final int LOCAL_MUSIC_ACTIVITY_PLAY = 0x30002;//播放点击的歌曲
