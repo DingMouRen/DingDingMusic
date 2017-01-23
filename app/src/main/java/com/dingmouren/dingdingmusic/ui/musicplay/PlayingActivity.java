@@ -194,7 +194,7 @@ public class PlayingActivity extends BaseActivity {
                     if (0 == duration) break;
                     mSeekBar.setProgress(position * 100 /duration);
                     break;
-                case Constant.MEDIA_PLAYER_SERVICE_SONG_NAME:
+                case Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING:
                     mTvSongName.setText((CharSequence) msgFromService.obj);
                     break;
             }

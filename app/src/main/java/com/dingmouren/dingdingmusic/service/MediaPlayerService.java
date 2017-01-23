@@ -64,6 +64,8 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
     private int position = 0;
     //PlayingActivity的Messenger对象
     private Messenger mMessengerPlayingActivity;
+    //LocalMusicActivity的Messenger对象
+    private Messenger mMessengerLocalMusicActivity;
     //播放模式的变量
     private int play_mode = Constant.MEDIA_PLAYER_PLAY_ALL;//默认是循环播放
     @Override
@@ -122,9 +124,11 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
             mediaPlayer = null;
         }
         //取消注册的广播
-        unregisterReceiver(musicBroadCast);
+        if (null != musicBroadCast) unregisterReceiver(musicBroadCast);
+
         //取消通知
-        musicNotification.onCancelMusicNotification();
+        if (null != musicNotification) musicNotification.onCancelMusicNotification();
+
         super.onDestroy();
     }
 
@@ -135,6 +139,8 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
                 case Constant.PLAYING_ACTIVITY:
                     mMessengerPlayingActivity = msgFromClient.replyTo;
                     JLog.e(TAG,"PlayingActivity初始化");
+                    //将现在播放的歌曲发送给PlayingActivity
+                    updateSongName();
                     break;
                 case Constant.PLAYING_ACTIVITY_PLAY:
                     playSong();
@@ -171,6 +177,18 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
                         JLog.e(TAG, "musicsListSize--" + musicsListSize);
                         JLog.e(TAG, "接收到来自PlayingActivity客户端的数据"  );
                     }
+                    break;
+                case Constant.LOCAL_MUSIC_ACTIVITY:
+                    mMessengerLocalMusicActivity = msgFromClient.replyTo;
+                    musicsList.clear();
+                    if (0 == musicsList.size()) {//LocalMusicActivity连接上服务的时候，将本地歌曲集合数据导入
+                        musicsList.addAll(MyApplication.getDaoSession().getLocalMusicBeanDao().loadAll());
+                    }
+                    if (null != musicsList) musicsListSize = musicsList.size();
+                    updateSongPosition();
+                    break;
+                case Constant.LOCAL_MUSIC_ACTIVITY_PLAY://播放本地音乐列表被点击的歌曲
+                    playCustomSong(msgFromClient.arg1);
                     break;
 
             }
@@ -221,6 +239,8 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         updateSeekBarProgress(mediaPlayer.isPlaying());
         //将现在播放的歌曲发送给PlayingActivity
         updateSongName();
+        //将现在播放的歌曲发送给LocalMusicActivity
+        updateSongPosition();
         if (currentTime > 0) {
             mediaPlayer.seekTo(currentTime);
         }
@@ -236,13 +256,11 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         mediaPlayer.stop();
         currentTime = 0;//停止音乐，将当前播放时间置为0
     }
-
     //--------------监听listener
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
         Log.e(TAG, "onCompletion");
-        Toast.makeText(getApplicationContext(),"播放完成",Toast.LENGTH_SHORT).show();
-        if (play_mode != Constant.MEDIA_PLAYER_PLAY_SINGLEONE){
+        if (play_mode != Constant.MEDIA_PLAYER_PLAY_SINGLEONE ){
             Message msgToServiceNext = Message.obtain();
             msgToServiceNext.what = Constant.PLAYING_ACTIVITY_NEXT;
             try {
@@ -272,9 +290,8 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
      */
     private void playSong() {
         JLog.e(TAG, "playSong()");
-        if (position == 0){ //刚进入播放界面，播放歌曲集合中的第一首歌曲
-            bean = musicsList.get(0);
-        }
+        if (null == musicsList && 0 == musicsList.size()) return;
+        bean = musicsList.get(position);
         if (mediaPlayer.isPlaying()) {//如果是正在播放状态的话，就暂停
             pause();
         } else {
@@ -284,17 +301,33 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
                 if (null != bean) {
                     play(bean.getPath());
                     //每当从头开始播放一首歌曲时，每秒发送一条播放进度的消息，
-                    Message msgFromServiceProgress = Message.obtain();
-                    msgFromServiceProgress.what = Constant.MEDIA_PLAYER_SERVICE_PROGRESS;
-                    try {
-                        mServiceMessenger.send(msgFromServiceProgress);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
+                    if (null != mServiceMessenger) {
+                        Message msgFromServiceProgress = Message.obtain();
+                        msgFromServiceProgress.what = Constant.MEDIA_PLAYER_SERVICE_PROGRESS;
+                        try {
+                            mServiceMessenger.send(msgFromServiceProgress);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
         }
 
+    }
+
+    /**
+     * 播放本地音乐列表中被点击的歌曲
+     * @param position
+     */
+    private void playCustomSong(int position){
+        this.currentTime = 0;
+        this.position = position;
+        bean = musicsList.get(position);
+        if (null != bean){
+            play(bean.getPath());
+
+        }
     }
 
     /**
@@ -377,11 +410,27 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
      * 将正在播放的歌曲名称发送给PlayingActivity
      */
     private void  updateSongName(){
-        Message msgToCLient = Message.obtain(null,Constant.MEDIA_PLAYER_SERVICE_SONG_NAME,bean.getTitle());
-        try {
-            mMessengerPlayingActivity.send(msgToCLient);
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        if (null != mMessengerPlayingActivity) {
+            Message msgToCLient = Message.obtain(null, Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING, bean== null ? "" :bean.getTitle());
+            try {
+                mMessengerPlayingActivity.send(msgToCLient);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 将正在播放的歌曲的position发送给LocalMusicActivity
+     */
+    private void updateSongPosition(){
+        if (null != mMessengerLocalMusicActivity){
+            Message msgToCLient = Message.obtain(null, Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING, this.position );
+            try {
+                mMessengerLocalMusicActivity.send(msgToCLient);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
     }
 

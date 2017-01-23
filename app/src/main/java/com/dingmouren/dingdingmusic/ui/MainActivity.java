@@ -13,6 +13,7 @@ import com.dingmouren.dingdingmusic.ui.personal.PersonalCenterActivity;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import rx.Observable;
 
 public class MainActivity extends BaseActivity {
     @BindView(R.id.fab_user)FloatingActionButton mFabUser;
@@ -33,7 +34,6 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void initData() {
-
     }
 
     @OnClick({R.id.img_suixinting,R.id.img_recommend,R.id.img_rock,R.id.img_ballad,R.id.fab_user,R.id.fab_music})
@@ -63,4 +63,5 @@ public class MainActivity extends BaseActivity {
         super.onDestroy();
         stopService(new Intent(this,MediaPlayerService.class));
     }
+
 }
