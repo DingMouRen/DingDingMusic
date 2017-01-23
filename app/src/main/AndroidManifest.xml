@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.dingmouren.dingdingmusic">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/dingding_icon"
+        android:label="@string/app_name"
+        android:name=".MyApplication"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".ui.MainActivity"
+            android:theme="@style/MainActivityTheme"
+            android:launchMode="singleTask"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <!--播放音乐的界面-->
+        <activity android:name=".ui.musicplay.PlayingActivity"
+            android:theme="@style/PlayingActivityTheme"
+            android:launchMode="singleTask"/>
+        <!--个人中心-->
+        <activity android:name=".ui.personal.PersonalCenterActivity"
+            android:theme="@style/PersonalActivityTheme"
+            android:launchMode="singleTask"
+            />
+        <!--本地音乐界面-->
+        <activity android:name=".ui.localmusic.LocalMusicActivity"
+            android:theme="@style/LocalMusicActivityTheme"
+            android:launchMode="singleTask"/>
+        <!--设置界面-->
+        <activity android:name=".ui.setting.SettingActivity"
+            android:theme="@style/SettingActivityTheme"
+            android:launchMode="singleTask"/>
+
+        <service android:name=".service.MediaPlayerService"/>
+
+
+
+    </application>
+
+</manifest>

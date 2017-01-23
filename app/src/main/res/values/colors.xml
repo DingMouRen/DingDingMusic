@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#01ffc1</color>
+    <color name="colorPrimaryDark">#01ffc1</color>
+    <color name="colorAccent">#01ffc1</color>
+    <color name="user_name">#FF9966</color>
+    <color name="singer">#b2b2b2</color>
+    <color name="line">#e2e2e2</color>
+    <color name="notification_bak">#47fafafa</color>
+
+
+</resources>
