@@ -14,7 +14,6 @@ public interface LocalMusicConstract {
 
     interface View extends BaseView{
         void setData(List<LocalMusicBean> list);
-        void setRefresh(boolean refresh);
     }
 
     interface Presenter extends BasePresenter{

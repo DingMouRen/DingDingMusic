@@ -38,7 +38,6 @@ import butterknife.BindView;
 public class LocalMusicActivity extends BaseActivity implements LocalMusicConstract.View{
     private static final String TAG = LocalMusicActivity.class.getName();
     @BindView(R.id.toolbar) Toolbar mToolbar;
-    @BindView(R.id.swipe_refresh)  SwipeRefreshLayout mSwipeRefresh;
     @BindView(R.id.recycler) RecyclerView mRecycler;
     private LinearLayoutManager mLayoutManager;
     private LocalMusicConstract.Presenter mPresenter;
@@ -70,14 +69,12 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
     @Override
     public void initListener() {
         mToolbar.setNavigationOnClickListener((view)->finish());//点击箭头返回
-        mSwipeRefresh.setOnRefreshListener(()-> mPresenter.requestData());
         mAdapter.setOnItemClickListener((view, position) -> playSong(position));
     }
 
     @Override
     public void initData() {
         mPresenter = new LocalMusicPresenter((LocalMusicConstract.View) this);
-        setRefresh(true);
         mPresenter.requestData();
     }
 
@@ -86,7 +83,6 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
     public void setData(List<LocalMusicBean> list) {
         mAdapter.setList(list);
         mAdapter.notifyDataSetChanged();
-        setRefresh(false);
     }
 
     @Override
@@ -95,14 +91,6 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
         super.onDestroy();
     }
 
-    @Override
-    public void setRefresh(boolean refresh) {
-           if (refresh){
-               mSwipeRefresh.setRefreshing(true);
-           }else {
-               new Handler().postDelayed(()-> mSwipeRefresh.setRefreshing(false),1000);
-           }
-    }
 
     ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
