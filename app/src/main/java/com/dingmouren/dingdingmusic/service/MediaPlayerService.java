@@ -224,6 +224,7 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         if (mediaPlayer.isPlaying()) {
             currentTime = mediaPlayer.getCurrentPosition();
             mediaPlayer.pause();
+            sendIsPlayingMsg();//发送播放器是否在播放的状态
         }
         musicNotification.onUpdateMusicNotification(bean, mediaPlayer.isPlaying());
     }
@@ -235,6 +236,7 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         JLog.e(TAG, "resume()");
         if (null == mediaPlayer) return;
         mediaPlayer.start();
+        sendIsPlayingMsg();//发送播放器是否在播放的状态
         //播放的同时，更新进度条
         updateSeekBarProgress(mediaPlayer.isPlaying());
         //将现在播放的歌曲发送给PlayingActivity
@@ -316,19 +318,7 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
 
     }
 
-    /**
-     * 播放本地音乐列表中被点击的歌曲
-     * @param position
-     */
-    private void playCustomSong(int position){
-        this.currentTime = 0;
-        this.position = position;
-        bean = musicsList.get(position);
-        if (null != bean){
-            play(bean.getPath());
 
-        }
-    }
 
     /**
      * 下一首
@@ -436,6 +426,36 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
             msgToCLient.what = Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING;
             try {
                 mMessengerLocalMusicActivity.send(msgToCLient);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 播放本地音乐列表中被点击的歌曲
+     * @param position
+     */
+    private void playCustomSong(int position){
+        this.currentTime = 0;
+        this.position = position;
+        bean = musicsList.get(position);
+        if (null != bean){
+            play(bean.getPath());
+
+        }
+    }
+
+    /**
+     * 发送播放器是否在播放的状态，更新PlayingActivity的UI
+     */
+    private void sendIsPlayingMsg(){
+        if (null != mServiceMessenger) {
+            Message msgToClient = Message.obtain();
+            msgToClient.arg1 = mediaPlayer.isPlaying() ? 1 : 0;
+            msgToClient.what = Constant.MEDIA_PLAYER_SERVICE_IS_PLAYING;
+            try {
+                mMessengerPlayingActivity.send(msgToClient);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }

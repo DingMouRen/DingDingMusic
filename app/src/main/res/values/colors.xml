@@ -7,6 +7,7 @@
     <color name="singer">#b2b2b2</color>
     <color name="line">#e2e2e2</color>
     <color name="notification_bak">#47fafafa</color>
+    <color name="playing_activity_song_bac">#80000000</color>
 
 
 </resources>

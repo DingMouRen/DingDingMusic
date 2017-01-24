@@ -17,8 +17,11 @@ import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dingmouren.dingdingmusic.Constant;
 import com.dingmouren.dingdingmusic.MyApplication;
@@ -27,10 +30,12 @@ import com.dingmouren.dingdingmusic.base.BaseActivity;
 import com.dingmouren.dingdingmusic.bean.LocalMusicBean;
 import com.dingmouren.dingdingmusic.service.MediaPlayerService;
 import com.dingmouren.dingdingmusic.ui.MainActivity;
+import com.jiongbull.jlog.JLog;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -45,10 +50,15 @@ public class PlayingActivity extends BaseActivity {
 
     @BindView(R.id.seek_bar)  SeekBar mSeekBar;
     @BindView(R.id.tv_song_name) TextView mTvSongName;
+    @BindView(R.id.tv_singer) TextView mTvSinger;
+    @BindView(R.id.img_cover) ImageView mImgCover;
+    @BindView(R.id.btn_playorpause) ImageButton mBtnPlay;
 
     public Messenger mServiceMessenger;//来自服务端的Messenger
     private boolean isConnected = false;//标记是否连接上了服务端
     private float mPercent;//进度的百分比
+
+    int[] imgsArr = {R.mipmap.native_1,R.mipmap.native_2,R.mipmap.native_3,R.mipmap.native_4,R.mipmap.native_5,R.mipmap.native_6,R.mipmap.native_7,R.mipmap.native_8,R.mipmap.native_9};
     @Override
     public int setLayoutResourceID() {
         return R.layout.activity_musicplayer;
@@ -113,6 +123,7 @@ public class PlayingActivity extends BaseActivity {
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
+                mImgCover.setImageResource(imgsArr[new Random().nextInt(9)]);//更换封面
                 break;
             case R.id.btn_playorpause://播放or暂停
                 Message msgToServicePlay = Message.obtain();
@@ -122,6 +133,7 @@ public class PlayingActivity extends BaseActivity {
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
+                mImgCover.setImageResource(imgsArr[new Random().nextInt(9)]);//更换封面
                 break;
             case R.id.btn_next://下一首
                  Message msgToServiceNext = Message.obtain();
@@ -131,6 +143,7 @@ public class PlayingActivity extends BaseActivity {
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
+                mImgCover.setImageResource(imgsArr[new Random().nextInt(9)]);//更换封面
                 break;
             case R.id.btn_single:
                 Message msgToServceSingle = Message.obtain();
@@ -198,6 +211,14 @@ public class PlayingActivity extends BaseActivity {
                     Bundle bundle = msgFromService.getData();
                     LocalMusicBean bean = (LocalMusicBean) bundle.getSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING);
                     mTvSongName.setText(bean.getTitle());
+                    mTvSinger.setText(bean.getArtist());
+                    break;
+                case Constant.MEDIA_PLAYER_SERVICE_IS_PLAYING:
+                    if (1 == msgFromService.arg1){//正在播放
+                        mBtnPlay.setImageResource(R.mipmap.play);
+                    }else {
+                        mBtnPlay.setImageResource(R.mipmap.pause);
+                    }
                     break;
             }
             super.handleMessage(msgFromService);

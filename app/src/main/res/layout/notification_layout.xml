@@ -59,33 +59,32 @@
         >
         <ImageButton
             android:id="@+id/img_play"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/play"
-            android:background="@drawable/press_selector"
+            android:layout_width="17dp"
+            android:layout_height="17dp"
+            android:src="@mipmap/notification_pause"
+            android:background="@drawable/notification_selector"
             android:scaleType="centerInside"
             android:layout_gravity="center_vertical"
-            android:padding="5dp"
+            android:layout_marginRight="15dp"
             />
         <ImageButton
             android:id="@+id/img_next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/next"
-            android:background="@drawable/press_selector"
+            android:layout_width="17dp"
+            android:layout_height="17dp"
+            android:src="@mipmap/notification_next"
+            android:background="@drawable/notification_selector"
             android:scaleType="centerInside"
             android:layout_gravity="center_vertical"
-            android:padding="5dp"
+            android:layout_marginRight="15dp"
             />
         <ImageButton
             android:id="@+id/img_close"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@mipmap/close"
+            android:layout_width="17dp"
+            android:layout_height="17dp"
+            android:src="@mipmap/notification_close"
             android:scaleType="centerInside"
             android:layout_gravity="center_vertical"
-            android:background="@drawable/press_selector"
-            android:padding="5dp"
+            android:background="@drawable/notification_selector"
             />
     </LinearLayout>
 

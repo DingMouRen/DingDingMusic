@@ -21,6 +21,7 @@ public class  Constant {
     public static final int MEDIA_PLAYER_SERVICE_SONG_PLAYING = 0x20002;
     public static final int MEDIA_PLAYER_PLAY_SINGLEONE = 0x20003;//单曲循环
     public static final int MEDIA_PLAYER_PLAY_ALL = 0x20004;//循环播放
+    public static final int MEDIA_PLAYER_SERVICE_IS_PLAYING = 0x20005;//播放器是否在播放音乐，用于修改PlayingActivity的UI
     public static final String MEDIA_PLAYER_SERVICE_MODEL_PLAYING = "song_playing";//服务端正在播放的歌曲
     //LocalMusicActivity
     public static final int LOCAL_MUSIC_ACTIVITY = 0x30001;

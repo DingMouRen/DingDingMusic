@@ -127,9 +127,9 @@ public class MusicNotification extends Notification {
         }*/
         //更新播放状态：播放或者暂停
         if (isplay){
-            remoteViews.setImageViewResource(R.id.img_play,R.mipmap.play);
+            remoteViews.setImageViewResource(R.id.img_play,R.mipmap.notification_play);
         }else {
-            remoteViews.setImageViewResource(R.id.img_play,R.mipmap.pause);
+            remoteViews.setImageViewResource(R.id.img_play,R.mipmap.notification_pause);
         }
         onCreateMusicNotification();//弹出更新的通知
     }

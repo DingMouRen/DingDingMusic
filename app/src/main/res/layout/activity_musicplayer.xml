@@ -4,25 +4,44 @@
     android:layout_height="match_parent"
     android:background="@android:color/darker_gray"
     >
-    <FrameLayout
-        android:id="@+id/frame_container"
+    <RelativeLayout
+        android:id="@+id/relative_container"
         android:layout_width="match_parent"
-        android:layout_height="400dp">
+        android:layout_height="@dimen/playing_activity_img_height">
         <ImageView
+            android:id="@+id/img_cover"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/holo_blue_bright"
+            android:src="@mipmap/native_5"
+            android:scaleType="centerCrop"
             />
         <TextView
             android:id="@+id/tv_song_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textSize="20sp"
-            android:text="lajdfa "
+            android:textSize="@dimen/playing_activity_song_size"
+            android:text="白雪公主 "
             android:textColor="@android:color/white"
+            android:layout_above="@+id/tv_singer"
+            android:padding="@dimen/playing_activity_singer_padding"
+            android:background="@color/playing_activity_song_bac"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="@dimen/playing_activity_singer_padding"
             />
-    </FrameLayout>
+        <TextView
+            android:id="@+id/tv_singer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/playing_activity_singer_size"
+            android:text="周杰伦 "
+            android:textColor="@android:color/white"
+            android:layout_alignParentBottom="true"
+            android:background="@color/playing_activity_song_bac"
+            android:padding="@dimen/playing_activity_singer_padding"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            />
+    </RelativeLayout>
     <TextView
         android:id="@+id/tv_category"
         android:layout_width="wrap_content"
@@ -39,10 +58,9 @@
         android:id="@+id/relative_bottom_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/frame_container"
+        android:layout_below="@+id/relative_container"
         >
         <SeekBar
             android:id="@+id/seek_bar"
@@ -52,36 +70,43 @@
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:layout_above="@+id/btn_playorpause"
             />
-        <Button
+        <ImageButton
             android:id="@+id/btn_pre"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_toLeftOf="@+id/btn_playorpause"
-            android:text="上一首"
+            android:background="@drawable/notification_selector"
+            android:src="@mipmap/next"
             />
-        <Button
+        <ImageButton
             android:id="@+id/btn_playorpause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="播放/暂停"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:background="@drawable/notification_selector"
+            android:src="@mipmap/pause"
             />
-        <Button
+        <ImageButton
             android:id="@+id/btn_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:background="@drawable/notification_selector"
             android:layout_toRightOf="@+id/btn_playorpause"
-            android:text="下一首"
+            android:src="@mipmap/pre"
             />
-        <Button
+        <ImageButton
             android:id="@+id/btn_single"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:layout_toRightOf="@+id/btn_next"
-            android:text="单曲循环 "
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/notification_selector"
+            android:src="@mipmap/order_mode"
             />
     </RelativeLayout>
 </RelativeLayout>
