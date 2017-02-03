@@ -9,12 +9,9 @@ import android.graphics.Bitmap;
 import android.util.Log;
 import android.widget.RemoteViews;
 
-import com.bumptech.glide.Glide;
 import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
-import com.dingmouren.dingdingmusic.bean.LocalMusicBean;
-
-import java.util.concurrent.ExecutionException;
+import com.dingmouren.dingdingmusic.bean.MusicBean;
 
 /**
  * Created by dingmouren on 2017/1/20.
@@ -110,12 +107,12 @@ public class MusicNotification extends Notification {
     /**
      * 更新通知
      */
-    public void onUpdateMusicNotification(LocalMusicBean bean,boolean isplay){
-        Log.e(TAG,"更新通知--歌曲名称："+ bean.getTitle()+"--isplay:"+isplay);
+    public void onUpdateMusicNotification(MusicBean bean, boolean isplay){
+        Log.e(TAG,"更新通知--歌曲名称："+ bean.getSongname()+"--isplay:"+isplay);
         //更新歌曲名称
-        remoteViews.setTextViewText(R.id.tv_song_name,(bean.getTitle() == null ? "" : bean.getTitle()));
+        remoteViews.setTextViewText(R.id.tv_song_name,(bean.getSongname() == null ? "" : bean.getSongname()));
         //更新歌手名字
-        remoteViews.setTextViewText(R.id.tv_singer,(bean.getArtist() == null ? "" : bean.getArtist()));
+        remoteViews.setTextViewText(R.id.tv_singer,(bean.getSingername() == null ? "" : bean.getSingername()));
        /* //更新歌曲图片
         try {
             bitmap = Glide.with(context).load(bean.getPath()).asBitmap().centerCrop().into(300,300).get();

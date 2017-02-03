@@ -1,11 +1,6 @@
 package com.dingmouren.dingdingmusic.ui.musicplay;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -13,29 +8,24 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.Parcelable;
 import android.os.RemoteException;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.dingmouren.dingdingmusic.Constant;
 import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.base.BaseActivity;
-import com.dingmouren.dingdingmusic.bean.LocalMusicBean;
+import com.dingmouren.dingdingmusic.bean.MusicBean;
 import com.dingmouren.dingdingmusic.service.MediaPlayerService;
-import com.dingmouren.dingdingmusic.ui.MainActivity;
 import com.jiongbull.jlog.JLog;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -51,14 +41,15 @@ public class PlayingActivity extends BaseActivity {
     @BindView(R.id.seek_bar)  SeekBar mSeekBar;
     @BindView(R.id.tv_song_name) TextView mTvSongName;
     @BindView(R.id.tv_singer) TextView mTvSinger;
-    @BindView(R.id.img_cover) ImageView mImgCover;
+    @BindView(R.id.album_viewpager) ViewPager mAlbumViewPager;
     @BindView(R.id.btn_playorpause) ImageButton mBtnPlay;
+    @BindView(R.id.btn_single) ImageButton mPlayMode;
 
     public Messenger mServiceMessenger;//来自服务端的Messenger
     private boolean isConnected = false;//标记是否连接上了服务端
     private float mPercent;//进度的百分比
+    private AlbumFragmentAdapater mAlbumFragmentAdapater;
 
-    int[] imgsArr = {R.mipmap.native_1,R.mipmap.native_2,R.mipmap.native_3,R.mipmap.native_4,R.mipmap.native_5,R.mipmap.native_6,R.mipmap.native_7,R.mipmap.native_8,R.mipmap.native_9};
     @Override
     public int setLayoutResourceID() {
         return R.layout.activity_musicplayer;
@@ -73,10 +64,14 @@ public class PlayingActivity extends BaseActivity {
     public void initView() {
         mSeekBar.setProgress(0);
         mSeekBar.setMax(100);
+
+        mAlbumFragmentAdapater = new AlbumFragmentAdapater(getSupportFragmentManager());
+        mAlbumViewPager.setAdapter(mAlbumFragmentAdapater);
     }
 
     @Override
     public void initListener() {
+        //进度条的监听
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -105,6 +100,31 @@ public class PlayingActivity extends BaseActivity {
                 }
             }
         });
+
+        //滑动播放上/下一首歌曲的监听,实际上传递过去的是歌曲的position
+        mAlbumViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                Message msgToService = Message.obtain();
+                msgToService.arg1 = position;
+                msgToService.what = Constant.PLAYING_ACTIVITY_PLAYING_POSITION;
+                if (null != mServiceMessenger) {
+                    try {
+                        mServiceMessenger.send(msgToService);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
     }
 
     @Override
@@ -112,19 +132,9 @@ public class PlayingActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.btn_pre, R.id.btn_playorpause, R.id.btn_next,R.id.btn_single})
+    @OnClick({ R.id.btn_playorpause,R.id.btn_single})
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.btn_pre://上一首
-                Message msgToServicePre = Message.obtain();
-                msgToServicePre.what = Constant.PLAYING_ACTIVITY_PRE;
-                try {
-                    mServiceMessenger.send(msgToServicePre);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-                mImgCover.setImageResource(imgsArr[new Random().nextInt(9)]);//更换封面
-                break;
             case R.id.btn_playorpause://播放or暂停
                 Message msgToServicePlay = Message.obtain();
                 msgToServicePlay.what = Constant.PLAYING_ACTIVITY_PLAY;
@@ -133,19 +143,8 @@ public class PlayingActivity extends BaseActivity {
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
-                mImgCover.setImageResource(imgsArr[new Random().nextInt(9)]);//更换封面
                 break;
-            case R.id.btn_next://下一首
-                 Message msgToServiceNext = Message.obtain();
-                msgToServiceNext.what = Constant.PLAYING_ACTIVITY_NEXT;
-                try {
-                    mServiceMessenger.send(msgToServiceNext);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-                mImgCover.setImageResource(imgsArr[new Random().nextInt(9)]);//更换封面
-                break;
-            case R.id.btn_single:
+            case R.id.btn_single://顺序播放还是单曲循环
                 Message msgToServceSingle = Message.obtain();
                 msgToServceSingle.what = Constant.PLAYING_ACTIVITY_SINGLE;
                 try {
@@ -175,11 +174,16 @@ public class PlayingActivity extends BaseActivity {
                     e.printStackTrace();
                 }
             }
-            //连接成功的时候吗，将歌曲的数据集合传递给播放器
+            //连接成功的时候，
             if (null != mServiceMessenger){
+                List<MusicBean> list = MyApplication.getDaoSession().getMusicBeanDao().loadAll();
+                //更新专辑图片
+                mAlbumFragmentAdapater.addList(list);
+                mAlbumFragmentAdapater.notifyDataSetChanged();
+                //将歌曲的数据集合传递给播放器
                 Message msgToServiceData = Message.obtain();
                 Bundle songsData = new Bundle();
-                songsData.putSerializable(Constant.PLAYING_ACTIVITY_DATA_KEY, (Serializable) MyApplication.getDaoSession().getLocalMusicBeanDao().loadAll());
+                songsData.putSerializable(Constant.PLAYING_ACTIVITY_DATA_KEY, (Serializable)list );
                 msgToServiceData.setData(songsData);
                 msgToServiceData.what = Constant.PLAYING_ACTIVITY_DATA;
                 try {
@@ -209,15 +213,23 @@ public class PlayingActivity extends BaseActivity {
                     break;
                 case Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING:
                     Bundle bundle = msgFromService.getData();
-                    LocalMusicBean bean = (LocalMusicBean) bundle.getSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING);
-                    mTvSongName.setText(bean.getTitle());
-                    mTvSinger.setText(bean.getArtist());
+                    MusicBean bean = (MusicBean) bundle.getSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING);
+                    mTvSongName.setText(bean.getSongname());
+                    mTvSinger.setText(bean.getSingername());
                     break;
                 case Constant.MEDIA_PLAYER_SERVICE_IS_PLAYING:
                     if (1 == msgFromService.arg1){//正在播放
                         mBtnPlay.setImageResource(R.mipmap.play);
                     }else {
                         mBtnPlay.setImageResource(R.mipmap.pause);
+                    }
+                    break;
+                case Constant.PLAYING_ACTIVITY_PLAY_MODE://显示播放器的播放模式
+                    JLog.e(TAG,"播放模式：" + msgFromService.arg1);
+                    if (msgFromService.arg1 == 0){
+                        mPlayMode.setImageResource(R.mipmap.order_mode);
+                    }else if (msgFromService.arg1 == 1){
+                        mPlayMode.setImageResource(R.mipmap.single_mode);
                     }
                     break;
             }

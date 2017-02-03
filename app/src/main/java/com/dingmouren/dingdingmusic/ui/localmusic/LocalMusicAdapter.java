@@ -3,21 +3,15 @@ package com.dingmouren.dingdingmusic.ui.localmusic;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.dingmouren.dingdingmusic.R;
-import com.dingmouren.dingdingmusic.bean.LocalMusicBean;
+import com.dingmouren.dingdingmusic.bean.MusicBean;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.Inflater;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Created by dingmouren on 2017/1/17.
@@ -25,15 +19,15 @@ import butterknife.ButterKnife;
 
 public class LocalMusicAdapter extends RecyclerView.Adapter<LocalMusicAdapter.ViewHolder> {
     private static final String TAG = LocalMusicAdapter.class.getName();
-    private List<LocalMusicBean> mList;
+    private List<MusicBean> mList;
     private Context mContext;
     private OnItemClickListener onItemClickListener;
-    private LocalMusicBean playingBean;//正在播放的歌曲
+    private MusicBean playingBean;//正在播放的歌曲
     public LocalMusicAdapter(Context context) {
         this.mContext = context;
     }
 
-    public void setList(List<LocalMusicBean> list) {
+    public void setList(List<MusicBean> list) {
         this.mList = list;
     }
 
@@ -41,7 +35,7 @@ public class LocalMusicAdapter extends RecyclerView.Adapter<LocalMusicAdapter.Vi
         this.onItemClickListener = listener;
     }
 
-    public void showPlaying(LocalMusicBean bean){
+    public void showPlaying(MusicBean bean){
         this.playingBean = bean;
     }
 
@@ -57,7 +51,7 @@ public class LocalMusicAdapter extends RecyclerView.Adapter<LocalMusicAdapter.Vi
         holder.bindData(mList.get(position),playingBean);
         holder.cardView.setOnClickListener((view -> {
             if (null != onItemClickListener){
-                onItemClickListener.onItemClickListener(holder.cardView,position);
+                onItemClickListener.onItemClickListener(holder.cardView,position,mList);
             }
         }));
     }
@@ -78,18 +72,17 @@ public class LocalMusicAdapter extends RecyclerView.Adapter<LocalMusicAdapter.Vi
             singer = (TextView) itemView.findViewById(R.id.tv_singer);
         }
 
-        private void bindData(LocalMusicBean bean,LocalMusicBean playingBean){
+        private void bindData(MusicBean bean,MusicBean playingBean){
             if (null != bean){
-                songName.setText(bean.getTitle());
-                singer.setText(bean.getArtist());
+                songName.setText(bean.getSongname());
+                singer.setText(bean.getSingername());
 
             }
             if (null != bean && null != playingBean) {
-                if (!bean.getTitle().equals(playingBean.getTitle()) && bean.getId() != (playingBean.getId())) {//先设置没有播放的歌曲的样式，随后设置正在播放歌曲的样式，有点覆盖的意思
+                if (!bean.getSongname().equals(playingBean.getSongname()) && bean.getSongid() !=playingBean.getSongid()) {//先设置没有播放的歌曲的样式，随后设置正在播放歌曲的样式，有点覆盖的意思
                     songName.setTextColor(itemView.getResources().getColor(android.R.color.black));
-                }else if (bean.getId() == playingBean.getId()
-                        && bean.getTitle().equals(playingBean.getTitle())
-                        && bean.getDuration() == playingBean.getDuration()){
+                }else if (bean.getSongname().equals(playingBean.getSongname())
+                        && bean.getSingername().equals(playingBean.getSingername())){
                     songName.setTextColor(itemView.getResources().getColor(android.R.color.holo_red_light));
                 }
             }
@@ -97,6 +90,6 @@ public class LocalMusicAdapter extends RecyclerView.Adapter<LocalMusicAdapter.Vi
     }
 
     public interface OnItemClickListener{
-        void onItemClickListener(View view,int position);
+        void onItemClickListener(View view,int position,List<MusicBean> list);
     }
 }

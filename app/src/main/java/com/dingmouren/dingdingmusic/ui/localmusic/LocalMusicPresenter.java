@@ -2,11 +2,12 @@ package com.dingmouren.dingdingmusic.ui.localmusic;
 
 import android.database.Cursor;
 import android.provider.MediaStore;
-import android.util.Log;
 
+import com.dingmouren.dingdingmusic.Constant;
 import com.dingmouren.dingdingmusic.MyApplication;
-import com.dingmouren.dingdingmusic.bean.LocalMusicBean;
-import com.dingmouren.greendao.LocalMusicBeanDao;
+import com.dingmouren.dingdingmusic.bean.MusicBean;
+import com.dingmouren.greendao.MusicBeanDao;
+import com.jiongbull.jlog.JLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,7 @@ public class LocalMusicPresenter implements LocalMusicConstract.Presenter {
     private static final String TAG = LocalMusicPresenter.class.getName();
     private LocalMusicConstract.View mView;
     private Cursor mCursor;
-    List<LocalMusicBean> list = new ArrayList<>();
+    List<MusicBean> list = new ArrayList<>();
     public LocalMusicPresenter(LocalMusicConstract.View view) {
         this.mView = view;
     }
@@ -31,16 +32,16 @@ public class LocalMusicPresenter implements LocalMusicConstract.Presenter {
         if (null != mCursor) {
             list.clear();
             for (int i = 0; i < mCursor.getCount(); i++) {
-                LocalMusicBean bean = new LocalMusicBean();
+                MusicBean bean = new MusicBean();
                 mCursor.moveToNext();
-                bean.setId(mCursor.getLong(mCursor.getColumnIndex(MediaStore.Audio.Media._ID)));//音乐id
-                bean.setTitle(mCursor.getString((mCursor.getColumnIndex(MediaStore.Audio.Media.TITLE))));//歌曲名称
-                bean.setArtist(mCursor.getString(mCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));//歌手
-                bean.setDuration(mCursor.getLong(mCursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));//歌曲时间
-                bean.setSize(mCursor.getLong(mCursor.getColumnIndex(MediaStore.Audio.Media.SIZE)));//歌曲文件大小
+                bean.setSongid((int) mCursor.getLong(mCursor.getColumnIndex(MediaStore.Audio.Media._ID)));//音乐id
+                bean.setSongname(mCursor.getString((mCursor.getColumnIndex(MediaStore.Audio.Media.TITLE))));//歌曲名称
+                bean.setSingername(mCursor.getString(mCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));//歌手
                 bean.setPath(mCursor.getString(mCursor.getColumnIndex(MediaStore.Audio.Media.DATA)));//歌曲路径
-                if (0 == MyApplication.getDaoSession().getLocalMusicBeanDao().queryBuilder().where(LocalMusicBeanDao.Properties.Id.eq(bean.getId())).count()) {
-                    MyApplication.getDaoSession().getLocalMusicBeanDao().insertOrReplace(bean);
+                bean.setType(Constant.MUSIC_LOCAL);
+                if (0 == MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Songid.eq(bean.getSongid())).count()) {
+                    JLog.e(TAG,""+i);
+                    MyApplication.getDaoSession().getMusicBeanDao().insert(bean);
                 }
                 list.add(bean);
             }

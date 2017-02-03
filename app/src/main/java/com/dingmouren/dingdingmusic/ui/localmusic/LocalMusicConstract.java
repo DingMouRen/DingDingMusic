@@ -2,7 +2,7 @@ package com.dingmouren.dingdingmusic.ui.localmusic;
 
 import com.dingmouren.dingdingmusic.base.BasePresenter;
 import com.dingmouren.dingdingmusic.base.BaseView;
-import com.dingmouren.dingdingmusic.bean.LocalMusicBean;
+import com.dingmouren.dingdingmusic.bean.MusicBean;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
 public interface LocalMusicConstract {
 
     interface View extends BaseView{
-        void setData(List<LocalMusicBean> list);
+        void setData(List<MusicBean> list);
     }
 
     interface Presenter extends BasePresenter{

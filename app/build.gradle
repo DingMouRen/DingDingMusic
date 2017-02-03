@@ -57,6 +57,8 @@ dependencies {
     /*日志*/
     compile 'com.squareup.okhttp3:logging-interceptor:3.4.2'
     compile 'com.jiongbull:jlog:1.0.5'
+    /*百分比布局*/
+    compile 'com.android.support:percent:25.1.0'
 }
 //数据库版本以及Dao的相关设置
 greendao{

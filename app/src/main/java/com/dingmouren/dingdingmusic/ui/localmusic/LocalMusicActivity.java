@@ -3,29 +3,22 @@ package com.dingmouren.dingdingmusic.ui.localmusic;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.provider.MediaStore;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.dingmouren.dingdingmusic.Constant;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.base.BaseActivity;
-import com.dingmouren.dingdingmusic.bean.LocalMusicBean;
+import com.dingmouren.dingdingmusic.bean.MusicBean;
 import com.dingmouren.dingdingmusic.service.MediaPlayerService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -69,7 +62,7 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
     @Override
     public void initListener() {
         mToolbar.setNavigationOnClickListener((view)->finish());//点击箭头返回
-        mAdapter.setOnItemClickListener((view, position) -> playSong(position));
+        mAdapter.setOnItemClickListener((view, position,list) -> playSong(position,list));
     }
 
     @Override
@@ -80,7 +73,7 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
 
 
     @Override
-    public void setData(List<LocalMusicBean> list) {
+    public void setData(List<MusicBean> list) {
         mAdapter.setList(list);
         mAdapter.notifyDataSetChanged();
     }
@@ -121,7 +114,7 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
             switch (msgFromService.what){
                 case Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING://通过Bundle传递对象
                     Bundle bundle = msgFromService.getData();
-                    mAdapter.showPlaying((LocalMusicBean) bundle.getSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING));
+                    mAdapter.showPlaying((MusicBean) bundle.getSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING));
                     mAdapter.notifyDataSetChanged();
                     break;
             }
@@ -133,7 +126,7 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
      * 播放被点击的歌曲
      * @param position
      */
-    private void playSong(int position){
+    private void playSong(int position,List<MusicBean> list){
         Message msgToService = Message.obtain();
         msgToService.arg1 = position;
         msgToService.what = Constant.LOCAL_MUSIC_ACTIVITY_PLAY;

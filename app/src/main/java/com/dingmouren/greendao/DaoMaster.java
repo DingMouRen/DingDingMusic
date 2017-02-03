@@ -21,12 +21,12 @@ public class DaoMaster extends AbstractDaoMaster {
 
     /** Creates underlying database table using DAOs. */
     public static void createAllTables(Database db, boolean ifNotExists) {
-        LocalMusicBeanDao.createTable(db, ifNotExists);
+        MusicBeanDao.createTable(db, ifNotExists);
     }
 
     /** Drops underlying database table using DAOs. */
     public static void dropAllTables(Database db, boolean ifExists) {
-        LocalMusicBeanDao.dropTable(db, ifExists);
+        MusicBeanDao.dropTable(db, ifExists);
     }
 
     /**
@@ -45,7 +45,7 @@ public class DaoMaster extends AbstractDaoMaster {
 
     public DaoMaster(Database db) {
         super(db, SCHEMA_VERSION);
-        registerDaoClass(LocalMusicBeanDao.class);
+        registerDaoClass(MusicBeanDao.class);
     }
 
     public DaoSession newSession() {
