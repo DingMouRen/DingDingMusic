@@ -73,11 +73,9 @@ public class MainActivity extends BaseActivity {
     }
 
     /**
-     * 随行听
+     * 随心听
      */
     private void playRandom() {
-        List<MusicBean> list = MyApplication.getDaoSession().getMusicBeanDao().loadAll();
-        JLog.e(TAG,""+list.size());
         Intent intent = new Intent(this, PlayingActivity.class);
         intent.putExtra("flag",Constant.MUSIC_HOT);
         startActivity(intent);
