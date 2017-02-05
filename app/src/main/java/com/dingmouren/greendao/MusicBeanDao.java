@@ -36,7 +36,6 @@ public class MusicBeanDao extends AbstractDao<MusicBean, Void> {
         public final static Property Singername = new Property(9, String.class, "singername", false, "SINGERNAME");
         public final static Property Albumid = new Property(10, int.class, "albumid", false, "ALBUMID");
         public final static Property Type = new Property(11, int.class, "type", false, "TYPE");
-        public final static Property Path = new Property(12, String.class, "path", false, "PATH");
     }
 
 
@@ -63,8 +62,7 @@ public class MusicBeanDao extends AbstractDao<MusicBean, Void> {
                 "\"URL\" TEXT," + // 8: url
                 "\"SINGERNAME\" TEXT," + // 9: singername
                 "\"ALBUMID\" INTEGER NOT NULL ," + // 10: albumid
-                "\"TYPE\" INTEGER NOT NULL ," + // 11: type
-                "\"PATH\" TEXT);"); // 12: path
+                "\"TYPE\" INTEGER NOT NULL );"); // 11: type
     }
 
     /** Drops the underlying database table. */
@@ -116,11 +114,6 @@ public class MusicBeanDao extends AbstractDao<MusicBean, Void> {
         }
         stmt.bindLong(11, entity.getAlbumid());
         stmt.bindLong(12, entity.getType());
- 
-        String path = entity.getPath();
-        if (path != null) {
-            stmt.bindString(13, path);
-        }
     }
 
     @Override
@@ -166,11 +159,6 @@ public class MusicBeanDao extends AbstractDao<MusicBean, Void> {
         }
         stmt.bindLong(11, entity.getAlbumid());
         stmt.bindLong(12, entity.getType());
- 
-        String path = entity.getPath();
-        if (path != null) {
-            stmt.bindString(13, path);
-        }
     }
 
     @Override
@@ -192,8 +180,7 @@ public class MusicBeanDao extends AbstractDao<MusicBean, Void> {
             cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // url
             cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // singername
             cursor.getInt(offset + 10), // albumid
-            cursor.getInt(offset + 11), // type
-            cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12) // path
+            cursor.getInt(offset + 11) // type
         );
         return entity;
     }
@@ -212,7 +199,6 @@ public class MusicBeanDao extends AbstractDao<MusicBean, Void> {
         entity.setSingername(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
         entity.setAlbumid(cursor.getInt(offset + 10));
         entity.setType(cursor.getInt(offset + 11));
-        entity.setPath(cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12));
      }
     
     @Override

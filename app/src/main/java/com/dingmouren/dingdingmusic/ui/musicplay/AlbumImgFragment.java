@@ -41,7 +41,7 @@ public class AlbumImgFragment extends BaseFragment {
     @Override
     public void initData() {
         if (null != mAlbumUrl){
-            Glide.with(this).load(mAlbumUrl).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).placeholder(R.mipmap.native_1).into(mImgAlbum);
+            Glide.with(this).load(mAlbumUrl).centerCrop().crossFade().diskCacheStrategy(DiskCacheStrategy.NONE).placeholder(R.mipmap.native_1).into(mImgAlbum);
         }
     }
 }

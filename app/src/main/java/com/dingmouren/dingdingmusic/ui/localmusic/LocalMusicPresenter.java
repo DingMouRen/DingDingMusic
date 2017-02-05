@@ -29,7 +29,7 @@ public class LocalMusicPresenter implements LocalMusicConstract.Presenter {
     @Override
     public void requestData() {
         mCursor = ((LocalMusicActivity)mView).getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
-        if (null != mCursor) {
+        if (  null != mCursor) {
             list.clear();
             for (int i = 0; i < mCursor.getCount(); i++) {
                 MusicBean bean = new MusicBean();
@@ -37,8 +37,9 @@ public class LocalMusicPresenter implements LocalMusicConstract.Presenter {
                 bean.setSongid((int) mCursor.getLong(mCursor.getColumnIndex(MediaStore.Audio.Media._ID)));//音乐id
                 bean.setSongname(mCursor.getString((mCursor.getColumnIndex(MediaStore.Audio.Media.TITLE))));//歌曲名称
                 bean.setSingername(mCursor.getString(mCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));//歌手
-                bean.setPath(mCursor.getString(mCursor.getColumnIndex(MediaStore.Audio.Media.DATA)));//歌曲路径
-                bean.setType(Constant.MUSIC_LOCAL);
+                bean.setUrl(mCursor.getString(mCursor.getColumnIndex(MediaStore.Audio.Media.DATA)));//歌曲路径
+                bean.setType(Integer.parseInt(Constant.MUSIC_LOCAL));
+                JLog.e(TAG,"本地音乐路径："+bean.getUrl());
                 if (0 == MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Songid.eq(bean.getSongid())).count()) {
                     JLog.e(TAG,""+i);
                     MyApplication.getDaoSession().getMusicBeanDao().insert(bean);

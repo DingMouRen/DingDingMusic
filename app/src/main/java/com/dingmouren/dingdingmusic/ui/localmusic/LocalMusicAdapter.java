@@ -51,7 +51,7 @@ public class LocalMusicAdapter extends RecyclerView.Adapter<LocalMusicAdapter.Vi
         holder.bindData(mList.get(position),playingBean);
         holder.cardView.setOnClickListener((view -> {
             if (null != onItemClickListener){
-                onItemClickListener.onItemClickListener(holder.cardView,position,mList);
+                onItemClickListener.onItemClickListener(holder.cardView,position);
             }
         }));
     }
@@ -90,6 +90,6 @@ public class LocalMusicAdapter extends RecyclerView.Adapter<LocalMusicAdapter.Vi
     }
 
     public interface OnItemClickListener{
-        void onItemClickListener(View view,int position,List<MusicBean> list);
+        void onItemClickListener(View view,int position);
     }
 }

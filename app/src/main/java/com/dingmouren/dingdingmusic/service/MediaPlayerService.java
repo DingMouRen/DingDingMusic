@@ -27,6 +27,7 @@ import com.dingmouren.dingdingmusic.notification.MusicNotification;
 import com.jiongbull.jlog.JLog;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -42,7 +43,7 @@ import rx.schedulers.Schedulers;
 public class MediaPlayerService extends Service implements OnPreparedListener, OnCompletionListener, OnErrorListener {
     private static final String TAG = MediaPlayerService.class.getName();
     //音乐列表
-    private List<MusicBean> musicsList = new ArrayList<>();
+    private  List<MusicBean> musicsList = new ArrayList<>();
     private int musicsListSize;
     //通知栏
     private MusicNotification musicNotification;
@@ -133,12 +134,16 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
             switch (msgFromClient.what) {
                 case Constant.PLAYING_ACTIVITY:
                     mMessengerPlayingActivity = msgFromClient.replyTo;
-                    JLog.e(TAG,"PlayingActivity初始化");
+                    JLog.e(TAG,"mMessengerPlayingActivity初始化--positon:"+ position +" currentTime:"+currentTime+" isPlaying:"+mediaPlayer.isPlaying()+" isLooping:"+ mediaPlayer.isLooping());
+                    if (0 != msgFromClient.arg1){
+                        currentTime = msgFromClient.arg1;
+                    }
                     //将现在播放的歌曲发送给PlayingActivity
                     updateSongName();
                     break;
                 case Constant.PLAYING_ACTIVITY_PLAY:
-                    playSong(position);
+                    playSong(position,msgFromClient.arg1);
+                    JLog.e(TAG,"点击播放/暂停按钮时执行playSong()");
                     break;
                 case Constant.PLAYING_ACTIVITY_NEXT://顺序播放模式下，自动播放下一曲，
                     nextSong();
@@ -157,11 +162,21 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
                     currentTime = percent * mediaPlayer.getDuration() / 100;
                     mediaPlayer.seekTo(currentTime);
                     break;
-                case Constant.PLAYING_ACTIVITY_DATA://接受PlayingActivity传递过来的歌曲的集合数据
+                case Constant.LOCAL_MUSIC_ACTIVITY:
+                    mMessengerLocalMusicActivity = msgFromClient.replyTo;
+                    updateSongPosition();
+                    break;
+                case Constant.PLAYING_ACTIVITY_PLAYING_POSITION:
+                    int newPosition = msgFromClient.arg1;
+                        playSong(newPosition,-1);
+                    JLog.e(TAG,"上一首或下一首执行playSong()");
+                    break;
+                case Constant.PLAYING_ACTIVITY_INIT:
                     Bundle songsData = msgFromClient.getData();
                     musicsList.clear();
-                    if (0 == musicsList.size()) {//当歌曲集合没有数据的时候
-                        musicsList.addAll((List<MusicBean>) songsData.getSerializable(Constant.PLAYING_ACTIVITY_DATA_KEY));
+                    List<MusicBean> clientList = (List<MusicBean>) songsData.getSerializable(Constant.PLAYING_ACTIVITY_DATA_KEY);
+                    if (0 == musicsList.size() && null != clientList) {//当歌曲集合没有数据的时候
+                        musicsList.addAll(clientList);
                     }
                     if (null != musicsList) musicsListSize = musicsList.size();
                     if (null != musicsList) {
@@ -169,22 +184,9 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
                         JLog.e(TAG, "musicsListSize--" + musicsListSize);
                         JLog.e(TAG, "接收到来自PlayingActivity客户端的数据"  );
                     }
-                    break;
-                case Constant.LOCAL_MUSIC_ACTIVITY:
-                    mMessengerLocalMusicActivity = msgFromClient.replyTo;
-                    musicsList.clear();
-                    if (0 == musicsList.size()) {//LocalMusicActivity连接上服务的时候，将本地歌曲集合数据导入
-                        musicsList.addAll(MyApplication.getDaoSession().getMusicBeanDao().loadAll());
-                    }
-                    if (null != musicsList) musicsListSize = musicsList.size();
-                    updateSongPosition();
-                    break;
-                case Constant.LOCAL_MUSIC_ACTIVITY_PLAY://播放本地音乐列表被点击的歌曲
-                    playCustomSong(msgFromClient.arg1);
-                    break;
-                case Constant.PLAYING_ACTIVITY_PLAYING_POSITION:
-                    int newPosition = msgFromClient.arg1;
-                    playSong(newPosition);
+                    position = msgFromClient.arg1;
+                    JLog.e(TAG,"positon:"+position);
+                    playCustomSong(position);
                     break;
 
             }
@@ -248,10 +250,9 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         JLog.e(TAG, "resume()");
         if (null == mediaPlayer) return;
         mediaPlayer.start();
-        sendIsPlayingMsg();//发送播放器是否在播放的状态
         //播放的同时，更新进度条
         updateSeekBarProgress(mediaPlayer.isPlaying());
-        //将现在播放的歌曲发送给PlayingActivity
+        //将现在播放的歌曲发送给PlayingActivity，并将播放的集合传递过去
         updateSongName();
         //将现在播放的歌曲发送给LocalMusicActivity
         updateSongPosition();
@@ -302,23 +303,25 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
     /**
      * 播放
      */
-    private void playSong(int newPosition) {
+    private void playSong(int newPosition,int isOnClick) {
         JLog.e(TAG, "playSong()");
         if (null == musicsList && 0 == musicsList.size()) return;//数据为空直接返回
         if (position != newPosition){//由滑动操作传递过来的歌曲position，如果跟当前的播放的不同的话，就将MediaPlayer重置
+            JLog.e(TAG, "playSong()--position:" +position+" newPosition:"+ newPosition);
             mediaPlayer.reset();
             currentTime = 0;
             position = newPosition;
         }
-        bean = musicsList.get(position);
-        if (mediaPlayer.isPlaying()) {//如果是正在播放状态的话，就暂停
+        if (null != musicsList && 0 < musicsList.size()) bean = musicsList.get(position);
+        JLog.e(TAG, "playSong()--position:" + position +" currentTime:"+ currentTime);
+        if (mediaPlayer.isPlaying() && 0x40001 == isOnClick) {//如果是正在播放状态的话，就暂停
             pause();
         } else {
             if (currentTime > 0) {//currentTime>0说明当前是暂停状态，直接播放
                 resume();
             } else {
                 if (null != bean) {
-                    play(bean.getPath());
+                    play(bean.getUrl());
                     //每当从头开始播放一首歌曲时，每秒发送一条播放进度的消息，
                     if (null != mServiceMessenger) {
                         Message msgFromServiceProgress = Message.obtain();
@@ -350,10 +353,22 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
             position++;
             if (position < musicsListSize) {//当前歌曲的索引小于歌曲集合的长度
                 bean = musicsList.get(position);
-                play(bean.getPath());
+                play(bean.getUrl());
             } else {
                 bean = musicsList.get(0);//超过长度时，就播放第一首
-                play(bean.getPath());
+                play(bean.getUrl());
+            }
+            //通知PalyingActivity跟换专辑图片  歌曲信息等
+            if (null != mMessengerPlayingActivity){
+                Message msgToClient = Message.obtain();
+                msgToClient.arg1 = position;
+                msgToClient.what = Constant.MEDIA_PLAYER_SERVICE_UPDATE_SONG;
+                try {
+                    mMessengerPlayingActivity.send(msgToClient);
+                    JLog.e(TAG,"自动播放下一首，发送更新UI的消息");
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -371,10 +386,10 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
             position--;
             if (position >= 0) {//大于等于0的情况
                 bean = musicsList.get(position);
-                play(bean.getPath());
+                play(bean.getUrl());
             } else {
                 bean = musicsList.get(0);//小于0时，播放第一首歌
-                play(bean.getPath());
+                play(bean.getUrl());
             }
         }
     }
@@ -414,15 +429,18 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
     }
 
     /**
-     * 将正在播放的歌曲名称发送给PlayingActivity
+     * 将正在播放的歌曲名称发送给PlayingActivity,并将播放的集合传递过去
      */
     private void  updateSongName(){
-        if (null != mMessengerPlayingActivity && null != this.bean) {
+        sendIsPlayingMsg();//发送播放器是否在播放的状态
+        if (null != mMessengerPlayingActivity && null != this.musicsList) {
             Message msgToCLient = Message.obtain();
             Bundle bundle = new Bundle();
-            bundle.putSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING,this.bean);
+            bundle.putSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING, (Serializable) this.musicsList);
             msgToCLient.setData(bundle);
+            msgToCLient.arg1 = position;
             msgToCLient.what = Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING;
+            JLog.e(TAG,"updateSongName()--position:"+ position);
             try {
                 mMessengerPlayingActivity.send(msgToCLient);
             } catch (RemoteException e) {
@@ -457,8 +475,9 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         this.currentTime = 0;
         this.position = position;
         bean = musicsList.get(position);
+        JLog.e(TAG,"position:" + position +" musiclist:"+musicsList.toString() );
         if (null != bean){
-            play(bean.getPath());
+            play(bean.getUrl());
 
         }
     }
@@ -507,7 +526,7 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
             Log.e(TAG_BRAODCAST, "musicNotificationService");
             switch (value) {
                 case 30001:
-                    playSong(position); //播放
+                    playSong(position,-1); //播放
                     break;
                 case 30002:
                     nextSong();//下一首

@@ -24,7 +24,7 @@ public class AlbumFragmentAdapater extends FragmentStatePagerAdapter {
     }
     @Override
     public Fragment getItem(int position) {
-        String url = null == mList.get(position).getAlbumpic_big() ? "http://7xi8d6.com1.z0.glb.clouddn.com/16123958_1630476787257847_7576387494862651392_n.jpg" :mList.get(position).getAlbumpic_big();
+        String url = null == mList.get(position).getAlbumpic_big() ? "" :mList.get(position).getAlbumpic_big();
         return AlbumImgFragment.newInstance(url);
     }
 

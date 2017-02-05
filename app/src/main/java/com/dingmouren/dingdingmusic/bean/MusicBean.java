@@ -36,14 +36,13 @@ public class MusicBean extends BaseBean{
     private String singername;
     private int albumid;
     private int type;//表示歌曲的类型
-    private String path ;//文件路径,这是本地歌曲用的参数
 
     @Generated(hash = 1899243370)
     public MusicBean() {
     }
 
-    @Generated(hash = 1934906673)
-    public MusicBean(String songname, int seconds, String albummid, int songid, int singerid, String albumpic_big, String albumpic_small, String downUrl, String url, String singername, int albumid, int type, String path) {
+    @Generated(hash = 1173238035)
+    public MusicBean(String songname, int seconds, String albummid, int songid, int singerid, String albumpic_big, String albumpic_small, String downUrl, String url, String singername, int albumid, int type) {
         this.songname = songname;
         this.seconds = seconds;
         this.albummid = albummid;
@@ -56,7 +55,6 @@ public class MusicBean extends BaseBean{
         this.singername = singername;
         this.albumid = albumid;
         this.type = type;
-        this.path = path;
     }
 
     public String getSongname() {
@@ -155,11 +153,4 @@ public class MusicBean extends BaseBean{
         this.type = type;
     }
 
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
 }

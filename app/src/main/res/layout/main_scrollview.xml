@@ -8,8 +8,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <ImageView
-            android:id="@+id/img_suixinting"
+        <Button
+            android:id="@+id/img_randomn"
             android:layout_width="match_parent"
             android:layout_height="@dimen/main_content_item_height"
             android:text="随心听"
@@ -17,17 +17,17 @@
             android:gravity="center"
             android:background="#FFFF00"
             />
-        <ImageView
+        <Button
             android:id="@+id/img_recommend"
             android:layout_width="match_parent"
             android:layout_height="@dimen/main_content_item_height"
             android:text="热门推荐"
             android:textSize="30sp"
             android:gravity="center"
-            android:layout_below="@+id/img_suixinting"
+            android:layout_below="@+id/img_randomn"
             android:background="#FF99CC"
             />
-        <ImageView
+        <Button
             android:id="@+id/img_rock"
             android:layout_width="match_parent"
             android:layout_height="@dimen/main_content_item_height"
@@ -38,7 +38,7 @@
             android:layout_below="@+id/img_recommend"
             android:background="#000000"
             />
-        <ImageView
+        <Button
             android:id="@+id/img_ballad"
             android:layout_width="match_parent"
             android:layout_height="@dimen/main_content_item_height"

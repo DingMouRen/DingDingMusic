@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@android:color/darker_gray">
+    android:background="#353333">
 
     <RelativeLayout
         android:id="@+id/relative_container"
@@ -25,9 +25,10 @@
             android:layout_above="@+id/tv_singer"
             android:layout_marginBottom="@dimen/playing_activity_singer_padding"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:background="@color/playing_activity_song_bac"
             android:padding="@dimen/playing_activity_singer_padding"
-            android:text="白雪公主 "
+            android:maxLines="2"
             android:textColor="@android:color/white"
             android:textSize="@dimen/playing_activity_song_size" />
 
@@ -40,7 +41,6 @@
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:background="@color/playing_activity_song_bac"
             android:padding="@dimen/playing_activity_singer_padding"
-            android:text="周杰伦 "
             android:textColor="@android:color/white"
             android:textSize="@dimen/playing_activity_singer_size" />
     </RelativeLayout>
