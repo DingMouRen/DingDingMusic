@@ -72,10 +72,14 @@
         <SeekBar
             android:id="@+id/seek_bar"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_margin="@dimen/activity_horizontal_margin"
-            android:layout_toLeftOf="@+id/btn_single" />
+            android:maxHeight="4dp"
+            android:layout_toLeftOf="@+id/btn_single"
+            android:progressDrawable="@drawable/seekbar_bg"
+            android:thumb="@drawable/seekbar_thumb"
+            />
 
         <ImageButton
             android:id="@+id/btn_single"

@@ -77,7 +77,7 @@ public class PlayingActivity extends BaseActivity {
 
     @Override
     public void initView() {
-//        mSeekBar.setProgress(0);
+        updatePlayMode();
         mSeekBar.setMax(100);
 
         mAlbumFragmentAdapater = new AlbumFragmentAdapater(getSupportFragmentManager());
@@ -123,6 +123,14 @@ public class PlayingActivity extends BaseActivity {
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {//arg1:当前页面的位置，也就是position;     arg2:当前页面偏移的百分比;     arg3当前页面偏移的像素位置
                 JLog.e(TAG,"onPageScrolled--postion:" + position +" positionOffset:"+positionOffset+" positionOffsetPixels:"+positionOffsetPixels);
                 mPositionOffset = positionOffset;
+                if (position == 0){//解决第一次进入的时候没有显示模糊效果
+                    Glide.with(PlayingActivity.this)//底部的模糊效果
+                            .load(list.get(position).getAlbumpic_big())
+                            .bitmapTransform(new BlurTransformation(PlayingActivity.this,99))
+                            .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                            .crossFade()
+                            .into(mImgBg);
+                }
             }
 
             @Override
@@ -283,12 +291,7 @@ public class PlayingActivity extends BaseActivity {
                     }
                     break;
                 case Constant.PLAYING_ACTIVITY_PLAY_MODE://显示播放器的播放模式
-                    int playMode = (int) SPUtil.get(MyApplication.mContext,Constant.SP_PLAY_MODE,0);
-                    if (0 == playMode){
-                        mPlayMode.setImageResource(R.mipmap.order_mode);
-                    }else if (1 == playMode){
-                        mPlayMode.setImageResource(R.mipmap.single_mode);
-                    }
+                   updatePlayMode();
                     break;
                 case Constant.MEDIA_PLAYER_SERVICE_UPDATE_SONG://播放完成自动播放下一首时，更新正在播放UI
                     int positionPlaying = msgFromService.arg1;
@@ -299,6 +302,18 @@ public class PlayingActivity extends BaseActivity {
             super.handleMessage(msgFromService);
         }
     });
+
+    /**
+     * 修改播放模式的UI
+     */
+    private void updatePlayMode(){
+        int playMode = (int) SPUtil.get(MyApplication.mContext,Constant.SP_PLAY_MODE,0);
+        if (0 == playMode){
+            mPlayMode.setImageResource(R.mipmap.order_mode);
+        }else if (1 == playMode){
+            mPlayMode.setImageResource(R.mipmap.single_mode);
+        }
+    }
 
     @Override
     protected void onDestroy() {
