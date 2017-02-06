@@ -8,30 +8,6 @@
     android:fitsSystemWindows="true"
     tools:context="com.dingmouren.dingdingmusic.ui.home.MainActivity">
 
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorPrimary"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:elevation="1dp"
-            android:layout_gravity="center"
-            >
-
-            <com.mancj.materialsearchbar.MaterialSearchBar
-                android:id="@+id/search_bar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:hint="@string/search_bar_hint" />
-        </android.support.v7.widget.Toolbar>
-    </android.support.design.widget.AppBarLayout>
-
     <include
         android:id="@+id/main_scrollview"
         layout="@layout/main_scrollview" />
@@ -43,7 +19,7 @@
         android:layout_marginBottom="@dimen/abc_action_bar_content_inset_material"
         android:layout_marginLeft="@dimen/abc_action_bar_content_inset_material"
         android:src="@mipmap/icon_user"
-        android:scaleType="centerCrop"
+        app:fabSize="mini"
         app:layout_anchor="@id/main_scrollview"
         app:layout_anchorGravity="bottom|left" />
 
@@ -53,6 +29,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/abc_action_bar_content_inset_material"
         android:layout_marginRight="@dimen/abc_action_bar_content_inset_material"
+        app:fabSize="mini"
         app:layout_anchor="@id/main_scrollview"
-        app:layout_anchorGravity="bottom|right" />
+        app:layout_anchorGravity="bottom|right"
+        />
 </android.support.design.widget.CoordinatorLayout>

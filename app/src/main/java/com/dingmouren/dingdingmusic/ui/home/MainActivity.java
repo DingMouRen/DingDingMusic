@@ -4,7 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.dingmouren.dingdingmusic.Constant;
 import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
@@ -30,6 +33,7 @@ import rx.schedulers.Schedulers;
 public class MainActivity extends BaseActivity {
     private static final String TAG = MainActivity.class.getName();
     @BindView(R.id.fab_user)FloatingActionButton mFabUser;
+    @BindView(R.id.img_rock) ImageView mImgRock;
 
   @Override
     public int setLayoutResourceID() {
@@ -77,7 +81,7 @@ public class MainActivity extends BaseActivity {
      */
     private void playRandom() {
         Intent intent = new Intent(this, PlayingActivity.class);
-        intent.putExtra("flag",Constant.MUSIC_HOT);
+        intent.putExtra("flag",Constant.MAIN_RANDOM);
         startActivity(intent);
     }
 

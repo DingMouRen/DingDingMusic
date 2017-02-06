@@ -44,4 +44,6 @@ public class  Constant {
     //SharedPrefrence键值
     public static final String SP_PLAY_MODE = "sp_play_mode";//0表示顺序播放，1表示单曲循环
 
+    public static final String MAIN_RANDOM = "main_random";
+
 }

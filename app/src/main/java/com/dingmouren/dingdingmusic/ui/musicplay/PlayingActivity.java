@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -155,7 +156,7 @@ public class PlayingActivity extends BaseActivity {
                 }
 
                 Glide.with(PlayingActivity.this)//底部的模糊效果
-                        .load(list.get(position).getAlbumpic_big())
+                        .load(list.get(position).getAlbumpic_big()==null ? R.mipmap.native_1 : list.get(position).getAlbumpic_big())
                         .bitmapTransform(new BlurTransformation(PlayingActivity.this,99))
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                         .crossFade()
@@ -227,8 +228,8 @@ public class PlayingActivity extends BaseActivity {
 
                 if ( flag.equals(Constant.MUSIC_LOCAL)){
                     list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_LOCAL)).list();
-                }else if (flag.equals(Constant.MUSIC_HOT)){
-                    list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_HOT)).list();
+                }else if (flag.equals(Constant.MAIN_RANDOM)){
+                    list = MyApplication.getDaoSession().getMusicBeanDao().loadAll();
                     Collections.shuffle(list);
                 }
                 if (null != list) {
