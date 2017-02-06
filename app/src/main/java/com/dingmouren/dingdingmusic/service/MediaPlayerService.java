@@ -24,6 +24,7 @@ import com.dingmouren.dingdingmusic.Constant;
 import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.bean.MusicBean;
 import com.dingmouren.dingdingmusic.notification.MusicNotification;
+import com.dingmouren.dingdingmusic.utils.SPUtil;
 import com.jiongbull.jlog.JLog;
 
 import java.io.IOException;
@@ -57,8 +58,6 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
     private final String MUSIC_NOTIFICATION_ACTION_PLAY = "musicnotificaion.To.PLAY";
     private final String MUSIC_NOTIFICATION_ACTION_NEXT = "musicnotificaion.To.NEXT";
     private final String MUSIC_NOTIFICATION_ACTION_CLOSE = "musicnotificaion.To.CLOSE";
-    // 来自MusicService的Action
-    private final String MUSIC_ACTIVITY_SERVICE_ACTION = "activity.to.musicservice";
     //播放的位置
     private int position = 0;
     //PlayingActivity的Messenger对象
@@ -149,11 +148,14 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
                     nextSong();
                     break;
                 case Constant.PLAYING_ACTIVITY_SINGLE://是否单曲循环
-                    if (mediaPlayer.isLooping()){
-                        mediaPlayer.setLooping(false);
-                        sendPlayModeMsgToPlayingActivity();
-                    }else {
+                    int playMode = (int) SPUtil.get(MyApplication.mContext,Constant.SP_PLAY_MODE,0);
+                    if (0 == playMode){
                         mediaPlayer.setLooping(true);
+                        SPUtil.put(MyApplication.mContext,Constant.SP_PLAY_MODE,1);
+                        sendPlayModeMsgToPlayingActivity();
+                    }else if (1 == playMode){
+                        mediaPlayer.setLooping(false);
+                        SPUtil.put(MyApplication.mContext,Constant.SP_PLAY_MODE,0);
                         sendPlayModeMsgToPlayingActivity();
                     }
                     break;
@@ -200,8 +202,6 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
     private void sendPlayModeMsgToPlayingActivity() {
         if (null != mediaPlayer && null != mMessengerPlayingActivity) {
             Message msgToClient = Message.obtain();
-            msgToClient.arg1 = mediaPlayer.isLooping() ? 1 : 0;//0表示顺序模式，1表示单曲循环
-            JLog.e(TAG,"播放模式：" + msgToClient.arg1);
             msgToClient.what = Constant.PLAYING_ACTIVITY_PLAY_MODE;
             try {
                 mMessengerPlayingActivity.send(msgToClient);

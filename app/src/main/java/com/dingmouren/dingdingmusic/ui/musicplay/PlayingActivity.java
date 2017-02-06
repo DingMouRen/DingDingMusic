@@ -13,24 +13,30 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.dingmouren.dingdingmusic.Constant;
 import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.base.BaseActivity;
 import com.dingmouren.dingdingmusic.bean.MusicBean;
 import com.dingmouren.dingdingmusic.service.MediaPlayerService;
+import com.dingmouren.dingdingmusic.utils.SPUtil;
 import com.dingmouren.greendao.MusicBeanDao;
 import com.jiongbull.jlog.JLog;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import jp.wasabeef.glide.transformations.BlurTransformation;
 
 /**
  * Created by dingmouren on 2017/1/17.
@@ -46,6 +52,7 @@ public class PlayingActivity extends BaseActivity {
     @BindView(R.id.album_viewpager) ViewPager mAlbumViewPager;
     @BindView(R.id.btn_playorpause) ImageButton mBtnPlay;
     @BindView(R.id.btn_single) ImageButton mPlayMode;
+    @BindView(R.id.img_bg) ImageView mImgBg;
 
     public Messenger mServiceMessenger;//来自服务端的Messenger
     private boolean isConnected = false;//标记是否连接上了服务端
@@ -57,6 +64,7 @@ public class PlayingActivity extends BaseActivity {
     public int duration;//歌曲的总进度
     private float mPositionOffset;//viewpager滑动的百分比
     private int mState;//viewpager的滑动状态
+    List<MusicBean> list ;
     @Override
     public int setLayoutResourceID() {
         return R.layout.activity_musicplayer;
@@ -137,6 +145,13 @@ public class PlayingActivity extends BaseActivity {
                         }
                     }
                 }
+
+                Glide.with(PlayingActivity.this)//底部的模糊效果
+                        .load(list.get(position).getAlbumpic_big())
+                        .bitmapTransform(new BlurTransformation(PlayingActivity.this,99))
+                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                        .crossFade()
+                        .into(mImgBg);
             }
         });
     }
@@ -201,11 +216,12 @@ public class PlayingActivity extends BaseActivity {
             if (null != mServiceMessenger  && null != flag ){
                 Message msgToService = Message.obtain();
                 msgToService.arg1 = position;
-                List<MusicBean> list = null;
+
                 if ( flag.equals(Constant.MUSIC_LOCAL)){
                     list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_LOCAL)).list();
                 }else if (flag.equals(Constant.MUSIC_HOT)){
                     list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_HOT)).list();
+                    Collections.shuffle(list);
                 }
                 if (null != list) {
                     for (int i = 0; i < list.size(); i++) {
@@ -248,10 +264,11 @@ public class PlayingActivity extends BaseActivity {
                     break;
                 case Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING:
                     Bundle bundle = msgFromService.getData();
-                    List<MusicBean> list = (List<MusicBean>) bundle.getSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING);
+                    list = (List<MusicBean>) bundle.getSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING);
                     if (null != list && 0 < list.size()) {
                         mTvSongName.setText(list.get(msgFromService.arg1).getSongname());
                         mTvSinger.setText(list.get(msgFromService.arg1).getSingername());
+
                         //更新专辑图片
                         mAlbumFragmentAdapater.addList(list);
                         mAlbumFragmentAdapater.notifyDataSetChanged();
@@ -266,10 +283,10 @@ public class PlayingActivity extends BaseActivity {
                     }
                     break;
                 case Constant.PLAYING_ACTIVITY_PLAY_MODE://显示播放器的播放模式
-                    JLog.e(TAG,"播放模式：" + msgFromService.arg1);
-                    if (msgFromService.arg1 == 0){
+                    int playMode = (int) SPUtil.get(MyApplication.mContext,Constant.SP_PLAY_MODE,0);
+                    if (0 == playMode){
                         mPlayMode.setImageResource(R.mipmap.order_mode);
-                    }else if (msgFromService.arg1 == 1){
+                    }else if (1 == playMode){
                         mPlayMode.setImageResource(R.mipmap.single_mode);
                     }
                     break;

@@ -50,6 +50,7 @@ dependencies {
     compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
     /*图片加载库*/
     compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'jp.wasabeef:glide-transformations:2.0.1'
     /*圆形图片*/
     compile 'de.hdodenhof:circleimageview:1.3.0'
     /* greendao 数据库*/
