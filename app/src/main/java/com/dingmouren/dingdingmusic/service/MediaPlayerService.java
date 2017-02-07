@@ -486,8 +486,12 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
      * @param position
      */
     private void playCustomSong(int position){
-        this.currentTime = 0;
-        this.position = position;
+        if (null != bean && null != musicsList) {
+            if (!musicsList.get(position).getSongname().equals(bean.getSongname())) {
+                this.currentTime = 0;
+                this.position = position;
+            }
+        }
         bean = musicsList.get(position);
         JLog.e(TAG,"position:" + position +" musiclist:"+musicsList.toString() );
         if (null != bean){

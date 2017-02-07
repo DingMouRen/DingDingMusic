@@ -80,6 +80,7 @@ public class PlayingActivity extends BaseActivity {
         bindService(new Intent(getApplicationContext(),MediaPlayerService.class),mServiceConnection, BIND_AUTO_CREATE);
     }
 
+
     @Override
     public void initView() {
         updatePlayMode();
@@ -321,6 +322,12 @@ public class PlayingActivity extends BaseActivity {
         }else if (1 == playMode){
             mPlayMode.setImageResource(R.mipmap.single_mode);
         }
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     @Override
