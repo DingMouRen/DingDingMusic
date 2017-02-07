@@ -14,8 +14,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         init(savedInstanceState);//初始化view之前，进行的操作
+        super.onCreate(savedInstanceState);
         setContentView(setLayoutResourceID());
         ButterKnife.bind(this);
         initView();

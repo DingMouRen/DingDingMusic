@@ -46,7 +46,11 @@
         <activity android:name=".ui.setting.SettingActivity"
             android:theme="@style/SettingActivityTheme"
             android:launchMode="singleTask"/>
-
+        <!--日韩歌曲-->
+        <activity android:name=".ui.jk.JKActivity"
+            android:theme="@style/JKActivityTheme"
+            android:launchMode="singleTask"
+            />
         <service android:name=".service.MediaPlayerService"/>
 
 

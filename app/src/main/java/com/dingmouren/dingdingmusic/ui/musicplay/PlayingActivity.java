@@ -11,8 +11,12 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
+import android.transition.Fade;
+import android.transition.Slide;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -85,8 +89,9 @@ public class PlayingActivity extends BaseActivity {
         mAlbumViewPager.setAdapter(mAlbumFragmentAdapater);
         mAlbumViewPager.setOffscreenPageLimit(6);
 
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+//        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
+
 
     @Override
     public void initListener() {
@@ -231,6 +236,8 @@ public class PlayingActivity extends BaseActivity {
                 }else if (flag.equals(Constant.MAIN_RANDOM)){
                     list = MyApplication.getDaoSession().getMusicBeanDao().loadAll();
                     Collections.shuffle(list);
+                }else if (flag.equals(Constant.MUSIC_KOREA)){
+                    list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_KOREA)).list();
                 }
                 if (null != list) {
                     for (int i = 0; i < list.size(); i++) {

@@ -19,6 +19,8 @@
         android:layout_marginBottom="@dimen/abc_action_bar_content_inset_material"
         android:layout_marginLeft="@dimen/abc_action_bar_content_inset_material"
         android:src="@mipmap/icon_user"
+        app:backgroundTint="@android:color/black"
+        android:alpha="0.5"
         app:fabSize="mini"
         app:layout_anchor="@id/main_scrollview"
         app:layout_anchorGravity="bottom|left" />
@@ -29,8 +31,11 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/abc_action_bar_content_inset_material"
         android:layout_marginRight="@dimen/abc_action_bar_content_inset_material"
+        app:backgroundTint="@android:color/black"
+        android:alpha="0.5"
         app:fabSize="mini"
         app:layout_anchor="@id/main_scrollview"
         app:layout_anchorGravity="bottom|right"
+        android:scaleType="fitXY"
         />
 </android.support.design.widget.CoordinatorLayout>

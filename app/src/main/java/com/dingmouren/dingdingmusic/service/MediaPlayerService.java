@@ -64,6 +64,8 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
     private Messenger mMessengerPlayingActivity;
     //LocalMusicActivity的Messenger对象
     private Messenger mMessengerLocalMusicActivity;
+    //JKActivity的Messenger对象
+    private Messenger mMessengerJKMusicActivity;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -166,7 +168,11 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
                     break;
                 case Constant.LOCAL_MUSIC_ACTIVITY:
                     mMessengerLocalMusicActivity = msgFromClient.replyTo;
-                    updateSongPosition();
+                    updateSongPosition(mMessengerLocalMusicActivity);
+                    break;
+                case Constant.JK_MUSIC_ACTIVITY:
+                    mMessengerJKMusicActivity = msgFromClient.replyTo;
+                    updateSongPosition(mMessengerJKMusicActivity);
                     break;
                 case Constant.PLAYING_ACTIVITY_PLAYING_POSITION:
                     int newPosition = msgFromClient.arg1;
@@ -254,8 +260,15 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         updateSeekBarProgress(mediaPlayer.isPlaying());
         //将现在播放的歌曲发送给PlayingActivity，并将播放的集合传递过去
         updateSongName();
-        //将现在播放的歌曲发送给LocalMusicActivity
-        updateSongPosition();
+        //将现在播放的歌曲发送给Activity
+        JLog.e(TAG,"JK测试--1.播放音乐");
+        if (bean.getType() == Integer.valueOf(Constant.MUSIC_LOCAL)) {
+            JLog.e(TAG,"JK测试--2.向本地发送消息");
+            updateSongPosition(mMessengerLocalMusicActivity);
+        }else if (bean.getType() == Integer.valueOf(Constant.MUSIC_KOREA)){
+            JLog.e(TAG,"JK测试--3.向JK发送消息");
+            updateSongPosition(mMessengerJKMusicActivity);
+        }
         if (currentTime > 0) {
             mediaPlayer.seekTo(currentTime);
         }
@@ -452,15 +465,16 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
     /**
      * 将正在播放的歌曲的position发送给LocalMusicActivity
      */
-    private void updateSongPosition(){
-        if (null != mMessengerLocalMusicActivity && null != this.bean){
+    private void updateSongPosition(Messenger messenger){
+        JLog.e(TAG,"updateSongPosition(Messenger messenger)--Messenger:" +messenger.toString());
+        if (null != messenger && null != this.bean){
             Message msgToCLient = Message.obtain();
             Bundle bundle = new Bundle();
             bundle.putSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING,this.bean);
             msgToCLient.setData(bundle);
             msgToCLient.what = Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING;
             try {
-                mMessengerLocalMusicActivity.send(msgToCLient);
+                messenger.send(msgToCLient);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }

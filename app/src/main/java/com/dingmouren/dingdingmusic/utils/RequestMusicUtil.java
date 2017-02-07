@@ -38,9 +38,9 @@ public class RequestMusicUtil {
         if (null != topic && null != list) {
             for (int i = 0; i < list.size(); i++) {
                 list.get(i).setType(Integer.parseInt(topic));
-                if (0 == MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Songid.eq(list.get(i).getSongid())).count()) {
-                    MyApplication.getDaoSession().getMusicBeanDao().insert(list.get(i));
-                }
+//                if (0 == MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Songid.eq(list.get(i).getSongid())).count()) {
+                    MyApplication.getDaoSession().getMusicBeanDao().insertOrReplace(list.get(i));
+//                }
             }
         }
     }

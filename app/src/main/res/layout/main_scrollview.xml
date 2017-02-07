@@ -42,7 +42,7 @@
             android:layout_below="@+id/appbar_layout"
             />
         <ImageView
-            android:id="@+id/img_recommend"
+            android:id="@+id/img_jk"
             android:layout_width="match_parent"
             android:layout_height="@dimen/main_content_item_height"
             android:layout_below="@+id/img_randomn"
@@ -53,7 +53,7 @@
             android:id="@+id/img_rock"
             android:layout_width="match_parent"
             android:layout_height="@dimen/main_content_item_height"
-            android:layout_below="@+id/img_recommend"
+            android:layout_below="@+id/img_jk"
             android:background="#000000"
             android:src="@mipmap/rock"
             android:scaleType="centerCrop"

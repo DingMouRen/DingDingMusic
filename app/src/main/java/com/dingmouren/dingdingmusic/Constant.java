@@ -25,6 +25,8 @@ public class  Constant {
     public static final String MEDIA_PLAYER_SERVICE_MODEL_PLAYING = "song_playing";//服务端正在播放的歌曲
     //LocalMusicActivity
     public static final int LOCAL_MUSIC_ACTIVITY = 0x30001;
+    //JKActivity
+    public static final int JK_MUSIC_ACTIVITY = 0x50001;
     //QQMusicApi相关
     public static final String QQ_MUSIC_APP_ID = "31475";
     public static final String QQ_MUSIC_SIGN = "86625d192d6745879b781b4282826522";

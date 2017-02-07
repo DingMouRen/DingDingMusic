@@ -1,7 +1,6 @@
-package com.dingmouren.dingdingmusic.ui.localmusic;
+package com.dingmouren.dingdingmusic.ui.jk;
 
 import android.content.Context;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,83 +14,83 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.bean.MusicBean;
+import com.dingmouren.dingdingmusic.ui.localmusic.LocalMusicAdapter;
 
 import java.util.List;
 
 /**
- * Created by dingmouren on 2017/1/17.
+ * Created by dingmouren on 2017/2/7.
  */
 
-public class LocalMusicAdapter extends RecyclerView.Adapter<LocalMusicAdapter.ViewHolder> {
-    private static final String TAG = LocalMusicAdapter.class.getName();
+public class JKAdapter extends RecyclerView.Adapter<JKAdapter.ViewHolder> {
     private List<MusicBean> mList;
     private Context mContext;
-    private OnItemClickListener onItemClickListener;
+    private LocalMusicAdapter.OnItemClickListener onItemClickListener;
     private MusicBean playingBean;//正在播放的歌曲
-    public LocalMusicAdapter(Context context) {
-        this.mContext = context;
+
+    public JKAdapter( Context mContext) {
+        this.mContext = mContext;
     }
 
-    public void setList(List<MusicBean> list) {
+    public void setList(List<MusicBean> list){
         this.mList = list;
     }
-
-    public void setOnItemClickListener(OnItemClickListener listener){
+    public void setOnItemClickListener(LocalMusicAdapter.OnItemClickListener listener){
         this.onItemClickListener = listener;
     }
 
     public void showPlaying(MusicBean bean){
         this.playingBean = bean;
     }
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.item_local_music,parent,false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.item_jk,parent,false);
         return new ViewHolder(view);
     }
-
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.bindData(mList.get(position),playingBean);
-        holder.relateive_local.setOnClickListener((view -> {
+        holder.relative_jk.setOnClickListener((view -> {
             if (null != onItemClickListener){
-                onItemClickListener.onItemClickListener(holder.relateive_local,position);
+                onItemClickListener.onItemClickListener(holder.relative_jk,position);
             }
         }));
     }
 
     @Override
     public int getItemCount() {
-        return mList.size();
+        return null == mList ? 0 : mList.size();
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        RelativeLayout relateive_local;
-         TextView songName;
-         TextView singer;
-        ImageView fab_isPlay;
+    public class ViewHolder extends RecyclerView.ViewHolder{
+        TextView tvSongName;
+        TextView tvSingerName;
+        ImageView imgAlbum;
+        ImageView fabIsPlay;
+        RelativeLayout relative_jk;
         public ViewHolder(View itemView) {
             super(itemView);
-            relateive_local = (RelativeLayout) itemView.findViewById(R.id.relateive_local);
-            songName = (TextView) itemView.findViewById(R.id.tv_song_name);
-            singer = (TextView) itemView.findViewById(R.id.tv_singer);
-            fab_isPlay = (ImageView) itemView.findViewById(R.id.fab_isPlay);
+            tvSongName = (TextView) itemView.findViewById(R.id.tv_songname);
+            tvSingerName = (TextView) itemView.findViewById(R.id.tv_singername);
+            imgAlbum = (ImageView) itemView.findViewById(R.id.img_album);
+            fabIsPlay = (ImageView) itemView.findViewById(R.id.fab_isPlay);
+            relative_jk = (RelativeLayout) itemView.findViewById(R.id.relative_jk);
         }
 
         private void bindData(MusicBean bean,MusicBean playingBean){
             if (null != bean){
-                songName.setText(bean.getSongname());
-                singer.setText(bean.getSingername());
-
+                tvSongName.setText(bean.getSongname());
+                tvSingerName.setText(bean.getSingername());
+                Glide.with(mContext).load(bean.getAlbumpic_small()).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(imgAlbum);
             }
             if (null != bean && null != playingBean) {
                 if (!bean.getSongname().equals(playingBean.getSongname()) && bean.getSongid() !=playingBean.getSongid()) {//先设置没有播放的歌曲的样式，随后设置正在播放歌曲的样式，有点覆盖的意思
-                    fab_isPlay.setVisibility(View.GONE);
+                    fabIsPlay.setVisibility(View.GONE);
                 }else if (bean.getSongname().equals(playingBean.getSongname())
                         && bean.getSingername().equals(playingBean.getSingername())){
-                    fab_isPlay.setVisibility(View.VISIBLE);
-                    Glide.with(MyApplication.mContext).load(R.mipmap.playing).asGif().diskCacheStrategy(DiskCacheStrategy.NONE).into(fab_isPlay);
+                    fabIsPlay.setVisibility(View.VISIBLE);
+                    Glide.with(MyApplication.mContext).load(R.mipmap.playing).asGif().diskCacheStrategy(DiskCacheStrategy.NONE).into(fabIsPlay);
                 }
             }
         }

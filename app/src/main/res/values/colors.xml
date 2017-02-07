@@ -8,6 +8,7 @@
     <color name="line">#e2e2e2</color>
     <color name="notification_bak">#47fafafa</color>
     <color name="playing_activity_song_bac">#80000000</color>
+    <color name="color_bg_black">#353333</color>
 
 
 </resources>
