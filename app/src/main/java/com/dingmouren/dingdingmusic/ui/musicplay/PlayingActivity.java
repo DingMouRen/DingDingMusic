@@ -77,7 +77,20 @@ public class PlayingActivity extends BaseActivity {
 
     @Override
     public void init(Bundle savedInstanceState) {
+        setTransiton();
         bindService(new Intent(getApplicationContext(),MediaPlayerService.class),mServiceConnection, BIND_AUTO_CREATE);
+    }
+
+    private void setTransiton() {
+        Slide slide = new Slide(Gravity.BOTTOM);
+        slide.setDuration(700);
+
+        getWindow().setEnterTransition(slide);
+
+        Slide slide1 = new Slide();
+        slide1.setDuration(900);
+        slide1.setSlideEdge(Gravity.TOP);
+        getWindow().setReturnTransition(slide1);
     }
 
 
@@ -293,7 +306,7 @@ public class PlayingActivity extends BaseActivity {
                         //更新专辑图片
                         mAlbumFragmentAdapater.addList(list);
                         mAlbumFragmentAdapater.notifyDataSetChanged();
-                        mAlbumViewPager.setCurrentItem(msgFromService.arg1,true);
+                        mAlbumViewPager.setCurrentItem(msgFromService.arg1,false);
                     }
                     break;
                 case Constant.MEDIA_PLAYER_SERVICE_IS_PLAYING:
@@ -308,7 +321,7 @@ public class PlayingActivity extends BaseActivity {
                     break;
                 case Constant.MEDIA_PLAYER_SERVICE_UPDATE_SONG://播放完成自动播放下一首时，更新正在播放UI
                     int positionPlaying = msgFromService.arg1;
-                    mAlbumViewPager.setCurrentItem(positionPlaying,true);
+                    mAlbumViewPager.setCurrentItem(positionPlaying,false);
                     JLog.e(TAG,"更新正在播放的UI");
 
             }

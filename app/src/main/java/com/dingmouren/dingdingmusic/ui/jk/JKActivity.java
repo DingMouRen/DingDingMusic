@@ -1,5 +1,6 @@
 package com.dingmouren.dingdingmusic.ui.jk;
 
+import android.app.ActivityOptions;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -13,6 +14,13 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.ChangeImageTransform;
+import android.transition.ChangeTransform;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.transition.Transition;
+import android.view.Gravity;
 
 import com.dingmouren.dingdingmusic.Constant;
 import com.dingmouren.dingdingmusic.MyApplication;
@@ -49,7 +57,12 @@ public class JKActivity extends BaseActivity implements JKConstract.View{
 
     @Override
     public void init(Bundle savedInstanceState) {
+        setTransiton();
         bindService(new Intent(this, MediaPlayerService.class),mServiceConnection,BIND_AUTO_CREATE);
+    }
+
+    private void setTransiton() {
+        getWindow().setEnterTransition(new Fade());
     }
 
     @Override
@@ -62,7 +75,7 @@ public class JKActivity extends BaseActivity implements JKConstract.View{
         mToolbar.setTitle("");
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setNavigationOnClickListener((view -> finish()));
+        mToolbar.setNavigationOnClickListener((view -> onBackPressed()));
 
         mAdapter = new JKAdapter(this);
         mAdapter.setOnItemClickListener((view, position) -> playSong(position));
@@ -73,6 +86,7 @@ public class JKActivity extends BaseActivity implements JKConstract.View{
 //        mPresenter = new JKPresenter((JKConstract.View)this);
 
     }
+
 
     @Override
     public void initData() {
@@ -141,6 +155,6 @@ public class JKActivity extends BaseActivity implements JKConstract.View{
         intent.putExtra("position",position);
         intent.putExtra("flag",Constant.MUSIC_KOREA);
         JLog.e(TAG,"点击JK一首音乐");
-        startActivity(intent);
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
     }
 }

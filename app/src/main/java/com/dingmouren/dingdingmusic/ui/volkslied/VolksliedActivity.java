@@ -1,5 +1,6 @@
 package com.dingmouren.dingdingmusic.ui.volkslied;
 
+import android.app.ActivityOptions;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -14,6 +15,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
 
 import com.dingmouren.dingdingmusic.Constant;
 import com.dingmouren.dingdingmusic.MyApplication;
@@ -52,9 +54,13 @@ public class VolksliedActivity extends BaseActivity {
 
     @Override
     public void init(Bundle savedInstanceState) {
+        setTransiton();
         bindService(new Intent(this, MediaPlayerService.class),mServiceConnection,BIND_AUTO_CREATE);
     }
+    private void setTransiton() {
+        getWindow().setEnterTransition(new Fade());
 
+    }
     @Override
     public void initView() {
 
@@ -65,7 +71,7 @@ public class VolksliedActivity extends BaseActivity {
         mToolbar.setTitle("");
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setNavigationOnClickListener((view -> finish()));
+        mToolbar.setNavigationOnClickListener((view -> onBackPressed()));
 
         mAdapter = new VolksliedAdapter(this);
         mAdapter.setOnItemClickListener((view, position) -> playSong(position));
@@ -136,7 +142,7 @@ public class VolksliedActivity extends BaseActivity {
         intent.putExtra("position",position);
         intent.putExtra("flag",Constant.MUSIC_VOLKSLIED);
         JLog.e(TAG,"点击民谣一首音乐");
-        startActivity(intent);
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
 
     }
 }

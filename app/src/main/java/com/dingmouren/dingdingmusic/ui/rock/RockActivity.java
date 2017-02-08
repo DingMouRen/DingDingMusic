@@ -1,5 +1,6 @@
 package com.dingmouren.dingdingmusic.ui.rock;
 
+import android.app.ActivityOptions;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -14,6 +15,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
 
 import com.dingmouren.dingdingmusic.Constant;
 import com.dingmouren.dingdingmusic.MyApplication;
@@ -51,9 +53,13 @@ public class RockActivity extends BaseActivity {
 
     @Override
     public void init(Bundle savedInstanceState) {
+        setTransiton();
         bindService(new Intent(this, MediaPlayerService.class),mServiceConnection,BIND_AUTO_CREATE);
     }
+    private void setTransiton() {
+        getWindow().setEnterTransition(new Fade());
 
+    }
     @Override
     public void initView() {
         mCollapsing.setTitle("");
@@ -63,7 +69,7 @@ public class RockActivity extends BaseActivity {
         mToolbar.setTitle("");
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setNavigationOnClickListener((view -> finish()));
+        mToolbar.setNavigationOnClickListener((view -> onBackPressed()));
 
         mAdapter = new RockAdapter(this);
         mAdapter.setOnItemClickListener((view, position) -> playSong(position));
@@ -133,7 +139,7 @@ public class RockActivity extends BaseActivity {
         intent.putExtra("position",position);
         intent.putExtra("flag",Constant.MUSIC_ROCK);
         JLog.e(TAG,"点击Rock一首音乐");
-        startActivity(intent);
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
 
     }
 }

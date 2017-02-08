@@ -18,14 +18,14 @@
             app:layout_scrollFlags="scroll|enterAlwaysCollapsed|exitUntilCollapsed"
             >
             <ImageView
-                android:id="@+id/img_jk"
+                android:id="@+id/img_volkslied"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scaleType="centerCrop"
-                android:src="@mipmap/jk"
+                android:src="@mipmap/volkslied"
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="0.5"
-                android:transitionName="share_jk"
+                android:transitionName="share_volkslied"
                 />
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"

@@ -4,6 +4,9 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.transition.ChangeBounds;
+import android.transition.ChangeImageTransform;
+import android.transition.ChangeTransform;
 import android.transition.Explode;
 import android.transition.Slide;
 import android.view.Gravity;
@@ -29,7 +32,6 @@ public class MainActivity extends BaseActivity {
     private static final String TAG = MainActivity.class.getName();
     @BindView(R.id.fab_user)FloatingActionButton mFabUser;
     @BindView(R.id.fab_music)FloatingActionButton mFabMusic;
-    @BindView(R.id.img_rock) ImageView mImgRock;
 
 
   @Override
@@ -54,8 +56,13 @@ public class MainActivity extends BaseActivity {
         slide.setDuration(1000);
         Explode explode = new Explode();
         explode.setDuration(1000);
-        getWindow().setEnterTransition(explode);
+
+        getWindow().setReenterTransition(explode);
         getWindow().setExitTransition(explode);
+
+        getWindow().setSharedElementExitTransition(new ChangeImageTransform());
+        getWindow().setSharedElementReenterTransition(new ChangeImageTransform());
+
     }
 
     @Override
@@ -69,13 +76,13 @@ public class MainActivity extends BaseActivity {
                 playRandom();
                 break;
              case R.id.img_jk:
-                 turnToJK();
+                 turnToJK(view);
                 break;
              case R.id.img_rock:
-                 turnToRock();
+                 turnToRock(view);
                 break;
              case R.id.img_volkslied:
-                 turnToVolkslied();
+                 turnToVolkslied(view);
                 break;
             case R.id.fab_user:
                 startActivity(new Intent(this, PersonalCenterActivity.class));
@@ -102,22 +109,22 @@ public class MainActivity extends BaseActivity {
     /**
      * 日韩歌曲
      */
-    private void turnToJK() {
-        startActivity(new Intent(this, JKActivity.class),ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+    private void turnToJK(View view) {
+        startActivity(new Intent(this, JKActivity.class),ActivityOptions.makeSceneTransitionAnimation(this,view,"share_jk").toBundle());
     }
 
     /**
      * 摇滚歌曲
      */
-    private void turnToRock() {
-        startActivity(new Intent(this, RockActivity.class),ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+    private void turnToRock(View view) {
+        startActivity(new Intent(this, RockActivity.class),ActivityOptions.makeSceneTransitionAnimation(this,view,"share_rock").toBundle());
     }
 
     /**
      * 民谣歌曲
      */
-    private void turnToVolkslied(){
-        startActivity(new Intent(this, VolksliedActivity.class),ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+    private void turnToVolkslied(View view){
+        startActivity(new Intent(this, VolksliedActivity.class),ActivityOptions.makeSceneTransitionAnimation(this,view,"share_volkslied").toBundle());
     }
     @Override
     protected void onDestroy() {
