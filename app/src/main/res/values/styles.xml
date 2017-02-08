@@ -3,12 +3,18 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/windowBackground</item>
+        <item name="colorPrimaryDark">@color/windowBackground</item>
         <item name="colorAccent">@android:color/black</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">false</item>
         <item name="android:windowAllowReturnTransitionOverlap">false</item>
+
+        <!--Activity跳转默认效果设置-->
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
     <style name="SplashActivityTheme" parent="AppTheme">
         <item name="android:windowNoTitle">true</item>
@@ -22,6 +28,7 @@
     <style name="PersonalActivityTheme" parent="AppTheme">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
     <style name="LocalMusicActivityTheme" parent="AppTheme">
         <item name="android:windowNoTitle">true</item>
@@ -34,6 +41,7 @@
     <style name="PlayingActivityTheme" parent="AppTheme">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
     <style name="JKActivityTheme" parent="AppTheme">
         <item name="android:windowNoTitle">true</item>

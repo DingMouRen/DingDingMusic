@@ -1,5 +1,6 @@
 package com.dingmouren.dingdingmusic.ui.musicplay;
 
+import android.animation.Animator;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -10,13 +11,17 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.design.widget.Snackbar;
+import android.support.percent.PercentRelativeLayout;
 import android.support.v4.view.ViewPager;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.Window;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -58,6 +63,7 @@ public class PlayingActivity extends BaseActivity {
     @BindView(R.id.btn_playorpause) ImageButton mBtnPlay;
     @BindView(R.id.btn_single) ImageButton mPlayMode;
     @BindView(R.id.img_bg) ImageView mImgBg;
+    @BindView(R.id.contanier_play_activity) PercentRelativeLayout mRootLayout;
 
     public Messenger mServiceMessenger;//来自服务端的Messenger
     private boolean isConnected = false;//标记是否连接上了服务端
@@ -70,6 +76,8 @@ public class PlayingActivity extends BaseActivity {
     private float mPositionOffset;//viewpager滑动的百分比
     private int mState;//viewpager的滑动状态
     List<MusicBean> list ;
+    private int enterX;//传递过来的x坐标，是点击View的中心点的x坐标，揭露动画
+    private int enterY;//传递过来的y坐标，是点击View的中心点的y坐标，揭露动画
     @Override
     public int setLayoutResourceID() {
         return R.layout.activity_musicplayer;
@@ -80,6 +88,7 @@ public class PlayingActivity extends BaseActivity {
         setTransiton();
         bindService(new Intent(getApplicationContext(),MediaPlayerService.class),mServiceConnection, BIND_AUTO_CREATE);
     }
+
 
     private void setTransiton() {
         Slide slide = new Slide(Gravity.BOTTOM);
@@ -103,6 +112,18 @@ public class PlayingActivity extends BaseActivity {
         mAlbumViewPager.setAdapter(mAlbumFragmentAdapater);
         mAlbumViewPager.setOffscreenPageLimit(6);
 
+        //揭露动画
+        mRootLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                enterX = getIntent().getIntExtra("x",0);
+                enterY = getIntent().getIntExtra("y",0);
+                if (0 != enterX && 0 != enterY){
+                    Animator animator = createRevealAnimator(false,enterX,enterY);
+                    animator.start();
+                }
+            }
+        });
 //        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
@@ -341,10 +362,49 @@ public class PlayingActivity extends BaseActivity {
         }
     }
 
+    /**
+     * 揭露动画
+     */
+    private Animator createRevealAnimator( boolean reversed,int x, int y) {
+        float hypot = (float) Math.hypot(mRootLayout.getHeight(),mRootLayout.getWidth());
+        float startRadius = reversed ? hypot : 0;
+        float endRadius = reversed ? 0 : hypot;
 
+        Animator animator = ViewAnimationUtils.createCircularReveal(mRootLayout,x,y,startRadius,endRadius);
+        animator.setDuration(800);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        if (reversed){
+            animator.addListener(animatorListener);
+        }
+        return animator;
+    }
+    private Animator.AnimatorListener animatorListener = new Animator.AnimatorListener() {
+        @Override
+        public void onAnimationStart(Animator animation) {
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            mRootLayout.setVisibility(View.INVISIBLE);
+            finish();
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animation) {
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animation) {
+        }
+    };
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        if (enterX != 0 && enterY != 0) {
+            Animator animator = createRevealAnimator(true, enterX, enterY);
+            animator.start();
+        }else {
+            super.onBackPressed();
+        }
     }
 
     @Override

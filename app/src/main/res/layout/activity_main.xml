@@ -37,5 +37,6 @@
         app:layout_anchor="@id/main_scrollview"
         app:layout_anchorGravity="bottom|right"
         android:scaleType="fitXY"
+        android:visibility="gone"
         />
 </android.support.design.widget.CoordinatorLayout>

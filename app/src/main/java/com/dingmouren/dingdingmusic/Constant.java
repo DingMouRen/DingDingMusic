@@ -31,6 +31,8 @@ public class  Constant {
     public static final int ROCK_MUSIC_ACTIVITY = 0x60001;
     //VolksliedActivity
     public static final int VOLKSLIED_MUSIC_ACTIVITY = 0x70001;
+    //MainActivity
+    public static final int MAIN_ACTIVITY = 0x80001;
     //QQMusicApi相关
     public static final String QQ_MUSIC_APP_ID = "31475";
     public static final String QQ_MUSIC_SIGN = "86625d192d6745879b781b4282826522";

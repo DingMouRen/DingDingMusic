@@ -1,11 +1,15 @@
 package com.dingmouren.dingdingmusic.ui.personal;
 
+import android.animation.Animator;
 import android.content.Intent;
 import android.database.Cursor;
 import android.provider.MediaStore;
 import android.support.v7.widget.CardView;
 import android.view.View;
+import android.view.ViewAnimationUtils;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.dingmouren.dingdingmusic.R;
@@ -26,7 +30,10 @@ public class PersonalCenterActivity extends BaseActivity {
     @BindView(R.id.tv_local_music) TextView mLocalMusicCount;
     @BindView(R.id.tv_like_music) TextView mLikeMusicCount;
     @BindView(R.id.img_setting)ImageView mSetting;
+    @BindView(R.id.container) LinearLayout mRootLayout;
     private Cursor mCursor;
+    private int enterX;//传递过来的x坐标，是点击View的中心点的x坐标，揭露动画
+    private int enterY;//传递过来的y坐标，是点击View的中心点的y坐标，揭露动画
     @Override
     public int setLayoutResourceID() {
         return R.layout.activity_personal;
@@ -36,6 +43,19 @@ public class PersonalCenterActivity extends BaseActivity {
     public void initView() {
         mCursor  = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
         if (null != mCursor)mLocalMusicCount.setText("本地歌曲("+mCursor.getCount()+"首)");
+
+        //揭露动画
+        mRootLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                enterX = getIntent().getIntExtra("x",0);
+                enterY = getIntent().getIntExtra("y",0);
+                if (0 != enterX && 0 != enterY){
+                    Animator animator = createRevealAnimator(false,enterX,enterY);
+                    animator.start();
+                }
+            }
+        });
 
     }
 
@@ -55,6 +75,50 @@ public class PersonalCenterActivity extends BaseActivity {
                 break;
             case R.id.img_setting:
                 break;
+        }
+    }
+    /**
+     * 揭露动画
+     */
+    private Animator createRevealAnimator( boolean reversed,int x, int y) {
+        float hypot = (float) Math.hypot(mRootLayout.getHeight(),mRootLayout.getWidth());
+        float startRadius = reversed ? hypot : 0;
+        float endRadius = reversed ? 0 : hypot;
+
+        Animator animator = ViewAnimationUtils.createCircularReveal(mRootLayout,x,y,startRadius,endRadius);
+        animator.setDuration(800);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        if (reversed){
+            animator.addListener(animatorListener);
+        }
+        return animator;
+    }
+    private Animator.AnimatorListener animatorListener = new Animator.AnimatorListener() {
+        @Override
+        public void onAnimationStart(Animator animation) {
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            mRootLayout.setVisibility(View.INVISIBLE);
+            finish();
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animation) {
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animation) {
+        }
+    };
+    @Override
+    public void onBackPressed() {
+        if (enterX != 0 && enterY != 0) {
+            Animator animator = createRevealAnimator(true, enterX, enterY);
+            animator.start();
+        }else {
+            super.onBackPressed();
         }
     }
 }

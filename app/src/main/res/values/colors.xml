@@ -9,6 +9,7 @@
     <color name="notification_bak">#47fafafa</color>
     <color name="playing_activity_song_bac">#80000000</color>
     <color name="color_bg_black">#353333</color>
+    <color name="windowBackground">#f4f2f2</color>
 
 
 </resources>

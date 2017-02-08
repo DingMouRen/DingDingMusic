@@ -17,7 +17,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.dingmouren.dingdingmusic.Constant;
@@ -70,6 +69,8 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
     private Messenger mMessengerRockMusicActivity;
     //VolksliedActivity的Messenger对象
     private Messenger mMessengerVolksliedMusicActivity;
+    //MainActivity的Messenger对象
+    private Messenger mMessengerMainActivity;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -100,7 +101,6 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         return super.onStartCommand(intent, flags, startId);
     }
 
-    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         JLog.e(TAG, "onBind");
@@ -185,6 +185,9 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
                 case Constant.VOLKSLIED_MUSIC_ACTIVITY:
                     mMessengerVolksliedMusicActivity = msgFromClient.replyTo;
                     updateSongPosition(mMessengerVolksliedMusicActivity);
+                    break;
+                case Constant.MAIN_ACTIVITY:
+                    mMessengerMainActivity = msgFromClient.replyTo;
                     break;
                 case Constant.PLAYING_ACTIVITY_PLAYING_POSITION:
                     int newPosition = msgFromClient.arg1;
@@ -476,10 +479,9 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
     }
 
     /**
-     * 将正在播放的歌曲的position发送给LocalMusicActivity
+     * 将正在播放的歌曲的position发送给Activity
      */
     private void updateSongPosition(Messenger messenger){
-        JLog.e(TAG,"updateSongPosition(Messenger messenger)--Messenger:" +messenger.toString());
         if (null != messenger && null != this.bean){
             Message msgToCLient = Message.obtain();
             Bundle bundle = new Bundle();
@@ -519,10 +521,16 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
     private void sendIsPlayingMsg(){
         if (null != mMessengerPlayingActivity) {
             Message msgToClient = Message.obtain();
-            msgToClient.arg1 = mediaPlayer.isPlaying() ? 1 : 0;
+            msgToClient.arg1 = mediaPlayer.isPlaying() ? 1 : 0;//1表示在播放，0 表示没有播放
             msgToClient.what = Constant.MEDIA_PLAYER_SERVICE_IS_PLAYING;
+            Message msgToMain = Message.obtain();//发给MainActivity
+            msgToMain.arg1 = mediaPlayer.isPlaying() ? 1 : 0;//1表示在播放，0 表示没有播放
+            msgToMain.what = Constant.MEDIA_PLAYER_SERVICE_IS_PLAYING;
             try {
                 mMessengerPlayingActivity.send(msgToClient);
+                if (null != mMessengerMainActivity) {
+                    mMessengerMainActivity.send(msgToMain);
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }

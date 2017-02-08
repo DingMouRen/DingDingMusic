@@ -89,8 +89,8 @@ public class JKAdapter extends RecyclerView.Adapter<JKAdapter.ViewHolder> {
                     fabIsPlay.setVisibility(View.GONE);
                 }else if (bean.getSongname().equals(playingBean.getSongname())
                         && bean.getSingername().equals(playingBean.getSingername())){
-                    fabIsPlay.setVisibility(View.VISIBLE);
-                    Glide.with(MyApplication.mContext).load(R.mipmap.playing).asGif().diskCacheStrategy(DiskCacheStrategy.NONE).into(fabIsPlay);
+                        fabIsPlay.setVisibility(View.VISIBLE);
+                        Glide.with(MyApplication.mContext).load(R.mipmap.playing).asGif().diskCacheStrategy(DiskCacheStrategy.NONE).into(fabIsPlay);
                 }
             }
         }
