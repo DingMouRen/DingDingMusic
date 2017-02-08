@@ -60,7 +60,7 @@
 
             />
         <ImageView
-            android:id="@+id/img_ballad"
+            android:id="@+id/img_volkslied"
             android:layout_width="match_parent"
             android:layout_height="@dimen/main_content_item_height"
             android:layout_below="@+id/img_rock"

@@ -39,7 +39,7 @@ public class JKActivity extends BaseActivity implements JKConstract.View{
     @BindView(R.id.recycler) RecyclerView mRecycler;
 
     private JKAdapter mAdapter;
-    private List<MusicBean> mLiist;
+    private List<MusicBean> mList;
     private Messenger mServiceMessenger;
     private JKPresenter mPresenter;
     @Override
@@ -82,9 +82,9 @@ public class JKActivity extends BaseActivity implements JKConstract.View{
 
     @Override
     public void setData(List<MusicBean> list) {
-        mLiist = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_KOREA)).list();
-        if (null != mLiist) {
-            mAdapter.setList(mLiist);
+        mList = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_KOREA)).list();
+        if (null != mList) {
+            mAdapter.setList(mList);
             mAdapter.notifyDataSetChanged();
         }
     }
@@ -142,6 +142,5 @@ public class JKActivity extends BaseActivity implements JKConstract.View{
         intent.putExtra("flag",Constant.MUSIC_KOREA);
         JLog.e(TAG,"点击JK一首音乐");
         startActivity(intent);
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 }

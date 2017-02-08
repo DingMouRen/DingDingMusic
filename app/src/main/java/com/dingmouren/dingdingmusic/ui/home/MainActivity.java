@@ -19,6 +19,8 @@ import com.dingmouren.dingdingmusic.service.MediaPlayerService;
 import com.dingmouren.dingdingmusic.ui.jk.JKActivity;
 import com.dingmouren.dingdingmusic.ui.musicplay.PlayingActivity;
 import com.dingmouren.dingdingmusic.ui.personal.PersonalCenterActivity;
+import com.dingmouren.dingdingmusic.ui.rock.RockActivity;
+import com.dingmouren.dingdingmusic.ui.volkslied.VolksliedActivity;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -60,7 +62,7 @@ public class MainActivity extends BaseActivity {
     public void initData() {
     }
 
-    @OnClick({R.id.img_randomn,R.id.img_jk,R.id.img_rock,R.id.img_ballad,R.id.fab_user,R.id.fab_music})
+    @OnClick({R.id.img_randomn,R.id.img_jk,R.id.img_rock,R.id.img_volkslied,R.id.fab_user,R.id.fab_music})
     public void onClick(View view){
         switch (view.getId()){
             case R.id.img_randomn:
@@ -70,8 +72,10 @@ public class MainActivity extends BaseActivity {
                  turnToJK();
                 break;
              case R.id.img_rock:
+                 turnToRock();
                 break;
-             case R.id.img_ballad:
+             case R.id.img_volkslied:
+                 turnToVolkslied();
                 break;
             case R.id.fab_user:
                 startActivity(new Intent(this, PersonalCenterActivity.class));
@@ -83,6 +87,7 @@ public class MainActivity extends BaseActivity {
 
         }
     }
+
 
 
     /**
@@ -99,6 +104,20 @@ public class MainActivity extends BaseActivity {
      */
     private void turnToJK() {
         startActivity(new Intent(this, JKActivity.class),ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+    }
+
+    /**
+     * 摇滚歌曲
+     */
+    private void turnToRock() {
+        startActivity(new Intent(this, RockActivity.class),ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+    }
+
+    /**
+     * 民谣歌曲
+     */
+    private void turnToVolkslied(){
+        startActivity(new Intent(this, VolksliedActivity.class),ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
     }
     @Override
     protected void onDestroy() {

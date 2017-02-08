@@ -51,6 +51,14 @@
             android:theme="@style/JKActivityTheme"
             android:launchMode="singleTask"
             />
+        <!--摇滚歌曲-->
+        <activity android:name=".ui.rock.RockActivity"
+            android:theme="@style/RockActivityTheme"
+            android:launchMode="singleTask"/>
+        <!--民谣歌曲-->
+        <activity android:name=".ui.volkslied.VolksliedActivity"
+            android:theme="@style/VolkiliedActivityTheme"
+            android:launchMode="singleTask"/>
         <service android:name=".service.MediaPlayerService"/>
 
 

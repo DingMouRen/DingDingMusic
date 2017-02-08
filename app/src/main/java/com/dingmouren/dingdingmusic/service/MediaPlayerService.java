@@ -66,6 +66,10 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
     private Messenger mMessengerLocalMusicActivity;
     //JKActivity的Messenger对象
     private Messenger mMessengerJKMusicActivity;
+    //RockActivity的Messenger对象
+    private Messenger mMessengerRockMusicActivity;
+    //VolksliedActivity的Messenger对象
+    private Messenger mMessengerVolksliedMusicActivity;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -174,6 +178,14 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
                     mMessengerJKMusicActivity = msgFromClient.replyTo;
                     updateSongPosition(mMessengerJKMusicActivity);
                     break;
+                case Constant.ROCK_MUSIC_ACTIVITY:
+                    mMessengerRockMusicActivity = msgFromClient.replyTo;
+                    updateSongPosition(mMessengerRockMusicActivity);
+                    break;
+                case Constant.VOLKSLIED_MUSIC_ACTIVITY:
+                    mMessengerVolksliedMusicActivity = msgFromClient.replyTo;
+                    updateSongPosition(mMessengerVolksliedMusicActivity);
+                    break;
                 case Constant.PLAYING_ACTIVITY_PLAYING_POSITION:
                     int newPosition = msgFromClient.arg1;
                         playSong(newPosition,-1);
@@ -246,7 +258,6 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
             mediaPlayer.pause();
             sendIsPlayingMsg();//发送播放器是否在播放的状态
         }
-        musicNotification.onUpdateMusicNotification(bean, mediaPlayer.isPlaying());
     }
 
     /**
@@ -260,14 +271,15 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         updateSeekBarProgress(mediaPlayer.isPlaying());
         //将现在播放的歌曲发送给PlayingActivity，并将播放的集合传递过去
         updateSongName();
-        //将现在播放的歌曲发送给Activity
-        JLog.e(TAG,"JK测试--1.播放音乐");
+        //将现在播放的歌曲发送给指定Activity
         if (bean.getType() == Integer.valueOf(Constant.MUSIC_LOCAL)) {
-            JLog.e(TAG,"JK测试--2.向本地发送消息");
             updateSongPosition(mMessengerLocalMusicActivity);
         }else if (bean.getType() == Integer.valueOf(Constant.MUSIC_KOREA)){
-            JLog.e(TAG,"JK测试--3.向JK发送消息");
             updateSongPosition(mMessengerJKMusicActivity);
+        }else if (bean.getType() == Integer.valueOf(Constant.MUSIC_ROCK)){
+            updateSongPosition(mMessengerRockMusicActivity);
+        }else if (bean.getType() == Integer.valueOf(Constant.MUSIC_VOLKSLIED)){
+            updateSongPosition(mMessengerVolksliedMusicActivity);
         }
         if (currentTime > 0) {
             mediaPlayer.seekTo(currentTime);
@@ -283,6 +295,7 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         if (null == mediaPlayer) return;
         mediaPlayer.stop();
         currentTime = 0;//停止音乐，将当前播放时间置为0
+        musicNotification.onUpdateMusicNotification(bean, mediaPlayer.isPlaying());
     }
     //--------------监听listener
     @Override

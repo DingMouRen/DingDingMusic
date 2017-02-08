@@ -239,6 +239,10 @@ public class PlayingActivity extends BaseActivity {
                     Collections.shuffle(list);
                 }else if (flag.equals(Constant.MUSIC_KOREA)){
                     list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_KOREA)).list();
+                }else if (flag.equals(Constant.MUSIC_ROCK)){
+                    list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_ROCK)).list();
+                }else if (flag.equals(Constant.MUSIC_VOLKSLIED)){
+                    list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_VOLKSLIED)).list();
                 }
                 if (null != list) {
                     for (int i = 0; i < list.size(); i++) {

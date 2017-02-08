@@ -38,11 +38,15 @@
     <style name="JKActivityTheme" parent="AppTheme">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
-        <item name="drawerArrowStyle">@style/ToolbarArrowStyle</item>
+    </style>
+ <style name="RockActivityTheme" parent="AppTheme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+    <style name="VolkiliedActivityTheme" parent="AppTheme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
     </style>
 
 
-    <style name="ToolbarArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
-        <item name="color">@android:color/white</item>
-    </style>
 </resources>

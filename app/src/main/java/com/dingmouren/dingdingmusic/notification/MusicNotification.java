@@ -9,9 +9,14 @@ import android.graphics.Bitmap;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.bean.MusicBean;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by dingmouren on 2017/1/20.
@@ -36,7 +41,6 @@ public class MusicNotification extends Notification {
     private final int MUSIC_NOTIFICATION_VALUE_NEXT = 30002;
     private final int MUSIC_NOTIFICATION_VALUE_CLOSE =30003;
     private Intent playIntent = null,nextIntent = null,closeIntent = null;//播放、下一首、关闭的意图对象
-    private Bitmap bitmap = null;//歌曲图片
     /**
      * 设置通知管理器
      * @param manager
@@ -113,15 +117,13 @@ public class MusicNotification extends Notification {
         remoteViews.setTextViewText(R.id.tv_song_name,(bean.getSongname() == null ? "" : bean.getSongname()));
         //更新歌手名字
         remoteViews.setTextViewText(R.id.tv_singer,(bean.getSingername() == null ? "" : bean.getSingername()));
-       /* //更新歌曲图片
-        try {
-            bitmap = Glide.with(context).load(bean.getPath()).asBitmap().centerCrop().into(300,300).get();
-            remoteViews.setImageViewBitmap(R.id.img_song,bitmap);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }*/
+        //更新歌曲图片
+            Glide.with(context).load(bean.getAlbumpic_big()).asBitmap().into(new SimpleTarget<Bitmap>() {
+                @Override
+                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                    remoteViews.setImageViewBitmap(R.id.img_song, resource);
+                }
+            });
         //更新播放状态：播放或者暂停
         if (isplay){
             remoteViews.setImageViewResource(R.id.img_play,R.mipmap.notification_play);
