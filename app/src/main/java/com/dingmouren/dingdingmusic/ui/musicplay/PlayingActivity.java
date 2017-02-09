@@ -64,12 +64,14 @@ public class PlayingActivity extends BaseActivity {
     @BindView(R.id.btn_single) ImageButton mPlayMode;
     @BindView(R.id.img_bg) ImageView mImgBg;
     @BindView(R.id.contanier_play_activity) PercentRelativeLayout mRootLayout;
+    @BindView(R.id.btn_download) ImageButton mBtnDownLoad;
+    @BindView(R.id.btn_share) ImageButton mBtnShare;
 
     public Messenger mServiceMessenger;//来自服务端的Messenger
     private boolean isConnected = false;//标记是否连接上了服务端
     private float mPercent;//进度的百分比
     private AlbumFragmentAdapater mAlbumFragmentAdapater;//专辑图片的适配器
-    public int position;//本地歌曲正在播放的歌曲位置，否则就是其他集合的第一首歌曲
+    public int mPosition;//本地歌曲正在播放的歌曲位置，否则就是其他集合的第一首歌曲
     public String flag;//歌曲集合的类型
     public int currentTime;//实时当前进度
     public int duration;//歌曲的总进度
@@ -78,6 +80,10 @@ public class PlayingActivity extends BaseActivity {
     List<MusicBean> list ;
     private int enterX;//传递过来的x坐标，是点击View的中心点的x坐标，揭露动画
     private int enterY;//传递过来的y坐标，是点击View的中心点的y坐标，揭露动画
+    private String shareSongName ;
+    private String shareSingerName;
+    private String shareUrl;
+    private String shareContent;
     @Override
     public int setLayoutResourceID() {
         return R.layout.activity_musicplayer;
@@ -90,19 +96,6 @@ public class PlayingActivity extends BaseActivity {
     }
 
 
-    private void setTransiton() {
-        Slide slide = new Slide(Gravity.BOTTOM);
-        slide.setDuration(700);
-
-        getWindow().setEnterTransition(slide);
-
-        Slide slide1 = new Slide();
-        slide1.setDuration(900);
-        slide1.setSlideEdge(Gravity.TOP);
-        getWindow().setReturnTransition(slide1);
-    }
-
-
     @Override
     public void initView() {
         updatePlayMode();
@@ -111,6 +104,7 @@ public class PlayingActivity extends BaseActivity {
         mAlbumFragmentAdapater = new AlbumFragmentAdapater(getSupportFragmentManager());
         mAlbumViewPager.setAdapter(mAlbumFragmentAdapater);
         mAlbumViewPager.setOffscreenPageLimit(6);
+
 
         //揭露动画
         mRootLayout.post(new Runnable() {
@@ -203,6 +197,32 @@ public class PlayingActivity extends BaseActivity {
                         .into(mImgBg);
             }
         });
+    
+        //分享功能
+        mBtnShare.setOnClickListener((view -> share()));
+
+    }
+
+    /**
+     * 分享功能
+     */
+    private void share() {
+        if (null != list) {
+            shareSongName = list.get(mPosition).getSongname();
+            shareSingerName = list.get(mPosition).getSingername();
+            shareUrl = list.get(mPosition).getUrl();
+            shareContent = shareSongName +"\n"+ "--" + shareSingerName +"\n"+ shareUrl;
+        }
+        if ("".equals(shareContent)){
+            Snackbar.make(mRootLayout,"分享失败",Snackbar.LENGTH_SHORT).show();
+        }else {
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_TEXT,shareContent);
+            intent.setType("text/plain");
+            startActivity(Intent.createChooser(intent,"分享到"));
+        }
+
     }
 
     @Override
@@ -259,12 +279,12 @@ public class PlayingActivity extends BaseActivity {
                 }
             }
             //连接成功的时候，
-            position = getIntent().getIntExtra("position",0);
+            mPosition = getIntent().getIntExtra("position",0);
             flag = getIntent().getStringExtra("flag");
-            JLog.e(TAG,"positon:" + position +" flag:"+flag);
+            JLog.e(TAG,"positon:" + mPosition +" flag:"+flag);
             if (null != mServiceMessenger  && null != flag ){
                 Message msgToService = Message.obtain();
-                msgToService.arg1 = position;
+                msgToService.arg1 = mPosition;
 
                 if ( flag.equals(Constant.MUSIC_LOCAL)){
                     list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_LOCAL)).list();
@@ -360,6 +380,19 @@ public class PlayingActivity extends BaseActivity {
         }else if (1 == playMode){
             mPlayMode.setImageResource(R.mipmap.single_mode);
         }
+    }
+
+
+    private void setTransiton() {
+        Slide slide = new Slide(Gravity.BOTTOM);
+        slide.setDuration(700);
+
+        getWindow().setEnterTransition(slide);
+
+        Slide slide1 = new Slide();
+        slide1.setDuration(900);
+        slide1.setSlideEdge(Gravity.TOP);
+        getWindow().setReturnTransition(slide1);
     }
 
     /**
