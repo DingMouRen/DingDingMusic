@@ -62,6 +62,10 @@ dependencies {
     compile 'com.android.support:percent:25.1.0'
     /*SP使用到了*/
     compile 'org.androidannotations:androidannotations:4.2.0'
+    /*权限申请*/
+    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.9.1@aar'
+    /*组件通信*/
+    compile 'org.greenrobot:eventbus:3.0.0'
 }
 //数据库版本以及Dao的相关设置
 greendao{

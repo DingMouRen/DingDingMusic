@@ -62,7 +62,6 @@
         <service android:name=".service.MediaPlayerService"/>
 
 
-
     </application>
 
 </manifest>

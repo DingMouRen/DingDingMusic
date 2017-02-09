@@ -3,8 +3,8 @@ package com.dingmouren.dingdingmusic.ui.personal;
 import android.animation.Animator;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.v7.widget.CardView;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -25,10 +25,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
  */
 
 public class PersonalCenterActivity extends BaseActivity {
+    private static final String TAG = PersonalCenterActivity.class.getName();
     @BindView(R.id.img_header) CircleImageView mImgHeader;
     @BindView(R.id.tv_username)TextView mUserName;
     @BindView(R.id.tv_local_music) TextView mLocalMusicCount;
-    @BindView(R.id.tv_like_music) TextView mLikeMusicCount;
     @BindView(R.id.img_setting)ImageView mSetting;
     @BindView(R.id.container) LinearLayout mRootLayout;
     private Cursor mCursor;
@@ -48,6 +48,7 @@ public class PersonalCenterActivity extends BaseActivity {
         mRootLayout.post(new Runnable() {
             @Override
             public void run() {
+                mRootLayout.setVisibility(View.VISIBLE);
                 enterX = getIntent().getIntExtra("x",0);
                 enterY = getIntent().getIntExtra("y",0);
                 if (0 != enterX && 0 != enterY){
@@ -56,22 +57,23 @@ public class PersonalCenterActivity extends BaseActivity {
                 }
             }
         });
-
     }
+
+
+
 
     @Override
     public void initData() {
 
     }
 
-    @OnClick({R.id.card_local_music,R.id.card_like_music,R.id.img_setting})
+    @OnClick({R.id.card_local_music,R.id.img_setting})
     public void onClick(View view){
         switch (view.getId()){
             case R.id.card_local_music:
-                startActivity(new Intent(this, LocalMusicActivity.class));
-                finish();
-                break;
-            case R.id.card_like_music:
+                Intent intent = new Intent(PersonalCenterActivity.this,LocalMusicActivity.class);
+                startActivity(intent);
+                new Handler().postDelayed(()-> finish(),1000);
                 break;
             case R.id.img_setting:
                 break;
@@ -112,6 +114,7 @@ public class PersonalCenterActivity extends BaseActivity {
         public void onAnimationRepeat(Animator animation) {
         }
     };
+
     @Override
     public void onBackPressed() {
         if (enterX != 0 && enterY != 0) {
@@ -121,4 +124,6 @@ public class PersonalCenterActivity extends BaseActivity {
             super.onBackPressed();
         }
     }
+
+
 }

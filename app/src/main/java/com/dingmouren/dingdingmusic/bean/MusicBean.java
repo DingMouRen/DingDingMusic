@@ -5,6 +5,7 @@ import com.dingmouren.dingdingmusic.base.BaseBean;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Unique;
 
 /**
  * Created by dingmouren on 2017/2/3.
@@ -24,6 +25,7 @@ public class MusicBean extends BaseBean{
      * singername : 迪丽热巴
      * albumid : 1826345
      */
+
     private String songname;
     private int seconds;
     private String albummid;
@@ -36,13 +38,15 @@ public class MusicBean extends BaseBean{
     private String singername;
     private int albumid;
     private int type;//表示歌曲的类型
+    private boolean isCollected;
 
     @Generated(hash = 1899243370)
     public MusicBean() {
     }
 
-    @Generated(hash = 1173238035)
-    public MusicBean(String songname, int seconds, String albummid, int songid, int singerid, String albumpic_big, String albumpic_small, String downUrl, String url, String singername, int albumid, int type) {
+    @Generated(hash = 1294777174)
+    public MusicBean(String songname, int seconds, String albummid, int songid, int singerid, String albumpic_big, String albumpic_small, String downUrl, String url, String singername, int albumid, int type,
+            boolean isCollected) {
         this.songname = songname;
         this.seconds = seconds;
         this.albummid = albummid;
@@ -55,6 +59,7 @@ public class MusicBean extends BaseBean{
         this.singername = singername;
         this.albumid = albumid;
         this.type = type;
+        this.isCollected = isCollected;
     }
 
     public String getSongname() {
@@ -151,6 +156,15 @@ public class MusicBean extends BaseBean{
 
     public void setType(int type) {
         this.type = type;
+    }
+
+
+    public boolean getIsCollected() {
+        return this.isCollected;
+    }
+
+    public void setIsCollected(boolean isCollected) {
+        this.isCollected = isCollected;
     }
 
 }

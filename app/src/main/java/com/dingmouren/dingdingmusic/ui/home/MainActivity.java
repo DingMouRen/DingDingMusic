@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.dingmouren.dingdingmusic.Constant;
+import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.base.BaseActivity;
 import com.dingmouren.dingdingmusic.bean.MusicBean;
@@ -33,7 +34,10 @@ import com.dingmouren.dingdingmusic.ui.musicplay.PlayingActivity;
 import com.dingmouren.dingdingmusic.ui.personal.PersonalCenterActivity;
 import com.dingmouren.dingdingmusic.ui.rock.RockActivity;
 import com.dingmouren.dingdingmusic.ui.volkslied.VolksliedActivity;
+import com.dingmouren.greendao.MusicBeanDao;
 import com.jiongbull.jlog.JLog;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -53,6 +57,10 @@ public class MainActivity extends BaseActivity {
     public void init(Bundle savedInstanceState) {
         startService(new Intent(this,MediaPlayerService.class));//开启MediaPlayerService服务
         bindService(new Intent(this, MediaPlayerService.class),mServiceConnection,BIND_AUTO_CREATE);
+        List<MusicBean> list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.IsCollected.eq(true)).list();
+        if (null != list){
+            JLog.e(TAG,"收藏的歌曲："+list.toString());
+        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.dingmouren.dingdingmusic.ui.musicplay;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -38,6 +39,9 @@ import com.dingmouren.dingdingmusic.service.MediaPlayerService;
 import com.dingmouren.dingdingmusic.utils.SPUtil;
 import com.dingmouren.greendao.MusicBeanDao;
 import com.jiongbull.jlog.JLog;
+import com.tbruyelle.rxpermissions.RxPermissions;
+
+import org.w3c.dom.Text;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -66,6 +70,7 @@ public class PlayingActivity extends BaseActivity {
     @BindView(R.id.contanier_play_activity) PercentRelativeLayout mRootLayout;
     @BindView(R.id.btn_download) ImageButton mBtnDownLoad;
     @BindView(R.id.btn_share) ImageButton mBtnShare;
+    @BindView(R.id.tv_category) TextView mTvCategory;
 
     public Messenger mServiceMessenger;//来自服务端的Messenger
     private boolean isConnected = false;//标记是否连接上了服务端
@@ -200,6 +205,33 @@ public class PlayingActivity extends BaseActivity {
     
         //分享功能
         mBtnShare.setOnClickListener((view -> share()));
+        mBtnDownLoad.setOnClickListener((view -> downLoad()));
+
+    }
+
+    /**
+     * 下载歌曲
+     */
+    private void downLoad() {
+        if (null == list) return;
+        /*MusicBean bean = new MusicBean();
+        bean.setSongname(list.get(mPosition).getSongname());
+        bean.setSeconds(list.get(mPosition).getSeconds());
+        bean.setAlbummid(list.get(mPosition).getAlbummid());
+        bean.setSongid(list.get(mPosition).getSongid());
+        bean.setSingerid(list.get(mPosition).getSingerid());
+        bean.setAlbumpic_big(list.get(mPosition).getAlbumpic_big());
+        bean.setAlbumpic_small(list.get(mPosition).getAlbumpic_small());
+        bean.setDownUrl(list.get(mPosition).getDownUrl());
+        bean.setUrl(list.get(mPosition).getUrl());
+        bean.setSingername(list.get(mPosition).getSingername());
+        bean.setAlbumid(list.get(mPosition).getAlbumid());
+        bean.setType(list.get(mPosition).getType());
+        bean.setIsCollected(true);
+        MyApplication.getDaoSession().getMusicBeanDao().delete(list.get(mPosition));
+        MyApplication.getDaoSession().getMusicBeanDao().insertOrReplace(bean);*/
+       /* list.get(mPosition).setIsCollected(true);
+        MyApplication.getDaoSession().getMusicBeanDao().update(list.get(mPosition));*/
 
     }
 
@@ -288,15 +320,20 @@ public class PlayingActivity extends BaseActivity {
 
                 if ( flag.equals(Constant.MUSIC_LOCAL)){
                     list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_LOCAL)).list();
+                    mTvCategory.setText("本地音乐");
                 }else if (flag.equals(Constant.MAIN_RANDOM)){
                     list = MyApplication.getDaoSession().getMusicBeanDao().loadAll();
                     Collections.shuffle(list);
+                    mTvCategory.setText("随心听");
                 }else if (flag.equals(Constant.MUSIC_KOREA)){
                     list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_KOREA)).list();
+                    mTvCategory.setText("韩国");
                 }else if (flag.equals(Constant.MUSIC_ROCK)){
                     list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_ROCK)).list();
+                    mTvCategory.setText("摇滚");
                 }else if (flag.equals(Constant.MUSIC_VOLKSLIED)){
                     list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_VOLKSLIED)).list();
+                    mTvCategory.setText("民谣");
                 }
                 if (null != list) {
                     for (int i = 0; i < list.size(); i++) {

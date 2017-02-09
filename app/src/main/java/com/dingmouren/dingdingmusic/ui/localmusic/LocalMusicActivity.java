@@ -1,28 +1,31 @@
 package com.dingmouren.dingdingmusic.ui.localmusic;
 
+import android.animation.Animator;
+import android.app.ActivityOptions;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.provider.MediaStore;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.view.ViewAnimationUtils;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.LinearLayout;
 
 import com.dingmouren.dingdingmusic.Constant;
-import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.base.BaseActivity;
 import com.dingmouren.dingdingmusic.bean.MusicBean;
 import com.dingmouren.dingdingmusic.service.MediaPlayerService;
 import com.dingmouren.dingdingmusic.ui.musicplay.PlayingActivity;
-import com.dingmouren.greendao.MusicBeanDao;
 import com.jiongbull.jlog.JLog;
 
 import java.util.List;
@@ -38,6 +41,8 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
     private static final String TAG = LocalMusicActivity.class.getName();
     @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.recycler) RecyclerView mRecycler;
+    @BindView(R.id.swipe_refersh) SwipeRefreshLayout mSwipeRefresh;
+    @BindView(R.id.container)   LinearLayout mRootLayout;
     private LinearLayoutManager mLayoutManager;
     private LocalMusicConstract.Presenter mPresenter;
     private LocalMusicAdapter mAdapter;
@@ -52,8 +57,11 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
         bindService(new Intent(this, MediaPlayerService.class),mServiceConnection,BIND_AUTO_CREATE);
     }
 
+
+
     @Override
     public void initView() {
+
         mToolbar.setTitle(R.string.txt_local_music);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -63,18 +71,33 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
         mRecycler.setLayoutManager(mLayoutManager);
         mRecycler.setHasFixedSize(true);
         mRecycler.setAdapter(mAdapter);
+
+        //揭露动画
+        mRootLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mRootLayout.setVisibility(View.VISIBLE);
+                Animator animator = createRevealAnimator(false,0,0);
+                animator.start();
+
+            }
+        });
+
+
     }
 
     @Override
     public void initListener() {
-        mToolbar.setNavigationOnClickListener((view)->finish());//点击箭头返回
+        mToolbar.setNavigationOnClickListener((view)-> onBackPressed());//点击箭头返回
         mAdapter.setOnItemClickListener((view, position) -> playSong(position));
+        mSwipeRefresh.setOnRefreshListener(()-> mPresenter.requestData());
     }
 
     @Override
     public void initData() {
         mPresenter = new LocalMusicPresenter((LocalMusicConstract.View) this);
-            mPresenter.requestData();
+        setRefresh(true);
+        mPresenter.requestData();
     }
 
 
@@ -82,6 +105,12 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
     public void setData(List<MusicBean> list) {
         mAdapter.setList(list);
         mAdapter.notifyDataSetChanged();
+        setRefresh(false);
+    }
+
+    @Override
+    public void setRefresh(boolean refresh) {
+        mSwipeRefresh.setRefreshing(refresh);
     }
 
     @Override
@@ -137,7 +166,49 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
         intent.putExtra("position",position);
         intent.putExtra("flag",Constant.MUSIC_LOCAL);
         JLog.e(TAG,"点击本地的一首音乐");
-        startActivity(intent);
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+    }
+
+    /**
+     * 揭露动画
+     */
+    private Animator createRevealAnimator( boolean exit,int x, int y) {
+        float hypot = (float) Math.hypot(mRootLayout.getHeight(),mRootLayout.getWidth());
+        float startRadius = exit ? hypot : 0;
+        float endRadius = exit ? 0 : hypot;
+
+        Animator animator = ViewAnimationUtils.createCircularReveal(mRootLayout,x,y,startRadius,endRadius);
+        animator.setDuration(800);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        if (exit){
+            animator.addListener(animatorListenerExit);
+        }
+        return animator;
+    }
+
+    private Animator.AnimatorListener animatorListenerExit = new Animator.AnimatorListener() {
+        @Override
+        public void onAnimationStart(Animator animation) {
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            //动画结束时，销毁当前Activity
+            mRootLayout.setVisibility(View.INVISIBLE);//在finish()的时候会闪屏的现象，先不可见，再销毁就不会闪屏了
+           finish();
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animation) {
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animation) {
+        }
+    };
+    @Override
+    public void onBackPressed() {
+            Animator animator = createRevealAnimator(true, mRootLayout.getWidth()/2, mRootLayout.getHeight()/2);
+            animator.start();
     }
 }

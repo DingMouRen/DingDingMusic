@@ -36,6 +36,7 @@ public class MusicBeanDao extends AbstractDao<MusicBean, Void> {
         public final static Property Singername = new Property(9, String.class, "singername", false, "SINGERNAME");
         public final static Property Albumid = new Property(10, int.class, "albumid", false, "ALBUMID");
         public final static Property Type = new Property(11, int.class, "type", false, "TYPE");
+        public final static Property IsCollected = new Property(12, boolean.class, "isCollected", false, "IS_COLLECTED");
     }
 
 
@@ -62,7 +63,8 @@ public class MusicBeanDao extends AbstractDao<MusicBean, Void> {
                 "\"URL\" TEXT," + // 8: url
                 "\"SINGERNAME\" TEXT," + // 9: singername
                 "\"ALBUMID\" INTEGER NOT NULL ," + // 10: albumid
-                "\"TYPE\" INTEGER NOT NULL );"); // 11: type
+                "\"TYPE\" INTEGER NOT NULL ," + // 11: type
+                "\"IS_COLLECTED\" INTEGER NOT NULL );"); // 12: isCollected
     }
 
     /** Drops the underlying database table. */
@@ -114,6 +116,7 @@ public class MusicBeanDao extends AbstractDao<MusicBean, Void> {
         }
         stmt.bindLong(11, entity.getAlbumid());
         stmt.bindLong(12, entity.getType());
+        stmt.bindLong(13, entity.getIsCollected() ? 1L: 0L);
     }
 
     @Override
@@ -159,6 +162,7 @@ public class MusicBeanDao extends AbstractDao<MusicBean, Void> {
         }
         stmt.bindLong(11, entity.getAlbumid());
         stmt.bindLong(12, entity.getType());
+        stmt.bindLong(13, entity.getIsCollected() ? 1L: 0L);
     }
 
     @Override
@@ -180,7 +184,8 @@ public class MusicBeanDao extends AbstractDao<MusicBean, Void> {
             cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // url
             cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // singername
             cursor.getInt(offset + 10), // albumid
-            cursor.getInt(offset + 11) // type
+            cursor.getInt(offset + 11), // type
+            cursor.getShort(offset + 12) != 0 // isCollected
         );
         return entity;
     }
@@ -199,6 +204,7 @@ public class MusicBeanDao extends AbstractDao<MusicBean, Void> {
         entity.setSingername(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
         entity.setAlbumid(cursor.getInt(offset + 10));
         entity.setType(cursor.getInt(offset + 11));
+        entity.setIsCollected(cursor.getShort(offset + 12) != 0);
      }
     
     @Override
