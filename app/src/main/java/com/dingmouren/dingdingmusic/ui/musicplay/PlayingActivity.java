@@ -123,7 +123,9 @@ public class PlayingActivity extends BaseActivity {
                 }
             }
         });
-//        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+
+        //左上角显示类别
+        showCategory();
     }
 
 
@@ -320,20 +322,35 @@ public class PlayingActivity extends BaseActivity {
 
                 if ( flag.equals(Constant.MUSIC_LOCAL)){
                     list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_LOCAL)).list();
-                    mTvCategory.setText("本地音乐");
+                    SPUtil.put(PlayingActivity.this,Constant.CATEGOTY,1);
+                    if (1 == (int)SPUtil.get(PlayingActivity.this,Constant.CATEGOTY,0)) {
+                        mTvCategory.setText("本地音乐");
+                    }
                 }else if (flag.equals(Constant.MAIN_RANDOM)){
                     list = MyApplication.getDaoSession().getMusicBeanDao().loadAll();
+                    SPUtil.put(PlayingActivity.this,Constant.CATEGOTY,2);
+                    if (2 == (int)SPUtil.get(PlayingActivity.this,Constant.CATEGOTY,0)) {
+                        mTvCategory.setText("随心听");
+                    }
                     Collections.shuffle(list);
-                    mTvCategory.setText("随心听");
                 }else if (flag.equals(Constant.MUSIC_KOREA)){
                     list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_KOREA)).list();
-                    mTvCategory.setText("韩国");
+                    SPUtil.put(PlayingActivity.this,Constant.CATEGOTY,3);
+                    if (3 == (int)SPUtil.get(PlayingActivity.this,Constant.CATEGOTY,0)) {
+                        mTvCategory.setText("韩国");
+                    }
                 }else if (flag.equals(Constant.MUSIC_ROCK)){
                     list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_ROCK)).list();
-                    mTvCategory.setText("摇滚");
+                    SPUtil.put(PlayingActivity.this,Constant.CATEGOTY,4);
+                    if (4 == (int)SPUtil.get(PlayingActivity.this,Constant.CATEGOTY,0)) {
+                        mTvCategory.setText("摇滚");
+                    }
                 }else if (flag.equals(Constant.MUSIC_VOLKSLIED)){
                     list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_VOLKSLIED)).list();
-                    mTvCategory.setText("民谣");
+                    SPUtil.put(PlayingActivity.this,Constant.CATEGOTY,5);
+                    if (5 == (int)SPUtil.get(PlayingActivity.this,Constant.CATEGOTY,0)) {
+                        mTvCategory.setText("民谣");
+                    }
                 }
                 if (null != list) {
                     for (int i = 0; i < list.size(); i++) {
@@ -430,6 +447,28 @@ public class PlayingActivity extends BaseActivity {
         slide1.setDuration(900);
         slide1.setSlideEdge(Gravity.TOP);
         getWindow().setReturnTransition(slide1);
+    }
+
+    private void showCategory() {
+        int category = (int)SPUtil.get(PlayingActivity.this,Constant.CATEGOTY,0);
+        switch (category){
+            case 1:
+                mTvCategory.setText("本地音乐");
+                break;
+            case 2:
+                mTvCategory.setText("随心听");
+                break;
+            case 3:
+                mTvCategory.setText("韩国");
+                break;
+            case 4:
+                mTvCategory.setText("摇滚");
+                break;
+            case 5:
+                mTvCategory.setText("民谣");
+                break;
+
+        }
     }
 
     /**

@@ -54,4 +54,7 @@ public class  Constant {
 
     public static final String MAIN_RANDOM = "main_random";
 
+    //PlayingActivity左上角显示的类型
+    public static final String CATEGOTY = "categoty";
+
 }
