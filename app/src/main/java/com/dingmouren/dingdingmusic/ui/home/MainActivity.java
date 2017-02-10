@@ -17,9 +17,11 @@ import android.transition.ChangeTransform;
 import android.transition.Explode;
 import android.transition.Slide;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -48,6 +50,7 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.fab_music)FloatingActionButton mFabMusic;
 
     private Messenger mServiceMessenger;
+    private long time = 0;//双击退出时用的时间标记
   @Override
     public int setLayoutResourceID() {
         return R.layout.activity_main;
@@ -203,6 +206,25 @@ public class MainActivity extends BaseActivity {
         getWindow().setSharedElementReenterTransition(new ChangeImageTransform());
 
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK){
+            if ((System.currentTimeMillis() - time > 1000)){
+                Toast.makeText(this,"再按一次退出",Toast.LENGTH_SHORT).show();
+                time = System.currentTimeMillis();
+            }else {
+                /*Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                startActivity(intent);*/
+                finish();
+            }
+            return true;
+        }else {
+            return super.onKeyDown(keyCode, event);
+        }
+    }
+
     @Override
     protected void onDestroy() {
         stopService(new Intent(this,MediaPlayerService.class));
