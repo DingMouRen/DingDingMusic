@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.base.BaseActivity;
 import com.dingmouren.dingdingmusic.ui.localmusic.LocalMusicActivity;
@@ -29,9 +30,11 @@ public class PersonalCenterActivity extends BaseActivity {
     @BindView(R.id.img_header) CircleImageView mImgHeader;
     @BindView(R.id.tv_username)TextView mUserName;
     @BindView(R.id.tv_local_music) TextView mLocalMusicCount;
+    @BindView(R.id.tv_like) TextView mLikeMusic;
     @BindView(R.id.img_setting)ImageView mSetting;
     @BindView(R.id.container) LinearLayout mRootLayout;
     private Cursor mCursor;
+    private long mCountLike;
     private int enterX;//传递过来的x坐标，是点击View的中心点的x坐标，揭露动画
     private int enterY;//传递过来的y坐标，是点击View的中心点的y坐标，揭露动画
     @Override
@@ -43,6 +46,12 @@ public class PersonalCenterActivity extends BaseActivity {
     public void initView() {
         mCursor  = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
         if (null != mCursor)mLocalMusicCount.setText("本地歌曲("+mCursor.getCount()+"首)");
+
+        mCountLike  = MyApplication.getDaoSession().getLikeBeanDao().count();
+        if (0 != mCountLike){
+            mLikeMusic.setText("收藏歌曲("+mCountLike+"首)");
+        }
+
 
         //揭露动画
         mRootLayout.post(new Runnable() {
@@ -67,13 +76,15 @@ public class PersonalCenterActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.card_local_music,R.id.img_setting})
+    @OnClick({R.id.card_local_music,R.id.card_like,R.id.img_setting})
     public void onClick(View view){
         switch (view.getId()){
             case R.id.card_local_music:
                 Intent intent = new Intent(PersonalCenterActivity.this,LocalMusicActivity.class);
                 startActivity(intent);
                 new Handler().postDelayed(()-> finish(),1000);
+                break;
+            case R.id.card_like:
                 break;
             case R.id.img_setting:
                 break;

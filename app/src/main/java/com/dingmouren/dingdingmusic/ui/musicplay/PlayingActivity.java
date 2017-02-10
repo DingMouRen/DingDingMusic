@@ -34,9 +34,11 @@ import com.dingmouren.dingdingmusic.Constant;
 import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.base.BaseActivity;
+import com.dingmouren.dingdingmusic.bean.LikeBean;
 import com.dingmouren.dingdingmusic.bean.MusicBean;
 import com.dingmouren.dingdingmusic.service.MediaPlayerService;
 import com.dingmouren.dingdingmusic.utils.SPUtil;
+import com.dingmouren.greendao.LikeBeanDao;
 import com.dingmouren.greendao.MusicBeanDao;
 import com.jiongbull.jlog.JLog;
 import com.tbruyelle.rxpermissions.RxPermissions;
@@ -76,8 +78,8 @@ public class PlayingActivity extends BaseActivity {
     ImageView mImgBg;
     @BindView(R.id.contanier_play_activity)
     PercentRelativeLayout mRootLayout;
-    @BindView(R.id.btn_download)
-    ImageButton mBtnDownLoad;
+    @BindView(R.id.btn_like)
+    ImageButton mBtnLike;
     @BindView(R.id.btn_share)
     ImageButton mBtnShare;
     @BindView(R.id.tv_category)
@@ -89,13 +91,14 @@ public class PlayingActivity extends BaseActivity {
     private boolean isConnected = false;//标记是否连接上了服务端
     private float mPercent;//进度的百分比
     private AlbumFragmentAdapater mAlbumFragmentAdapater;//专辑图片的适配器
-    public int mPosition;//本地歌曲正在播放的歌曲位置，否则就是其他集合的第一首歌曲
+    public int mPosition;//传递过来的的歌曲的位置
+    public int mPositionPlaying;//正在播放的歌曲的位置
     public String flag;//歌曲集合的类型
     public int currentTime;//实时当前进度
     public int duration;//歌曲的总进度
     private float mPositionOffset;//viewpager滑动的百分比
     private int mState;//viewpager的滑动状态
-    List<MusicBean> list;
+    private List<MusicBean> mList = new ArrayList<>();
     private int enterX;//传递过来的x坐标，是点击View的中心点的x坐标，揭露动画
     private int enterY;//传递过来的y坐标，是点击View的中心点的y坐标，揭露动画
     private String shareSongName;
@@ -122,7 +125,7 @@ public class PlayingActivity extends BaseActivity {
 
         mAlbumFragmentAdapater = new AlbumFragmentAdapater(getSupportFragmentManager());
         mAlbumViewPager.setAdapter(mAlbumFragmentAdapater);
-        mAlbumViewPager.setOffscreenPageLimit(6);
+        mAlbumViewPager.setOffscreenPageLimit(1);
 
 
         //揭露动画
@@ -140,6 +143,7 @@ public class PlayingActivity extends BaseActivity {
 
         //左上角显示类别
         showCategory();
+
     }
 
 
@@ -181,7 +185,7 @@ public class PlayingActivity extends BaseActivity {
                 mPositionOffset = positionOffset;
                 if (position == 0) {//解决第一次进入的时候没有显示模糊效果
                     Glide.with(MyApplication.mContext)//底部的模糊效果
-                            .load(list.get(position).getAlbumpic_big())
+                            .load(mList.get(position).getAlbumpic_big())
                             .bitmapTransform(new BlurTransformation(PlayingActivity.this, 99))
                             .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                             .crossFade()
@@ -197,6 +201,8 @@ public class PlayingActivity extends BaseActivity {
 
             @Override
             public void onPageSelected(int position) {
+                mPositionPlaying =  position;
+                showIsLike();
                 if (2 == mState && 0 < mPositionOffset) {
                     Message msgToService = Message.obtain();
                     msgToService.arg1 = position;
@@ -211,9 +217,9 @@ public class PlayingActivity extends BaseActivity {
                     }
 
                 }
-                if (position < list.size()) {
+                if (position < mList.size()) {
                     Glide.with(PlayingActivity.this)//底部的模糊效果
-                            .load(list.get(position).getAlbumpic_big() == null ? R.mipmap.native_1 : list.get(position).getAlbumpic_big())
+                            .load(mList.get(position).getAlbumpic_big() == null ? R.mipmap.native_1 : mList.get(position).getAlbumpic_big())
                             .bitmapTransform(new BlurTransformation(PlayingActivity.this, 99))
                             .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                             .crossFade()
@@ -221,48 +227,71 @@ public class PlayingActivity extends BaseActivity {
                 }
 
             }
+
         });
 
         //分享功能
         mBtnShare.setOnClickListener((view -> share()));
-        mBtnDownLoad.setOnClickListener((view -> downLoad()));
+        mBtnLike.setOnClickListener((view -> collect()));
 
     }
 
-    /**
-     * 下载歌曲
-     */
-    private void downLoad() {
-        if (null == list) return;
-        /*MusicBean bean = new MusicBean();
-        bean.setSongname(list.get(mPosition).getSongname());
-        bean.setSeconds(list.get(mPosition).getSeconds());
-        bean.setAlbummid(list.get(mPosition).getAlbummid());
-        bean.setSongid(list.get(mPosition).getSongid());
-        bean.setSingerid(list.get(mPosition).getSingerid());
-        bean.setAlbumpic_big(list.get(mPosition).getAlbumpic_big());
-        bean.setAlbumpic_small(list.get(mPosition).getAlbumpic_small());
-        bean.setDownUrl(list.get(mPosition).getDownUrl());
-        bean.setUrl(list.get(mPosition).getUrl());
-        bean.setSingername(list.get(mPosition).getSingername());
-        bean.setAlbumid(list.get(mPosition).getAlbumid());
-        bean.setType(list.get(mPosition).getType());
-        bean.setIsCollected(true);
-        MyApplication.getDaoSession().getMusicBeanDao().delete(list.get(mPosition));
-        MyApplication.getDaoSession().getMusicBeanDao().insertOrReplace(bean);*/
-       /* list.get(mPosition).setIsCollected(true);
-        MyApplication.getDaoSession().getMusicBeanDao().update(list.get(mPosition));*/
 
+    private void showIsLike() {
+        List<LikeBean> list = MyApplication.getDaoSession().getLikeBeanDao().loadAll();
+        JLog.e(TAG,"收藏的歌曲："+ list.size());
+        for (int i = 0; i < list.size(); i++) {
+            JLog.e(TAG,"收藏的歌曲："+ list.get(i).getSongname());
+        }
+        if (null == list) return;
+        long count = MyApplication.getDaoSession().getLikeBeanDao().queryBuilder()
+                .where( LikeBeanDao.Properties.Songname.eq(mList.get(mPositionPlaying).getSongname()),
+                        LikeBeanDao.Properties.Singername.eq(mList.get(mPositionPlaying).getSingername())).count();
+        JLog.e(TAG,"count:"+ count);
+        if (count == 0){
+            mBtnLike.setImageResource(R.mipmap.no_collected);
+        }else {
+            mBtnLike.setImageResource(R.mipmap.collected);
+        }
+    }
+
+    /**
+     * 收藏歌曲
+     */
+    private void collect() {
+        if (null == mList) return;
+        LikeBean likeBean = new LikeBean();
+        likeBean.setSingername(mList.get(mPositionPlaying).getSingername());
+        likeBean.setSongname(mList.get(mPositionPlaying).getSongname());
+        likeBean.setType(Integer.valueOf(Constant.MUSIC_Like));
+        likeBean.setAlbumpic_big(mList.get(mPositionPlaying).getAlbumpic_big());
+        likeBean.setAlbumpic_small(mList.get(mPositionPlaying).getAlbumpic_small());
+        likeBean.setUrl(mList.get(mPositionPlaying).getUrl());
+        likeBean.setSeconds(mList.get(mPositionPlaying).getSeconds());
+        long count = MyApplication.getDaoSession().getLikeBeanDao().queryBuilder()
+                .where(LikeBeanDao.Properties.Singername.eq(mList.get(mPositionPlaying).getSingername()),
+                        LikeBeanDao.Properties.Songname.eq(mList.get(mPositionPlaying).getSongname())).count();
+        if (count == 0){
+            JLog.e(TAG,"收藏歌曲");
+            mBtnLike.setImageResource(R.mipmap.collected);
+            MyApplication.getDaoSession().getLikeBeanDao().insertOrReplace(likeBean);
+            Snackbar.make(mRootLayout,"收藏成功",Snackbar.LENGTH_SHORT).show();
+        }else {
+            JLog.e(TAG,"取消收藏");
+            mBtnLike.setImageResource(R.mipmap.no_collected);
+            MyApplication.getDaoSession().getLikeBeanDao().delete(likeBean);
+            Snackbar.make(mRootLayout,"取消收藏",Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     /**
      * 分享功能
      */
     private void share() {
-        if (null != list) {
-            shareSongName = list.get(mPosition).getSongname();
-            shareSingerName = list.get(mPosition).getSingername();
-            shareUrl = list.get(mPosition).getUrl();
+        if (null != mList) {
+            shareSongName = mList.get(mPositionPlaying).getSongname();
+            shareSingerName = mList.get(mPositionPlaying).getSingername();
+            shareUrl = mList.get(mPositionPlaying).getUrl();
             shareContent = shareSongName + "\n" + "--" + shareSingerName + "\n" + shareUrl;
         }
         if ("".equals(shareContent)) {
@@ -333,48 +362,50 @@ public class PlayingActivity extends BaseActivity {
             //连接成功的时候，
             mPosition = getIntent().getIntExtra("position", 0);
             flag = getIntent().getStringExtra("flag");
-            JLog.e(TAG, "positon:" + mPosition + " flag:" + flag);
+            JLog.e(TAG, "传递过来的positon:" + mPosition + " flag:" + flag);
             if (null != mServiceMessenger && null != flag) {
                 Message msgToService = Message.obtain();
                 msgToService.arg1 = mPosition;
-
+                mList.clear();
                 if (flag.equals(Constant.MUSIC_LOCAL)) {
-                    list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_LOCAL)).list();
+                    mList.addAll(MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_LOCAL)).list());
                     SPUtil.put(PlayingActivity.this, Constant.CATEGOTY, 1);
                     mTvCategory.setText("本地音乐");
                 } else if (flag.equals(Constant.MAIN_RANDOM)) {
-                    list = MyApplication.getDaoSession().getMusicBeanDao().loadAll();
+                    mList.addAll(MyApplication.getDaoSession().getMusicBeanDao().loadAll());
                     SPUtil.put(PlayingActivity.this, Constant.CATEGOTY, 2);
                     mTvCategory.setText("随心听");
-                    Collections.shuffle(list);
+                    Collections.shuffle(mList);
                 } else if (flag.equals(Constant.MUSIC_KOREA)) {
-                    list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_KOREA)).list();
+                    mList.addAll(MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_KOREA)).list());
                     SPUtil.put(PlayingActivity.this, Constant.CATEGOTY, 3);
                     mTvCategory.setText("韩国");
                 } else if (flag.equals(Constant.MUSIC_ROCK)) {
-                    list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_ROCK)).list();
+                    mList.addAll(MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_ROCK)).list());
                     SPUtil.put(PlayingActivity.this, Constant.CATEGOTY, 4);
                     mTvCategory.setText("摇滚");
                 } else if (flag.equals(Constant.MUSIC_VOLKSLIED)) {
-                    list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_VOLKSLIED)).list();
+                    mList.addAll(MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_VOLKSLIED)).list());
                     SPUtil.put(PlayingActivity.this, Constant.CATEGOTY, 5);
                     mTvCategory.setText("民谣");
                 } else if (flag.equals(Constant.MUSIC_SEARCH)) {
-                    list = (List<MusicBean>) getIntent().getSerializableExtra(Constant.SEARCH_ACTIVITY_DATA_KEY);
+                    mList.addAll((List<MusicBean>) getIntent().getSerializableExtra(Constant.SEARCH_ACTIVITY_DATA_KEY));
                     SPUtil.put(PlayingActivity.this, Constant.CATEGOTY, 6);
                     mLine.setVisibility(View.INVISIBLE);
                     mTvCategory.setText("");
                 }
-                if (null != list) {
-                    for (int i = 0; i < list.size(); i++) {
+                if (null != mList) {
+                  /*  for (int i = 0; i < list.size(); i++) {
                         JLog.e(TAG, list.get(i).getSongname() + "--" + list.get(i).getUrl());
-                    }
+                    }*/
                     //更新专辑图片
-                    mAlbumFragmentAdapater.addList(list);
+                    mAlbumFragmentAdapater.addList(mList);
                     mAlbumFragmentAdapater.notifyDataSetChanged();
+                    //显示是否收藏了这首歌曲
+                    showIsLike();
                     //传递歌曲集合数据
                     Bundle songsData = new Bundle();
-                    songsData.putSerializable(Constant.PLAYING_ACTIVITY_DATA_KEY, (Serializable) list);
+                    songsData.putSerializable(Constant.PLAYING_ACTIVITY_DATA_KEY, (Serializable) mList);
                     msgToService.setData(songsData);
                     msgToService.what = Constant.PLAYING_ACTIVITY_INIT;
                     try {
@@ -406,13 +437,14 @@ public class PlayingActivity extends BaseActivity {
                     break;
                 case Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING:
                     Bundle bundle = msgFromService.getData();
-                    list = (List<MusicBean>) bundle.getSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING);
-                    if (null != list && 0 < list.size()) {
-                        mTvSongName.setText(list.get(msgFromService.arg1).getSongname());
-                        mTvSinger.setText(list.get(msgFromService.arg1).getSingername());
+                    mList.clear();
+                    mList.addAll((List<MusicBean>) bundle.getSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING));
+                    if (null != mList && 0 < mList.size()) {
+                        mTvSongName.setText(mList.get(msgFromService.arg1).getSongname());
+                        mTvSinger.setText(mList.get(msgFromService.arg1).getSingername());
 
                         //更新专辑图片
-                        mAlbumFragmentAdapater.addList(list);
+                        mAlbumFragmentAdapater.addList(mList);
                         mAlbumFragmentAdapater.notifyDataSetChanged();
                         mAlbumViewPager.setCurrentItem(msgFromService.arg1, false);
                     }

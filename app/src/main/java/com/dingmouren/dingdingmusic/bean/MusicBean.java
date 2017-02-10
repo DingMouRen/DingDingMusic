@@ -38,15 +38,13 @@ public class MusicBean extends BaseBean{
     private String singername;
     private int albumid;
     private int type;//表示歌曲的类型
-    private boolean isCollected;
 
     @Generated(hash = 1899243370)
     public MusicBean() {
     }
 
-    @Generated(hash = 1294777174)
-    public MusicBean(String songname, int seconds, String albummid, int songid, int singerid, String albumpic_big, String albumpic_small, String downUrl, String url, String singername, int albumid, int type,
-            boolean isCollected) {
+    @Generated(hash = 1173238035)
+    public MusicBean(String songname, int seconds, String albummid, int songid, int singerid, String albumpic_big, String albumpic_small, String downUrl, String url, String singername, int albumid, int type) {
         this.songname = songname;
         this.seconds = seconds;
         this.albummid = albummid;
@@ -59,7 +57,6 @@ public class MusicBean extends BaseBean{
         this.singername = singername;
         this.albumid = albumid;
         this.type = type;
-        this.isCollected = isCollected;
     }
 
     public String getSongname() {
@@ -158,13 +155,5 @@ public class MusicBean extends BaseBean{
         this.type = type;
     }
 
-
-    public boolean getIsCollected() {
-        return this.isCollected;
-    }
-
-    public void setIsCollected(boolean isCollected) {
-        this.isCollected = isCollected;
-    }
 
 }

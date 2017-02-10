@@ -125,13 +125,12 @@
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/btn_download"
+            android:id="@+id/btn_like"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:background="@drawable/notification_selector"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:src="@mipmap/download"
-            android:visibility="gone"
+            android:src="@mipmap/no_collected"
             />
 
         <ImageButton

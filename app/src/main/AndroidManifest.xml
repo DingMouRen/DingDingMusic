@@ -45,6 +45,10 @@
         <activity android:name=".ui.localmusic.LocalMusicActivity"
             android:theme="@style/LocalMusicActivityTheme"
             android:launchMode="singleTask"/>
+        <!--收藏的音乐-->
+        <activity android:name=".ui.collected.CollectedActivity"
+            android:theme="@style/CollectedActivityTheme"
+            android:launchMode="singleTask"/>
         <!--设置界面-->
         <activity android:name=".ui.setting.SettingActivity"
             android:theme="@style/SettingActivityTheme"

@@ -49,6 +49,7 @@ public class  Constant {
     public static final String MUSIC_HOT = "26";//热歌
     public static final String MUSIC_LOCAL = "27";//本地音乐
     public static final String MUSIC_SEARCH = "28";//搜索到的音乐
+    public static final String MUSIC_Like = "29";//收藏的音乐
 
 
     //SharedPrefrence键值

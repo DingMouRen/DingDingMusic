@@ -2,6 +2,6 @@
     <string name="app_name">丁丁音乐</string>
     <string name="search_bar_hint">搜索你的最爱</string>
     <string name="txt_local_music">本地歌曲</string>
-    <string name="txt_like_music">收藏</string>
+    <string name="txt_like_music">收藏歌曲</string>
 
 </resources>
