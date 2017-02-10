@@ -219,9 +219,7 @@ public class MainActivity extends BaseActivity {
                 Toast.makeText(this,"再按一次退出",Toast.LENGTH_SHORT).show();
                 time = System.currentTimeMillis();
             }else {
-                Intent intent = new Intent(Intent.ACTION_MAIN);
-                intent.addCategory(Intent.CATEGORY_HOME);
-                startActivity(intent);
+                onDestroy();
             }
             return true;
         }else {

@@ -15,6 +15,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.bean.MusicBean;
+import com.dingmouren.dingdingmusic.service.MediaPlayerService;
 import com.dingmouren.dingdingmusic.utils.ImageUtils;
 import com.jiongbull.jlog.JLog;
 
@@ -49,6 +50,7 @@ public class MusicNotification extends Notification {
     private final int MUSIC_NOTIFICATION_VALUE_NEXT = 30002;
     private final int MUSIC_NOTIFICATION_VALUE_CLOSE =30003;
     private Intent playIntent = null,nextIntent = null,closeIntent = null;//播放、下一首、关闭的意图对象
+    private MediaPlayerService mService;
     /**
      * 设置通知管理器
      * @param manager
@@ -56,6 +58,10 @@ public class MusicNotification extends Notification {
     public void setManager(NotificationManager manager){
         Log.e(TAG,"setManager:"+ manager.toString());
         this.notificationManager = manager;
+    }
+
+    public void setService(MediaPlayerService service){
+        this.mService = service;
     }
 
 
@@ -114,7 +120,9 @@ public class MusicNotification extends Notification {
 
         notification = builder.build();
         notification.flags = Notification.FLAG_ONGOING_EVENT;//将此通知放到通知栏的"Ongoing"，“正在运行”组中
-        notificationManager.notify(NOTIFICATION_ID,notification);//弹出通知
+//        notificationManager.notify(NOTIFICATION_ID,notification);//弹出通知
+        mService.startForeground(NOTIFICATION_ID,notification);
+
     }
 
     /**
@@ -150,6 +158,7 @@ public class MusicNotification extends Notification {
      */
     public void onCancelMusicNotification(){
         Log.e(TAG,"销毁通知" );
-        notificationManager.cancel(NOTIFICATION_ID);
+//        notificationManager.cancel(NOTIFICATION_ID);
+        mService.stopForeground(true);
     }
 }

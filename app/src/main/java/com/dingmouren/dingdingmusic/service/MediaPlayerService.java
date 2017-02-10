@@ -1,11 +1,14 @@
 package com.dingmouren.dingdingmusic.service;
 
+import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -18,10 +21,15 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.dingmouren.dingdingmusic.Constant;
 import com.dingmouren.dingdingmusic.MyApplication;
+import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.bean.MusicBean;
 import com.dingmouren.dingdingmusic.notification.MusicNotification;
 import com.dingmouren.dingdingmusic.utils.SPUtil;
@@ -79,6 +87,7 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         //初始化通知栏
         musicNotification = MusicNotification.getMusicNotification();
         musicNotification.setManager((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE));
+        musicNotification.setService(this);
         //初始化MediaPlayer,设置监听事件
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setOnPreparedListener(this);
@@ -246,6 +255,7 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         try {
             mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(musicUrl));
             mediaPlayer.prepareAsync();
+            musicNotification.onUpdateMusicNotification(bean, mediaPlayer.isPlaying());
         } catch (IOException e) {
             e.printStackTrace();
         }
