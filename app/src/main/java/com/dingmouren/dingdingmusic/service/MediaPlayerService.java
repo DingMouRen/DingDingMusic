@@ -18,6 +18,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.dingmouren.dingdingmusic.Constant;
 import com.dingmouren.dingdingmusic.MyApplication;
@@ -260,6 +261,7 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
             currentTime = mediaPlayer.getCurrentPosition();
             mediaPlayer.pause();
             sendIsPlayingMsg();//发送播放器是否在播放的状态
+            musicNotification.onUpdateMusicNotification(bean, mediaPlayer.isPlaying());
         }
     }
 
@@ -298,7 +300,6 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         if (null == mediaPlayer) return;
         mediaPlayer.stop();
         currentTime = 0;//停止音乐，将当前播放时间置为0
-        musicNotification.onUpdateMusicNotification(bean, mediaPlayer.isPlaying());
     }
     //--------------监听listener
     @Override
@@ -335,7 +336,7 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
     private void playSong(int newPosition,int isOnClick) {
         JLog.e(TAG, "playSong()");
         if (null == musicsList && 0 == musicsList.size()) return;//数据为空直接返回
-        if (position != newPosition){//由滑动操作传递过来的歌曲position，如果跟当前的播放的不同的话，就将MediaPlayer重置
+        if (position != newPosition && newPosition < musicsListSize){//由滑动操作传递过来的歌曲position，如果跟当前的播放的不同的话，就将MediaPlayer重置
             JLog.e(TAG, "playSong()--position:" +position+" newPosition:"+ newPosition);
             mediaPlayer.reset();
             currentTime = 0;
@@ -384,7 +385,8 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
                 bean = musicsList.get(position);
                 play(bean.getUrl());
             } else {
-                bean = musicsList.get(0);//超过长度时，就播放第一首
+                position = 0;
+                bean = musicsList.get(position);
                 play(bean.getUrl());
             }
             //通知PalyingActivity跟换专辑图片  歌曲信息等
@@ -565,7 +567,7 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
             Log.e(TAG_BRAODCAST, "musicNotificationService");
             switch (value) {
                 case 30001:
-                    playSong(position,-1); //播放
+                    playSong(position,0x40001); //播放or暂停
                     break;
                 case 30002:
                     nextSong();//下一首

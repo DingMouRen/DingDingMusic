@@ -38,6 +38,9 @@
             android:theme="@style/PersonalActivityTheme"
             android:launchMode="singleTask"
             />
+        <activity android:name=".ui.search.SearchActivity"
+            android:theme="@style/SearchActivityTheme"
+            android:launchMode="singleTask"/>
         <!--本地音乐界面-->
         <activity android:name=".ui.localmusic.LocalMusicActivity"
             android:theme="@style/LocalMusicActivityTheme"

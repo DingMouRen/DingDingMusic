@@ -48,6 +48,8 @@ public class  Constant {
     public static final String MUSIC_SALES = "23";//销量
     public static final String MUSIC_HOT = "26";//热歌
     public static final String MUSIC_LOCAL = "27";//本地音乐
+    public static final String MUSIC_SEARCH = "28";//搜索到的音乐
+
 
     //SharedPrefrence键值
     public static final String SP_PLAY_MODE = "sp_play_mode";//0表示顺序播放，1表示单曲循环
@@ -56,5 +58,8 @@ public class  Constant {
 
     //PlayingActivity左上角显示的类型
     public static final String CATEGOTY = "categoty";
+
+    //搜索歌曲使用的Bundle的key
+    public static final String SEARCH_ACTIVITY_DATA_KEY = "search_activity_data_key";
 
 }

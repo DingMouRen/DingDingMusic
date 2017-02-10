@@ -16,7 +16,7 @@ public class QQMusicPage<T> {
     private int currentPage;
     private int song_begin;
     private int totalpage;
-    private List<MusicBean> songlist;
+    private T songlist;
 
     public int getTotal_song_num() {
         return total_song_num;
@@ -90,11 +90,27 @@ public class QQMusicPage<T> {
         this.totalpage = totalpage;
     }
 
-    public List<MusicBean> getSonglist() {
+    public T getSonglist() {
         return songlist;
     }
 
-    public void setSonglist(List<MusicBean> songlist) {
+    public void setSonglist(T songlist) {
         this.songlist = songlist;
+    }
+
+    @Override
+    public String toString() {
+        return "QQMusicPage{" +
+                "total_song_num=" + total_song_num +
+                ", ret_code=" + ret_code +
+                ", update_time='" + update_time + '\'' +
+                ", color=" + color +
+                ", cur_song_num=" + cur_song_num +
+                ", comment_num=" + comment_num +
+                ", currentPage=" + currentPage +
+                ", song_begin=" + song_begin +
+                ", totalpage=" + totalpage +
+                ", songlist=" + songlist +
+                '}';
     }
 }

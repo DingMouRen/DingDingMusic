@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinator"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/localmusic_item_height"
+    android:elevation="0dp">
+    <RelativeLayout
+        android:id="@+id/relateive_search"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            >
+            <TextView
+                android:id="@+id/tv_song_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="光辉岁月"
+                android:maxLines="1"
+                android:textSize="@dimen/localmusic_item_song_name"
+                android:padding="5dp"
+                />
+
+            <TextView
+                android:id="@+id/tv_singer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="黄家驹"
+                android:textSize="10sp"
+                android:textColor="@color/singer"
+                android:padding="5dp"
+                android:layout_below="@+id/tv_song_name"
+                />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/line"
+            android:layout_alignParentBottom="true"
+            />
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>

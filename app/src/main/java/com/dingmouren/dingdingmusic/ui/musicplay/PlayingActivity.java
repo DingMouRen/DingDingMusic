@@ -60,17 +60,30 @@ public class PlayingActivity extends BaseActivity {
 
     private static final String TAG = PlayingActivity.class.getName();
 
-    @BindView(R.id.seek_bar)  SeekBar mSeekBar;
-    @BindView(R.id.tv_song_name) TextView mTvSongName;
-    @BindView(R.id.tv_singer) TextView mTvSinger;
-    @BindView(R.id.album_viewpager) ViewPager mAlbumViewPager;
-    @BindView(R.id.btn_playorpause) ImageButton mBtnPlay;
-    @BindView(R.id.btn_single) ImageButton mPlayMode;
-    @BindView(R.id.img_bg) ImageView mImgBg;
-    @BindView(R.id.contanier_play_activity) PercentRelativeLayout mRootLayout;
-    @BindView(R.id.btn_download) ImageButton mBtnDownLoad;
-    @BindView(R.id.btn_share) ImageButton mBtnShare;
-    @BindView(R.id.tv_category) TextView mTvCategory;
+    @BindView(R.id.seek_bar)
+    SeekBar mSeekBar;
+    @BindView(R.id.tv_song_name)
+    TextView mTvSongName;
+    @BindView(R.id.tv_singer)
+    TextView mTvSinger;
+    @BindView(R.id.album_viewpager)
+    ViewPager mAlbumViewPager;
+    @BindView(R.id.btn_playorpause)
+    ImageButton mBtnPlay;
+    @BindView(R.id.btn_single)
+    ImageButton mPlayMode;
+    @BindView(R.id.img_bg)
+    ImageView mImgBg;
+    @BindView(R.id.contanier_play_activity)
+    PercentRelativeLayout mRootLayout;
+    @BindView(R.id.btn_download)
+    ImageButton mBtnDownLoad;
+    @BindView(R.id.btn_share)
+    ImageButton mBtnShare;
+    @BindView(R.id.tv_category)
+    TextView mTvCategory;
+    @BindView(R.id.line_playing)
+    View mLine;
 
     public Messenger mServiceMessenger;//来自服务端的Messenger
     private boolean isConnected = false;//标记是否连接上了服务端
@@ -82,13 +95,14 @@ public class PlayingActivity extends BaseActivity {
     public int duration;//歌曲的总进度
     private float mPositionOffset;//viewpager滑动的百分比
     private int mState;//viewpager的滑动状态
-    List<MusicBean> list ;
+    List<MusicBean> list;
     private int enterX;//传递过来的x坐标，是点击View的中心点的x坐标，揭露动画
     private int enterY;//传递过来的y坐标，是点击View的中心点的y坐标，揭露动画
-    private String shareSongName ;
+    private String shareSongName;
     private String shareSingerName;
     private String shareUrl;
     private String shareContent;
+
     @Override
     public int setLayoutResourceID() {
         return R.layout.activity_musicplayer;
@@ -97,7 +111,7 @@ public class PlayingActivity extends BaseActivity {
     @Override
     public void init(Bundle savedInstanceState) {
         setTransiton();
-        bindService(new Intent(getApplicationContext(),MediaPlayerService.class),mServiceConnection, BIND_AUTO_CREATE);
+        bindService(new Intent(getApplicationContext(), MediaPlayerService.class), mServiceConnection, BIND_AUTO_CREATE);
     }
 
 
@@ -115,10 +129,10 @@ public class PlayingActivity extends BaseActivity {
         mRootLayout.post(new Runnable() {
             @Override
             public void run() {
-                enterX = getIntent().getIntExtra("x",0);
-                enterY = getIntent().getIntExtra("y",0);
-                if (0 != enterX && 0 != enterY){
-                    Animator animator = createRevealAnimator(false,enterX,enterY);
+                enterX = getIntent().getIntExtra("x", 0);
+                enterY = getIntent().getIntExtra("y", 0);
+                if (0 != enterX && 0 != enterY) {
+                    Animator animator = createRevealAnimator(false, enterX, enterY);
                     animator.start();
                 }
             }
@@ -135,8 +149,8 @@ public class PlayingActivity extends BaseActivity {
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser){//判断来自用户的滑动
-                    mPercent = (float) progress * 100 /(float) mSeekBar.getMax();
+                if (fromUser) {//判断来自用户的滑动
+                    mPercent = (float) progress * 100 / (float) mSeekBar.getMax();
                 }
             }
 
@@ -149,7 +163,7 @@ public class PlayingActivity extends BaseActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 //用户松开SeekBar，通知MediaPlayerService更新播放器的进度，解决拖动过程中卡顿的问题
                 Message msgToMediaPlayerService = Message.obtain();
-                msgToMediaPlayerService.what  = Constant.PLAYING_ACTIVITY_CUSTOM_PROGRESS;
+                msgToMediaPlayerService.what = Constant.PLAYING_ACTIVITY_CUSTOM_PROGRESS;
                 msgToMediaPlayerService.arg1 = (int) mPercent;
                 try {
                     mServiceMessenger.send(msgToMediaPlayerService);
@@ -163,12 +177,12 @@ public class PlayingActivity extends BaseActivity {
         mAlbumViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {//arg1:当前页面的位置，也就是position;     arg2:当前页面偏移的百分比;     arg3当前页面偏移的像素位置
-                JLog.e(TAG,"onPageScrolled--postion:" + position +" positionOffset:"+positionOffset+" positionOffsetPixels:"+positionOffsetPixels);
+//                JLog.e(TAG,"onPageScrolled--postion:" + position +" positionOffset:"+positionOffset+" positionOffsetPixels:"+positionOffsetPixels);
                 mPositionOffset = positionOffset;
-                if (position == 0){//解决第一次进入的时候没有显示模糊效果
-                    Glide.with(PlayingActivity.this)//底部的模糊效果
+                if (position == 0) {//解决第一次进入的时候没有显示模糊效果
+                    Glide.with(MyApplication.mContext)//底部的模糊效果
                             .load(list.get(position).getAlbumpic_big())
-                            .bitmapTransform(new BlurTransformation(PlayingActivity.this,99))
+                            .bitmapTransform(new BlurTransformation(PlayingActivity.this, 99))
                             .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                             .crossFade()
                             .into(mImgBg);
@@ -177,9 +191,10 @@ public class PlayingActivity extends BaseActivity {
 
             @Override
             public void onPageScrollStateChanged(int state) {//state==1表示正在滑动，state==2表示滑动完毕，state==0表示没有动作
-                JLog.e(TAG,"onPageScrollStateChanged--state:" + state);
+                JLog.e(TAG, "onPageScrollStateChanged--state:" + state);
                 mState = state;
             }
+
             @Override
             public void onPageSelected(int position) {
                 if (2 == mState && 0 < mPositionOffset) {
@@ -194,17 +209,20 @@ public class PlayingActivity extends BaseActivity {
                             e.printStackTrace();
                         }
                     }
+
+                }
+                if (position < list.size()) {
+                    Glide.with(PlayingActivity.this)//底部的模糊效果
+                            .load(list.get(position).getAlbumpic_big() == null ? R.mipmap.native_1 : list.get(position).getAlbumpic_big())
+                            .bitmapTransform(new BlurTransformation(PlayingActivity.this, 99))
+                            .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                            .crossFade()
+                            .into(mImgBg);
                 }
 
-                Glide.with(PlayingActivity.this)//底部的模糊效果
-                        .load(list.get(position).getAlbumpic_big()==null ? R.mipmap.native_1 : list.get(position).getAlbumpic_big())
-                        .bitmapTransform(new BlurTransformation(PlayingActivity.this,99))
-                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                        .crossFade()
-                        .into(mImgBg);
             }
         });
-    
+
         //分享功能
         mBtnShare.setOnClickListener((view -> share()));
         mBtnDownLoad.setOnClickListener((view -> downLoad()));
@@ -245,16 +263,16 @@ public class PlayingActivity extends BaseActivity {
             shareSongName = list.get(mPosition).getSongname();
             shareSingerName = list.get(mPosition).getSingername();
             shareUrl = list.get(mPosition).getUrl();
-            shareContent = shareSongName +"\n"+ "--" + shareSingerName +"\n"+ shareUrl;
+            shareContent = shareSongName + "\n" + "--" + shareSingerName + "\n" + shareUrl;
         }
-        if ("".equals(shareContent)){
-            Snackbar.make(mRootLayout,"分享失败",Snackbar.LENGTH_SHORT).show();
-        }else {
+        if ("".equals(shareContent)) {
+            Snackbar.make(mRootLayout, "分享失败", Snackbar.LENGTH_SHORT).show();
+        } else {
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_SEND);
-            intent.putExtra(Intent.EXTRA_TEXT,shareContent);
+            intent.putExtra(Intent.EXTRA_TEXT, shareContent);
             intent.setType("text/plain");
-            startActivity(Intent.createChooser(intent,"分享到"));
+            startActivity(Intent.createChooser(intent, "分享到"));
         }
 
     }
@@ -264,7 +282,7 @@ public class PlayingActivity extends BaseActivity {
 
     }
 
-    @OnClick({ R.id.btn_playorpause,R.id.btn_single})
+    @OnClick({R.id.btn_playorpause, R.id.btn_single})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_playorpause://播放or暂停
@@ -295,15 +313,15 @@ public class PlayingActivity extends BaseActivity {
     ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            Log.e(TAG,"onServiceConnected");
+            Log.e(TAG, "onServiceConnected");
             mServiceMessenger = new Messenger(iBinder);
             isConnected = true;
             //用于在服务端初始化来自客户端的Messenger对象,连接成功的时候，就进行初始化
-            if (null != mServiceMessenger){
+            if (null != mServiceMessenger) {
                 Message msgToService = Message.obtain();
                 msgToService.replyTo = mPlaygingClientMessenger;
                 msgToService.what = Constant.PLAYING_ACTIVITY;
-                if (0 != currentTime ) {//当前进度不是0，就更新MediaPlayerService的当前进度
+                if (0 != currentTime) {//当前进度不是0，就更新MediaPlayerService的当前进度
                     msgToService.arg1 = currentTime;
                 }
                 try {
@@ -313,48 +331,43 @@ public class PlayingActivity extends BaseActivity {
                 }
             }
             //连接成功的时候，
-            mPosition = getIntent().getIntExtra("position",0);
+            mPosition = getIntent().getIntExtra("position", 0);
             flag = getIntent().getStringExtra("flag");
-            JLog.e(TAG,"positon:" + mPosition +" flag:"+flag);
-            if (null != mServiceMessenger  && null != flag ){
+            JLog.e(TAG, "positon:" + mPosition + " flag:" + flag);
+            if (null != mServiceMessenger && null != flag) {
                 Message msgToService = Message.obtain();
                 msgToService.arg1 = mPosition;
 
-                if ( flag.equals(Constant.MUSIC_LOCAL)){
+                if (flag.equals(Constant.MUSIC_LOCAL)) {
                     list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_LOCAL)).list();
-                    SPUtil.put(PlayingActivity.this,Constant.CATEGOTY,1);
-                    if (1 == (int)SPUtil.get(PlayingActivity.this,Constant.CATEGOTY,0)) {
-                        mTvCategory.setText("本地音乐");
-                    }
-                }else if (flag.equals(Constant.MAIN_RANDOM)){
+                    SPUtil.put(PlayingActivity.this, Constant.CATEGOTY, 1);
+                    mTvCategory.setText("本地音乐");
+                } else if (flag.equals(Constant.MAIN_RANDOM)) {
                     list = MyApplication.getDaoSession().getMusicBeanDao().loadAll();
-                    SPUtil.put(PlayingActivity.this,Constant.CATEGOTY,2);
-                    if (2 == (int)SPUtil.get(PlayingActivity.this,Constant.CATEGOTY,0)) {
-                        mTvCategory.setText("随心听");
-                    }
+                    SPUtil.put(PlayingActivity.this, Constant.CATEGOTY, 2);
+                    mTvCategory.setText("随心听");
                     Collections.shuffle(list);
-                }else if (flag.equals(Constant.MUSIC_KOREA)){
+                } else if (flag.equals(Constant.MUSIC_KOREA)) {
                     list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_KOREA)).list();
-                    SPUtil.put(PlayingActivity.this,Constant.CATEGOTY,3);
-                    if (3 == (int)SPUtil.get(PlayingActivity.this,Constant.CATEGOTY,0)) {
-                        mTvCategory.setText("韩国");
-                    }
-                }else if (flag.equals(Constant.MUSIC_ROCK)){
+                    SPUtil.put(PlayingActivity.this, Constant.CATEGOTY, 3);
+                    mTvCategory.setText("韩国");
+                } else if (flag.equals(Constant.MUSIC_ROCK)) {
                     list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_ROCK)).list();
-                    SPUtil.put(PlayingActivity.this,Constant.CATEGOTY,4);
-                    if (4 == (int)SPUtil.get(PlayingActivity.this,Constant.CATEGOTY,0)) {
-                        mTvCategory.setText("摇滚");
-                    }
-                }else if (flag.equals(Constant.MUSIC_VOLKSLIED)){
+                    SPUtil.put(PlayingActivity.this, Constant.CATEGOTY, 4);
+                    mTvCategory.setText("摇滚");
+                } else if (flag.equals(Constant.MUSIC_VOLKSLIED)) {
                     list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_VOLKSLIED)).list();
-                    SPUtil.put(PlayingActivity.this,Constant.CATEGOTY,5);
-                    if (5 == (int)SPUtil.get(PlayingActivity.this,Constant.CATEGOTY,0)) {
-                        mTvCategory.setText("民谣");
-                    }
+                    SPUtil.put(PlayingActivity.this, Constant.CATEGOTY, 5);
+                    mTvCategory.setText("民谣");
+                } else if (flag.equals(Constant.MUSIC_SEARCH)) {
+                    list = (List<MusicBean>) getIntent().getSerializableExtra(Constant.SEARCH_ACTIVITY_DATA_KEY);
+                    SPUtil.put(PlayingActivity.this, Constant.CATEGOTY, 6);
+                    mLine.setVisibility(View.INVISIBLE);
+                    mTvCategory.setText("");
                 }
                 if (null != list) {
                     for (int i = 0; i < list.size(); i++) {
-                        JLog.e(TAG,list.get(i).getSongname() +"--"+ list.get(i).getUrl());
+                        JLog.e(TAG, list.get(i).getSongname() + "--" + list.get(i).getUrl());
                     }
                     //更新专辑图片
                     mAlbumFragmentAdapater.addList(list);
@@ -376,20 +389,20 @@ public class PlayingActivity extends BaseActivity {
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            JLog.e(TAG,"onServiceDisconnected");
+            JLog.e(TAG, "onServiceDisconnected");
             isConnected = false;
         }
     };
 
-    Messenger mPlaygingClientMessenger = new Messenger(new Handler(){
+    Messenger mPlaygingClientMessenger = new Messenger(new Handler() {
         @Override
         public void handleMessage(Message msgFromService) {
-            switch (msgFromService.what){
+            switch (msgFromService.what) {
                 case Constant.MEDIA_PLAYER_SERVICE_PROGRESS://更新进度条
                     currentTime = msgFromService.arg1;
                     duration = msgFromService.arg2;
                     if (0 == duration) break;
-                    mSeekBar.setProgress(currentTime * 100 /duration);
+                    mSeekBar.setProgress(currentTime * 100 / duration);
                     break;
                 case Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING:
                     Bundle bundle = msgFromService.getData();
@@ -401,23 +414,23 @@ public class PlayingActivity extends BaseActivity {
                         //更新专辑图片
                         mAlbumFragmentAdapater.addList(list);
                         mAlbumFragmentAdapater.notifyDataSetChanged();
-                        mAlbumViewPager.setCurrentItem(msgFromService.arg1,false);
+                        mAlbumViewPager.setCurrentItem(msgFromService.arg1, false);
                     }
                     break;
                 case Constant.MEDIA_PLAYER_SERVICE_IS_PLAYING:
-                    if (1 == msgFromService.arg1){//正在播放
+                    if (1 == msgFromService.arg1) {//正在播放
                         mBtnPlay.setImageResource(R.mipmap.play);
-                    }else {
+                    } else {
                         mBtnPlay.setImageResource(R.mipmap.pause);
                     }
                     break;
                 case Constant.PLAYING_ACTIVITY_PLAY_MODE://显示播放器的播放模式
-                   updatePlayMode();
+                    updatePlayMode();
                     break;
                 case Constant.MEDIA_PLAYER_SERVICE_UPDATE_SONG://播放完成自动播放下一首时，更新正在播放UI
                     int positionPlaying = msgFromService.arg1;
-                    mAlbumViewPager.setCurrentItem(positionPlaying,false);
-                    JLog.e(TAG,"更新正在播放的UI");
+                    mAlbumViewPager.setCurrentItem(positionPlaying, false);
+                    JLog.e(TAG, "更新正在播放的UI");
 
             }
             super.handleMessage(msgFromService);
@@ -427,11 +440,11 @@ public class PlayingActivity extends BaseActivity {
     /**
      * 修改播放模式的UI
      */
-    private void updatePlayMode(){
-        int playMode = (int) SPUtil.get(MyApplication.mContext,Constant.SP_PLAY_MODE,0);
-        if (0 == playMode){
+    private void updatePlayMode() {
+        int playMode = (int) SPUtil.get(MyApplication.mContext, Constant.SP_PLAY_MODE, 0);
+        if (0 == playMode) {
             mPlayMode.setImageResource(R.mipmap.order_mode);
-        }else if (1 == playMode){
+        } else if (1 == playMode) {
             mPlayMode.setImageResource(R.mipmap.single_mode);
         }
     }
@@ -450,8 +463,8 @@ public class PlayingActivity extends BaseActivity {
     }
 
     private void showCategory() {
-        int category = (int)SPUtil.get(PlayingActivity.this,Constant.CATEGOTY,0);
-        switch (category){
+        int category = (int) SPUtil.get(PlayingActivity.this, Constant.CATEGOTY, 0);
+        switch (category) {
             case 1:
                 mTvCategory.setText("本地音乐");
                 break;
@@ -467,6 +480,10 @@ public class PlayingActivity extends BaseActivity {
             case 5:
                 mTvCategory.setText("民谣");
                 break;
+            case 6:
+                mLine.setVisibility(View.INVISIBLE);
+                mTvCategory.setText("");
+                break;
 
         }
     }
@@ -474,19 +491,20 @@ public class PlayingActivity extends BaseActivity {
     /**
      * 揭露动画
      */
-    private Animator createRevealAnimator( boolean reversed,int x, int y) {
-        float hypot = (float) Math.hypot(mRootLayout.getHeight(),mRootLayout.getWidth());
+    private Animator createRevealAnimator(boolean reversed, int x, int y) {
+        float hypot = (float) Math.hypot(mRootLayout.getHeight(), mRootLayout.getWidth());
         float startRadius = reversed ? hypot : 0;
         float endRadius = reversed ? 0 : hypot;
 
-        Animator animator = ViewAnimationUtils.createCircularReveal(mRootLayout,x,y,startRadius,endRadius);
+        Animator animator = ViewAnimationUtils.createCircularReveal(mRootLayout, x, y, startRadius, endRadius);
         animator.setDuration(800);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
-        if (reversed){
+        if (reversed) {
             animator.addListener(animatorListener);
         }
         return animator;
     }
+
     private Animator.AnimatorListener animatorListener = new Animator.AnimatorListener() {
         @Override
         public void onAnimationStart(Animator animation) {
@@ -506,12 +524,13 @@ public class PlayingActivity extends BaseActivity {
         public void onAnimationRepeat(Animator animation) {
         }
     };
+
     @Override
     public void onBackPressed() {
         if (enterX != 0 && enterY != 0) {
             Animator animator = createRevealAnimator(true, enterX, enterY);
             animator.start();
-        }else {
+        } else {
             super.onBackPressed();
         }
     }
@@ -519,7 +538,7 @@ public class PlayingActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         unbindService(mServiceConnection);
-        JLog.e(TAG,"onDestroy");
+        JLog.e(TAG, "onDestroy");
         super.onDestroy();
     }
 }

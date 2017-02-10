@@ -20,6 +20,7 @@ public class AlbumFragmentAdapater extends FragmentStatePagerAdapter {
     }
 
     public void addList(List<MusicBean> list){
+        mList.clear();
         this.mList.addAll(list);
     }
     @Override

@@ -15,8 +15,16 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.bean.MusicBean;
+import com.dingmouren.dingdingmusic.utils.ImageUtils;
+import com.jiongbull.jlog.JLog;
 
 import java.util.concurrent.ExecutionException;
+
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by dingmouren on 2017/1/20.
@@ -102,7 +110,8 @@ public class MusicNotification extends Notification {
 
         builder.setContent(remoteViews)
                 .setOngoing(true)//表示正在运行的通知，常用于音乐播放或者文件下载
-                .setSmallIcon(R.drawable.notification_img_test);
+                .setSmallIcon(R.mipmap.notification_img_holder);
+
         notification = builder.build();
         notification.flags = Notification.FLAG_ONGOING_EVENT;//将此通知放到通知栏的"Ongoing"，“正在运行”组中
         notificationManager.notify(NOTIFICATION_ID,notification);//弹出通知
@@ -113,17 +122,20 @@ public class MusicNotification extends Notification {
      */
     public void onUpdateMusicNotification(MusicBean bean, boolean isplay){
         Log.e(TAG,"更新通知--歌曲名称："+ bean.getSongname()+"--isplay:"+isplay);
+        if (null == bean) return;
         //更新歌曲名称
         remoteViews.setTextViewText(R.id.tv_song_name,(bean.getSongname() == null ? "" : bean.getSongname()));
         //更新歌手名字
         remoteViews.setTextViewText(R.id.tv_singer,(bean.getSingername() == null ? "" : bean.getSingername()));
         //更新歌曲图片
-            Glide.with(context).load(bean.getAlbumpic_big()).asBitmap().into(new SimpleTarget<Bitmap>() {
-                @Override
-                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                    remoteViews.setImageViewBitmap(R.id.img_song, resource);
-                }
-            });
+        Glide.with(context).load(bean.getAlbumpic_big()).asBitmap().into(new SimpleTarget<Bitmap>() {
+            @Override
+            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                remoteViews.setImageViewBitmap(R.id.img_song, resource);
+            }
+        });
+
+
         //更新播放状态：播放或者暂停
         if (isplay){
             remoteViews.setImageViewResource(R.id.img_play,R.mipmap.notification_play);

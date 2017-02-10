@@ -66,9 +66,10 @@
             android:textSize="20sp"
             android:textStyle="bold" />
         <View
+            android:id="@+id/line_playing"
             android:layout_width="2dp"
             android:layout_height="21dp"
-            android:background="@android:color/darker_gray"
+            android:background="@android:color/white"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             />

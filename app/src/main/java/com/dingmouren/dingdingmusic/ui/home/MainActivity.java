@@ -11,6 +11,8 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.design.widget.FloatingActionButton;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.transition.ChangeBounds;
 import android.transition.ChangeImageTransform;
 import android.transition.ChangeTransform;
@@ -35,9 +37,11 @@ import com.dingmouren.dingdingmusic.ui.jk.JKActivity;
 import com.dingmouren.dingdingmusic.ui.musicplay.PlayingActivity;
 import com.dingmouren.dingdingmusic.ui.personal.PersonalCenterActivity;
 import com.dingmouren.dingdingmusic.ui.rock.RockActivity;
+import com.dingmouren.dingdingmusic.ui.search.SearchActivity;
 import com.dingmouren.dingdingmusic.ui.volkslied.VolksliedActivity;
 import com.dingmouren.greendao.MusicBeanDao;
 import com.jiongbull.jlog.JLog;
+import com.mancj.materialsearchbar.MaterialSearchBar;
 
 import java.util.List;
 
@@ -48,6 +52,7 @@ public class MainActivity extends BaseActivity {
     private static final String TAG = MainActivity.class.getName();
     @BindView(R.id.fab_user)FloatingActionButton mFabUser;
     @BindView(R.id.fab_music)FloatingActionButton mFabMusic;
+    @BindView(R.id.search_bar) MaterialSearchBar mSearchBar;
 
     private Messenger mServiceMessenger;
     private long time = 0;//双击退出时用的时间标记
@@ -60,15 +65,13 @@ public class MainActivity extends BaseActivity {
     public void init(Bundle savedInstanceState) {
         startService(new Intent(this,MediaPlayerService.class));//开启MediaPlayerService服务
         bindService(new Intent(this, MediaPlayerService.class),mServiceConnection,BIND_AUTO_CREATE);
-        List<MusicBean> list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.IsCollected.eq(true)).list();
-        if (null != list){
-            JLog.e(TAG,"收藏的歌曲："+list.toString());
-        }
     }
 
     @Override
     public void initView() {
         setupWindowAnimation();
+
+
     }
 
     @Override
@@ -94,6 +97,8 @@ public class MainActivity extends BaseActivity {
                 return false;
             }
         });
+
+       mSearchBar.setOnClickListener((view -> startActivity(new Intent(MainActivity.this,SearchActivity.class))));
     }
 
     @Override
@@ -214,10 +219,9 @@ public class MainActivity extends BaseActivity {
                 Toast.makeText(this,"再按一次退出",Toast.LENGTH_SHORT).show();
                 time = System.currentTimeMillis();
             }else {
-                /*Intent intent = new Intent(Intent.ACTION_MAIN);
+                Intent intent = new Intent(Intent.ACTION_MAIN);
                 intent.addCategory(Intent.CATEGORY_HOME);
-                startActivity(intent);*/
-                finish();
+                startActivity(intent);
             }
             return true;
         }else {

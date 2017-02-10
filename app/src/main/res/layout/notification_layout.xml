@@ -6,28 +6,28 @@
     >
     <ImageView
         android:id="@+id/img_song"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_centerVertical="true"
-        android:src="@drawable/notification_img_test"
         />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:id="@+id/song_info"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginLeft="@dimen/notification_marginleft"
+        android:layout_marginLeft="5dp"
         android:layout_toRightOf="@+id/img_song"
         android:layout_toLeftOf="@+id/linear_righht"
         android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true">
+        android:layout_alignParentEnd="true"
+        >
         <TextView
             android:id="@+id/tv_song_name"
-            android:layout_width="wrap_content"
+            android:layout_width="180dp"
             android:layout_height="wrap_content"
-            android:text="你好灰姑娘 "
             android:textColor="@android:color/white"
-            android:textSize="@dimen/notification_songname_size"
+            android:textSize="14sp"
             android:singleLine="true"
             android:ellipsize="end"
             android:fadingEdge="horizontal"
