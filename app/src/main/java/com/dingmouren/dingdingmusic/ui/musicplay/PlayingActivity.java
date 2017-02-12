@@ -221,7 +221,7 @@ public class PlayingActivity extends BaseActivity {
                 }
                 if (position < mList.size()) {
                     Glide.with(PlayingActivity.this)//底部的模糊效果
-                            .load(mList.get(position).getAlbumpic_big() == null ? R.mipmap.native_1 : mList.get(position).getAlbumpic_big())
+                            .load(mList.get(position).getAlbumpic_big() == null ? R.mipmap.bg2 : mList.get(position).getAlbumpic_big())
                             .bitmapTransform(new BlurTransformation(PlayingActivity.this, 99))
                             .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                             .crossFade()

@@ -5,6 +5,10 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
 import android.transition.Fade;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.dingmouren.dingdingmusic.Constant;
@@ -37,8 +41,9 @@ import rx.Observable;
 
 public class SplashActivity extends BaseActivity {
     private static final String TAG = SplashActivity.class.getName();
-    @BindView(R.id.author)
-    TextView mTvAuthor;
+    @BindView(R.id.author)TextView mTvAuthor;
+    @BindView(R.id.img_splash_bg) ImageView mImgBg;
+    @BindView(R.id.container) RelativeLayout mRootLayout;
     private RequestMusicUtil mRequestMusicUtil;
     private String[] topics = new String[]{Constant.MUSIC_HONGKANG,Constant.MUSIC_HOT,Constant.MUSIC_INLAND,Constant.MUSIC_JAPAN,Constant.MUSIC_KOREA,Constant.MUSIC_ROCK,Constant.MUSIC_SALES,Constant.MUSIC_VOLKSLIED,Constant.MUSIC_WEST};
     @Override
@@ -50,11 +55,16 @@ public class SplashActivity extends BaseActivity {
     public void initView() {
         mTvAuthor.setText("@钉某人");
         mTvAuthor.setTextColor(Color.WHITE);
+
+        ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f,1.3f,1.0f,1.3f,Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        scaleAnimation.setDuration(3000);
+        scaleAnimation.setFillAfter(true);
+        mImgBg.startAnimation(scaleAnimation);
         new Handler().postDelayed(()->{
             startActivity(new Intent(this, MainActivity.class));
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             finish();
-        },2500);
+        },3000);
     }
 
     @Override

@@ -11,7 +11,6 @@
             android:id="@+id/img_album"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@mipmap/native_1"
             android:scaleType="centerCrop"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_centerVertical="true"

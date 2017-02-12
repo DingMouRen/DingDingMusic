@@ -3,7 +3,6 @@
     android:id="@+id/img_album"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:src="@mipmap/native_1"
     >
 
 </com.dingmouren.dingdingmusic.view.AutoScaleHeightImageView>
