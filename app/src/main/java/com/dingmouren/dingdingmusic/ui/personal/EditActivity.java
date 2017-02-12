@@ -7,6 +7,7 @@ import android.transition.Slide;
 import android.view.Gravity;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.dingmouren.dingdingmusic.Constant;
 import com.dingmouren.dingdingmusic.R;
@@ -49,10 +50,10 @@ public class EditActivity extends BaseActivity {
         String newName = mEdit.getText().toString().trim();
         if (!TextUtils.isEmpty(newName)){
             SPUtil.put(this, Constant.USER_NAME,newName);
-            Snackbar.make(mEdit,"昵称修改成功",Snackbar.LENGTH_SHORT).show();
+            Toast.makeText(this,"昵称修改成功",Toast.LENGTH_SHORT).show();
             finish();
         }else {
-            Snackbar.make(mEdit,"昵称不能为空",Snackbar.LENGTH_SHORT).show();
+            Toast.makeText(this,"昵称不能为空",Toast.LENGTH_SHORT).show();
         }
     }
 }
