@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -82,6 +83,8 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
     private Messenger mMessengerVolksliedMusicActivity;
     //MainActivity的Messenger对象
     private Messenger mMessengerMainActivity;
+    //音频管理对象
+    private AudioManager mAudioManager;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -102,7 +105,9 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         filter.addAction(MUSIC_NOTIFICATION_ACTION_NEXT);
         filter.addAction(MUSIC_NOTIFICATION_ACTION_CLOSE);
         registerReceiver(musicBroadCast, filter);
-
+        //初始化音频管理对象
+        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        requestAudioFocus();
 
     }
 
@@ -319,6 +324,7 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         if (null == mediaPlayer) return;
         mediaPlayer.stop();
         currentTime = 0;//停止音乐，将当前播放时间置为0
+
     }
     //--------------监听listener
     @Override
@@ -353,7 +359,7 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
      * 播放
      */
     private void playSong(int newPosition,int isOnClick) {
-
+        requestAudioFocus();//请求音频焦点
         JLog.e(TAG, "playSong()");
         if (null == musicsList && 0 == musicsList.size()) return;//数据为空直接返回
         if (position != newPosition && newPosition < musicsListSize){//由滑动操作传递过来的歌曲position，如果跟当前的播放的不同的话，就将MediaPlayer重置
@@ -602,4 +608,51 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
 
     }
 
+    //音频焦点监听处理
+    AudioManager.OnAudioFocusChangeListener onAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+        @Override
+        public void onAudioFocusChange(int focusChange) {
+            switch (focusChange){
+                case AudioManager.AUDIOFOCUS_GAIN:
+                    //获取音频焦点
+                    JLog.e(TAG,"AUDIOFOCUS_GAIN");
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS:
+                    //永久失去 音频焦点
+                    JLog.e(TAG,"AUDIOFOCUS_LOSS");
+                    pause();
+                    abandonFocus();//放弃音频焦点
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                    //暂时失去 音频焦点，并会很快再次获得。必须停止Audio的播放，但是因为可能会很快再次获得AudioFocus，这里可以不释放Media资源
+                    JLog.e(TAG,"AUDIOFOCUS_LOSS_TRANSIENT");
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                    //暂时失去 音频焦点 ，但是可以继续播放，不过要在降低音量。
+                    JLog.e(TAG,"AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK");
+                    break;
+                default:
+                    JLog.e(TAG,"default"+ focusChange);
+                    break;
+            }
+        }
+    };
+
+    private void abandonFocus() {
+       if (null != onAudioFocusChangeListener){
+           mAudioManager.abandonAudioFocus(onAudioFocusChangeListener);
+       }
+    }
+
+    private void requestAudioFocus(){
+        JLog.e(TAG,"请求音频焦点requestAudioFocus");
+        if (null != onAudioFocusChangeListener){
+            int result = mAudioManager.requestAudioFocus(onAudioFocusChangeListener,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN);
+            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
+                JLog.e(TAG,"请求音频焦点成功");
+            }else if (result == AudioManager.AUDIOFOCUS_REQUEST_FAILED){
+                JLog.e(TAG,"请求音频焦点失败");
+            }
+        }
+    }
 }
