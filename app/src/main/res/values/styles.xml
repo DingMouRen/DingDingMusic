@@ -23,7 +23,8 @@
     <style name="MainActivityTheme" parent="AppTheme">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
-        <item name="android:windowBackground">@color/color_bg_black</item>
+        <!--<item name="android:windowBackground">@color/color_bg_black</item>-->
+        <item name="android:windowBackground">@android:color/darker_gray</item>
     </style>
 
     <style name="PersonalActivityTheme" parent="AppTheme">
