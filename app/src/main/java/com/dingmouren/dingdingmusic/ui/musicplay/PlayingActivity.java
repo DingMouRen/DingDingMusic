@@ -1,6 +1,5 @@
 package com.dingmouren.dingdingmusic.ui.musicplay;
 
-import android.Manifest;
 import android.animation.Animator;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -14,15 +13,12 @@ import android.os.RemoteException;
 import android.support.design.widget.Snackbar;
 import android.support.percent.PercentRelativeLayout;
 import android.support.v4.view.ViewPager;
-import android.transition.Fade;
 import android.transition.Slide;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewAnimationUtils;
-import android.view.Window;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -34,16 +30,11 @@ import com.dingmouren.dingdingmusic.Constant;
 import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.base.BaseActivity;
-import com.dingmouren.dingdingmusic.bean.LikeBean;
 import com.dingmouren.dingdingmusic.bean.MusicBean;
 import com.dingmouren.dingdingmusic.service.MediaPlayerService;
 import com.dingmouren.dingdingmusic.utils.SPUtil;
-import com.dingmouren.greendao.LikeBeanDao;
 import com.dingmouren.greendao.MusicBeanDao;
 import com.jiongbull.jlog.JLog;
-import com.tbruyelle.rxpermissions.RxPermissions;
-
-import org.w3c.dom.Text;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -105,6 +96,9 @@ public class PlayingActivity extends BaseActivity {
     private String shareSingerName;
     private String shareUrl;
     private String shareContent;
+    private String songNamePlaying;
+    private String singerNamePlaying;
+    private MusicBean beanToCollected;
 
     @Override
     public int setLayoutResourceID() {
@@ -125,7 +119,7 @@ public class PlayingActivity extends BaseActivity {
 
         mAlbumFragmentAdapater = new AlbumFragmentAdapater(getSupportFragmentManager());
         mAlbumViewPager.setAdapter(mAlbumFragmentAdapater);
-        mAlbumViewPager.setOffscreenPageLimit(1);
+        mAlbumViewPager.setOffscreenPageLimit(6);
 
 
         //揭露动画
@@ -190,6 +184,10 @@ public class PlayingActivity extends BaseActivity {
                             .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                             .crossFade()
                             .into(mImgBg);
+                    //首次进入获取正在播放歌曲的信息
+                    songNamePlaying = mList.get(0).getSongname();
+                    singerNamePlaying = mList.get(0).getSingername();
+                    showIsLike();
                 }
             }
 
@@ -202,6 +200,9 @@ public class PlayingActivity extends BaseActivity {
             @Override
             public void onPageSelected(int position) {
                 mPositionPlaying =  position;
+                songNamePlaying = mList.get(mPositionPlaying).getSongname();
+                singerNamePlaying = mList.get(mPositionPlaying).getSingername();
+                JLog.e(TAG,songNamePlaying+"--------"+ singerNamePlaying);
                 showIsLike();
                 if (2 == mState && 0 < mPositionOffset) {
                     Message msgToService = Message.obtain();
@@ -238,20 +239,18 @@ public class PlayingActivity extends BaseActivity {
 
 
     private void showIsLike() {
-        List<LikeBean> list = MyApplication.getDaoSession().getLikeBeanDao().loadAll();
-        JLog.e(TAG,"收藏的歌曲："+ list.size());
-        for (int i = 0; i < list.size(); i++) {
-            JLog.e(TAG,"收藏的歌曲："+ list.get(i).getSongname());
-        }
-        if (null == list) return;
-        long count = MyApplication.getDaoSession().getLikeBeanDao().queryBuilder()
-                .where( LikeBeanDao.Properties.Songname.eq(mList.get(mPositionPlaying).getSongname()),
-                        LikeBeanDao.Properties.Singername.eq(mList.get(mPositionPlaying).getSingername())).count();
-        JLog.e(TAG,"count:"+ count);
-        if (count == 0){
-            mBtnLike.setImageResource(R.mipmap.no_collected);
-        }else {
-            mBtnLike.setImageResource(R.mipmap.collected);
+        JLog.e(TAG,"showLike:" + songNamePlaying +"--"+ singerNamePlaying);
+        if (null == songNamePlaying || null == singerNamePlaying) return;
+        List<MusicBean> list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder()
+                .where(MusicBeanDao.Properties.Singername.eq(singerNamePlaying),
+                        MusicBeanDao.Properties.Songname.eq(songNamePlaying)).list();
+        if (null != list){
+            boolean isCollected = list.get(0).getIsCollected();
+            if (isCollected){
+                Glide.with(this).load(R.mipmap.collected).crossFade().into(mBtnLike);
+            }else {
+                Glide.with(this).load(R.mipmap.no_collected).crossFade().into(mBtnLike);
+            }
         }
     }
 
@@ -259,29 +258,49 @@ public class PlayingActivity extends BaseActivity {
      * 收藏歌曲
      */
     private void collect() {
-        if (null == mList) return;
-        LikeBean likeBean = new LikeBean();
-        likeBean.setSingername(mList.get(mPositionPlaying).getSingername());
-        likeBean.setSongname(mList.get(mPositionPlaying).getSongname());
-        likeBean.setType(Integer.valueOf(Constant.MUSIC_Like));
-        likeBean.setAlbumpic_big(mList.get(mPositionPlaying).getAlbumpic_big());
-        likeBean.setAlbumpic_small(mList.get(mPositionPlaying).getAlbumpic_small());
-        likeBean.setUrl(mList.get(mPositionPlaying).getUrl());
-        likeBean.setSeconds(mList.get(mPositionPlaying).getSeconds());
-        long count = MyApplication.getDaoSession().getLikeBeanDao().queryBuilder()
-                .where(LikeBeanDao.Properties.Singername.eq(mList.get(mPositionPlaying).getSingername()),
-                        LikeBeanDao.Properties.Songname.eq(mList.get(mPositionPlaying).getSongname())).count();
-        if (count == 0){
-            JLog.e(TAG,"收藏歌曲");
-            mBtnLike.setImageResource(R.mipmap.collected);
-            MyApplication.getDaoSession().getLikeBeanDao().insertOrReplace(likeBean);
-            Snackbar.make(mRootLayout,"收藏成功",Snackbar.LENGTH_SHORT).show();
-        }else {
-            JLog.e(TAG,"取消收藏");
-            mBtnLike.setImageResource(R.mipmap.no_collected);
-            MyApplication.getDaoSession().getLikeBeanDao().delete(likeBean);
-            Snackbar.make(mRootLayout,"取消收藏",Snackbar.LENGTH_SHORT).show();
-        }
+            if (null == mList) return;
+            JLog.e(TAG,"collected:"+songNamePlaying+"--"+ singerNamePlaying);
+            MusicBean newBean = null;
+            boolean isCollected = false;
+            List<MusicBean> listCollected = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder()
+                    .where(MusicBeanDao.Properties.Singername.eq(singerNamePlaying),
+                            MusicBeanDao.Properties.Songname.eq(songNamePlaying)).list();
+            if (null != listCollected && 0 < listCollected.size()) {
+                beanToCollected = listCollected.get(0);
+                isCollected = beanToCollected.getIsCollected();
+            }else {
+                newBean = new MusicBean();
+                newBean.setSongname(mList.get(mPositionPlaying).getSongname());
+                newBean.setSingername(mList.get(mPositionPlaying).getSingername());
+                newBean.setAlbumpic_small(mList.get(mPositionPlaying).getAlbumpic_small());
+                newBean.setAlbumpic_big(mList.get(mPositionPlaying).getAlbumpic_big());
+                newBean.setSeconds(mList.get(mPositionPlaying).getSeconds());
+                newBean.setUrl(mList.get(mPositionPlaying).getUrl());
+                newBean.setIsCollected(mList.get(mPositionPlaying).getIsCollected());
+            }
+
+
+            if (!isCollected){
+                JLog.e(TAG,"收藏歌曲");
+                Glide.with(this).load(R.mipmap.collected).crossFade().into(mBtnLike);
+                if (null != beanToCollected) {
+                    beanToCollected.setIsCollected(true);
+                    MyApplication.getDaoSession().getMusicBeanDao().update(beanToCollected);
+                }
+                if (null != newBean){
+                    newBean.setIsCollected(true);
+                    MyApplication.getDaoSession().getMusicBeanDao().insertOrReplace(newBean);
+                }
+                Snackbar.make(mRootLayout,"收藏成功",Snackbar.LENGTH_SHORT).show();
+            }else {
+                JLog.e(TAG,"取消收藏");
+                Glide.with(this).load(R.mipmap.no_collected).crossFade().into(mBtnLike);
+                if (null != beanToCollected) {
+                    beanToCollected.setIsCollected(false);
+                    MyApplication.getDaoSession().getMusicBeanDao().update(beanToCollected);
+                }
+                Snackbar.make(mRootLayout,"取消收藏",Snackbar.LENGTH_SHORT).show();
+            }
     }
 
     /**
@@ -310,6 +329,7 @@ public class PlayingActivity extends BaseActivity {
     public void initData() {
 
     }
+
 
     @OnClick({R.id.btn_playorpause, R.id.btn_single})
     public void onClick(View view) {
@@ -371,28 +391,38 @@ public class PlayingActivity extends BaseActivity {
                     mList.addAll(MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_LOCAL)).list());
                     SPUtil.put(PlayingActivity.this, Constant.CATEGOTY, 1);
                     mTvCategory.setText("本地音乐");
+                    mLine.setVisibility(View.VISIBLE);
                 } else if (flag.equals(Constant.MAIN_RANDOM)) {
                     mList.addAll(MyApplication.getDaoSession().getMusicBeanDao().loadAll());
                     SPUtil.put(PlayingActivity.this, Constant.CATEGOTY, 2);
                     mTvCategory.setText("随心听");
+                    mLine.setVisibility(View.VISIBLE);
                     Collections.shuffle(mList);
                 } else if (flag.equals(Constant.MUSIC_KOREA)) {
                     mList.addAll(MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_KOREA)).list());
                     SPUtil.put(PlayingActivity.this, Constant.CATEGOTY, 3);
                     mTvCategory.setText("韩国");
+                    mLine.setVisibility(View.VISIBLE);
                 } else if (flag.equals(Constant.MUSIC_ROCK)) {
                     mList.addAll(MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_ROCK)).list());
                     SPUtil.put(PlayingActivity.this, Constant.CATEGOTY, 4);
                     mTvCategory.setText("摇滚");
+                    mLine.setVisibility(View.VISIBLE);
                 } else if (flag.equals(Constant.MUSIC_VOLKSLIED)) {
                     mList.addAll(MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_VOLKSLIED)).list());
                     SPUtil.put(PlayingActivity.this, Constant.CATEGOTY, 5);
                     mTvCategory.setText("民谣");
+                    mLine.setVisibility(View.VISIBLE);
                 } else if (flag.equals(Constant.MUSIC_SEARCH)) {
                     mList.addAll((List<MusicBean>) getIntent().getSerializableExtra(Constant.SEARCH_ACTIVITY_DATA_KEY));
                     SPUtil.put(PlayingActivity.this, Constant.CATEGOTY, 6);
                     mLine.setVisibility(View.INVISIBLE);
                     mTvCategory.setText("");
+                }else if (flag.equals(Constant.MUSIC_Like)){
+                    mList.addAll(MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.IsCollected.eq(true)).list());
+                    SPUtil.put(PlayingActivity.this, Constant.MUSIC_Like, 7);
+                    mLine.setVisibility(View.VISIBLE);
+                    mTvCategory.setText("My Love");
                 }
                 if (null != mList) {
                   /*  for (int i = 0; i < list.size(); i++) {
@@ -515,6 +545,10 @@ public class PlayingActivity extends BaseActivity {
             case 6:
                 mLine.setVisibility(View.INVISIBLE);
                 mTvCategory.setText("");
+                break;
+            case 7:
+                mLine.setVisibility(View.VISIBLE);
+                mTvCategory.setText("My Love");
                 break;
 
         }

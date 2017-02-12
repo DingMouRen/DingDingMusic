@@ -15,7 +15,9 @@ import android.widget.TextView;
 import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.base.BaseActivity;
+import com.dingmouren.dingdingmusic.ui.collected.CollectedActivity;
 import com.dingmouren.dingdingmusic.ui.localmusic.LocalMusicActivity;
+import com.dingmouren.greendao.MusicBeanDao;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -47,7 +49,7 @@ public class PersonalCenterActivity extends BaseActivity {
         mCursor  = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
         if (null != mCursor)mLocalMusicCount.setText("本地歌曲("+mCursor.getCount()+"首)");
 
-        mCountLike  = MyApplication.getDaoSession().getLikeBeanDao().count();
+        mCountLike  = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.IsCollected.eq(true)).count();
         if (0 != mCountLike){
             mLikeMusic.setText("收藏歌曲("+mCountLike+"首)");
         }
@@ -85,6 +87,9 @@ public class PersonalCenterActivity extends BaseActivity {
                 new Handler().postDelayed(()-> finish(),1000);
                 break;
             case R.id.card_like:
+                Intent intent1 = new Intent(PersonalCenterActivity.this,CollectedActivity.class);
+                startActivity(intent1);
+                new Handler().postDelayed(()-> finish(),1000);
                 break;
             case R.id.img_setting:
                 break;

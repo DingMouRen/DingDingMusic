@@ -293,7 +293,7 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
             updateSongPosition(mMessengerJKMusicActivity);
         }else if (bean.getType() == Integer.valueOf(Constant.MUSIC_ROCK)){
             updateSongPosition(mMessengerRockMusicActivity);
-        }else if (bean.getType() == Integer.valueOf(Constant.MUSIC_VOLKSLIED)){
+        }else if (bean.getType() == Integer.valueOf(Constant.MUSIC_VOLKSLIED)) {
             updateSongPosition(mMessengerVolksliedMusicActivity);
         }
         if (currentTime > 0) {
@@ -495,6 +495,7 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
      */
     private void updateSongPosition(Messenger messenger){
         if (null != messenger && null != this.bean){
+            JLog.e(TAG,"updateSongPosition--发送消息");
             Message msgToCLient = Message.obtain();
             Bundle bundle = new Bundle();
             bundle.putSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING,this.bean);

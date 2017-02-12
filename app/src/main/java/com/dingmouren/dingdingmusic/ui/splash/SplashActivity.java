@@ -74,7 +74,7 @@ public class SplashActivity extends BaseActivity {
         JLog.e(TAG,"count:" + count);
 
         //请求歌曲数据
-        if (100 > count) {//当数据库中的网络歌曲小于100首时，去请求新数据
+        if (600 > count) {//当数据库中的网络歌曲小于600首时，去请求新数据
             mRequestMusicUtil = new RequestMusicUtil();
             Observable.interval(1000, 1500, TimeUnit.MILLISECONDS).limit(9)
                     .subscribe(aLong -> mRequestMusicUtil.requestMusic(topics[aLong.intValue()]));

@@ -19,6 +19,8 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.dingmouren.dingdingmusic.Constant;
 import com.dingmouren.dingdingmusic.R;
@@ -42,7 +44,8 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
     @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.recycler) RecyclerView mRecycler;
     @BindView(R.id.swipe_refersh) SwipeRefreshLayout mSwipeRefresh;
-    @BindView(R.id.container)   LinearLayout mRootLayout;
+    @BindView(R.id.tv_empty)TextView mTvEmpty;
+    @BindView(R.id.container)  RelativeLayout mRootLayout;
     private LinearLayoutManager mLayoutManager;
     private LocalMusicConstract.Presenter mPresenter;
     private LocalMusicAdapter mAdapter;
@@ -104,6 +107,11 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
     @Override
     public void setData(List<MusicBean> list) {
         mAdapter.setList(list);
+        if (null != list && 0 < list.size()){
+            mTvEmpty.setVisibility(View.GONE);
+        }else {
+            mTvEmpty.setVisibility(View.VISIBLE);
+        }
         mAdapter.notifyDataSetChanged();
         setRefresh(false);
     }
