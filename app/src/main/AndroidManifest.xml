@@ -38,6 +38,9 @@
             android:theme="@style/PersonalActivityTheme"
             android:launchMode="singleTask"
             />
+        <activity android:name=".ui.personal.EditActivity"
+            android:theme="@style/EditActivityTheme"
+            android:launchMode="singleTask"/>
         <activity android:name=".ui.search.SearchActivity"
             android:theme="@style/SearchActivityTheme"
             android:launchMode="singleTask"/>

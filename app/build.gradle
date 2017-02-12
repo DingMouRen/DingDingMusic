@@ -66,6 +66,8 @@ dependencies {
     compile 'com.tbruyelle.rxpermissions:rxpermissions:0.9.1@aar'
     /*组件通信*/
     compile 'org.greenrobot:eventbus:3.0.0'
+    /*图片选择*/
+    compile 'com.github.YancyYe:GalleryPick:1.1.4'
 }
 //数据库版本以及Dao的相关设置
 greendao{

@@ -65,4 +65,8 @@ public class  Constant {
     //搜索歌曲使用的Bundle的key
     public static final String SEARCH_ACTIVITY_DATA_KEY = "search_activity_data_key";
 
+    public static final String HEADER_IMG_PATH = "header_img_path";
+
+    public static final String USER_NAME = "user_name";
+
 }
