@@ -11,6 +11,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -73,6 +74,9 @@ public class SearchActivity extends BaseActivity  implements SearchConstract.Vie
             @Override
             public void onSearchStateChanged(boolean b) {
                 JLog.e(TAG,"搜索--onSearchStateChanged");
+                if (TextUtils.isEmpty(mSearchBar.getText().trim())){
+                    finish();
+                }
             }
 
             @Override

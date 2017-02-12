@@ -14,6 +14,7 @@ import android.support.design.widget.Snackbar;
 import android.support.percent.PercentRelativeLayout;
 import android.support.v4.view.ViewPager;
 import android.transition.Slide;
+import android.transition.Transition;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -515,11 +516,10 @@ public class PlayingActivity extends BaseActivity {
     private void setTransiton() {
         Slide slide = new Slide(Gravity.BOTTOM);
         slide.setDuration(700);
-
         getWindow().setEnterTransition(slide);
 
         Slide slide1 = new Slide();
-        slide1.setDuration(900);
+        slide1.setDuration(700);
         slide1.setSlideEdge(Gravity.TOP);
         getWindow().setReturnTransition(slide1);
     }

@@ -17,6 +17,7 @@ import android.transition.ChangeBounds;
 import android.transition.ChangeImageTransform;
 import android.transition.ChangeTransform;
 import android.transition.Explode;
+import android.transition.Fade;
 import android.transition.Slide;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -56,15 +57,16 @@ public class MainActivity extends BaseActivity {
 
     private Messenger mServiceMessenger;
     private long time = 0;//双击退出时用的时间标记
-  @Override
+
+    @Override
     public int setLayoutResourceID() {
         return R.layout.activity_main;
     }
 
     @Override
     public void init(Bundle savedInstanceState) {
-        startService(new Intent(this,MediaPlayerService.class));//开启MediaPlayerService服务
-        bindService(new Intent(this, MediaPlayerService.class),mServiceConnection,BIND_AUTO_CREATE);
+        startService(new Intent(this, MediaPlayerService.class));//开启MediaPlayerService服务
+        bindService(new Intent(this, MediaPlayerService.class), mServiceConnection, BIND_AUTO_CREATE);
     }
 
     @Override
@@ -79,9 +81,9 @@ public class MainActivity extends BaseActivity {
         mFabMusic.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                Intent intent = new Intent(MainActivity.this,PlayingActivity.class);
-                intent.putExtra("x",(int)(view.getX() + view.getWidth()/2));
-                intent.putExtra("y",(int)(view.getY() + view.getHeight()/2));
+                Intent intent = new Intent(MainActivity.this, PlayingActivity.class);
+                intent.putExtra("x", (int) (view.getX() + view.getWidth() / 2));
+                intent.putExtra("y", (int) (view.getY() + view.getHeight() / 2));
                 startActivity(intent);
                 return false;
             }
@@ -90,15 +92,15 @@ public class MainActivity extends BaseActivity {
         mFabUser.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                Intent intent = new Intent(MainActivity.this,PersonalCenterActivity.class);
-                intent.putExtra("x",(int)(view.getX() + view.getWidth()/2));
-                intent.putExtra("y",(int)(view.getY() + view.getHeight()/2));
+                Intent intent = new Intent(MainActivity.this, PersonalCenterActivity.class);
+                intent.putExtra("x", (int) (view.getX() + view.getWidth() / 2));
+                intent.putExtra("y", (int) (view.getY() + view.getHeight() / 2));
                 startActivity(intent);
                 return false;
             }
         });
 
-       mSearchBar.setOnClickListener((view -> startActivity(new Intent(MainActivity.this,SearchActivity.class))));
+        mSearchBar.setOnClickListener((view -> startActivity(new Intent(MainActivity.this, SearchActivity.class))));
     }
 
     @Override
@@ -106,20 +108,20 @@ public class MainActivity extends BaseActivity {
     }
 
 
-    @OnClick({R.id.img_randomn,R.id.img_jk,R.id.img_rock,R.id.img_volkslied,R.id.fab_user,R.id.fab_music})
-    public void onClick(View view){
-        switch (view.getId()){
+    @OnClick({R.id.img_randomn, R.id.img_jk, R.id.img_rock, R.id.img_volkslied, R.id.fab_user, R.id.fab_music})
+    public void onClick(View view) {
+        switch (view.getId()) {
             case R.id.img_randomn:
                 playRandom();
                 break;
-             case R.id.img_jk:
-                 turnToJK(view);
+            case R.id.img_jk:
+                turnToJK(view);
                 break;
-             case R.id.img_rock:
-                 turnToRock(view);
+            case R.id.img_rock:
+                turnToRock(view);
                 break;
-             case R.id.img_volkslied:
-                 turnToVolkslied(view);
+            case R.id.img_volkslied:
+                turnToVolkslied(view);
                 break;
         }
     }
@@ -129,7 +131,7 @@ public class MainActivity extends BaseActivity {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             mServiceMessenger = new Messenger(iBinder);
             //连接到服务
-            if (null != mServiceMessenger){
+            if (null != mServiceMessenger) {
                 Message msgToService = Message.obtain();
                 msgToService.replyTo = mMessengerClient;
                 msgToService.what = Constant.MAIN_ACTIVITY;
@@ -147,18 +149,18 @@ public class MainActivity extends BaseActivity {
         }
     };
 
-    Messenger mMessengerClient = new Messenger(new Handler(){
+    Messenger mMessengerClient = new Messenger(new Handler() {
         @Override
         public void handleMessage(Message msgFromService) {
-            switch (msgFromService.what){
+            switch (msgFromService.what) {
                 case Constant.MEDIA_PLAYER_SERVICE_IS_PLAYING://正在播放
-                    JLog.e(TAG,"收到消息了");
-                   if (1== msgFromService.arg1) {
-                       mFabMusic.setVisibility(View.VISIBLE);
-                       Glide.with(MainActivity.this).load(R.mipmap.playing).asGif().diskCacheStrategy(DiskCacheStrategy.NONE).into(mFabMusic);
-                   }else if (0 == msgFromService.arg1){
-                       mFabMusic.setVisibility(View.GONE);
-                   }
+                    JLog.e(TAG, "收到消息了");
+                    if (1 == msgFromService.arg1) {
+                        mFabMusic.setVisibility(View.VISIBLE);
+                        Glide.with(MainActivity.this).load(R.mipmap.playing).asGif().diskCacheStrategy(DiskCacheStrategy.NONE).into(mFabMusic);
+                    } else if (0 == msgFromService.arg1) {
+                        mFabMusic.setVisibility(View.GONE);
+                    }
                     break;
             }
             super.handleMessage(msgFromService);
@@ -171,7 +173,7 @@ public class MainActivity extends BaseActivity {
      */
     private void playRandom() {
         Intent intent = new Intent(this, PlayingActivity.class);
-        intent.putExtra("flag",Constant.MAIN_RANDOM);
+        intent.putExtra("flag", Constant.MAIN_RANDOM);
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
     }
 
@@ -179,33 +181,34 @@ public class MainActivity extends BaseActivity {
      * 日韩歌曲
      */
     private void turnToJK(View view) {
-        startActivity(new Intent(this, JKActivity.class),ActivityOptions.makeSceneTransitionAnimation(this,view,"share_jk").toBundle());
+        startActivity(new Intent(this, JKActivity.class), ActivityOptions.makeSceneTransitionAnimation(this, view, "share_jk").toBundle());
     }
 
     /**
      * 摇滚歌曲
      */
     private void turnToRock(View view) {
-        startActivity(new Intent(this, RockActivity.class),ActivityOptions.makeSceneTransitionAnimation(this,view,"share_rock").toBundle());
+        startActivity(new Intent(this, RockActivity.class), ActivityOptions.makeSceneTransitionAnimation(this, view, "share_rock").toBundle());
     }
 
     /**
      * 民谣歌曲
      */
-    private void turnToVolkslied(View view){
-        startActivity(new Intent(this, VolksliedActivity.class),ActivityOptions.makeSceneTransitionAnimation(this,view,"share_volkslied").toBundle());
+    private void turnToVolkslied(View view) {
+        startActivity(new Intent(this, VolksliedActivity.class), ActivityOptions.makeSceneTransitionAnimation(this, view, "share_volkslied").toBundle());
     }
 
 
     private void setupWindowAnimation() {
         Slide slide = new Slide();
-        slide.setSlideEdge(Gravity.BOTTOM);
+        slide.setSlideEdge(Gravity.TOP);
         slide.setDuration(1000);
-        Explode explode = new Explode();
-        explode.setDuration(1000);
+        Fade fade = new Fade();
+        fade.setDuration(500);
 
-        getWindow().setReenterTransition(explode);
-        getWindow().setExitTransition(explode);
+
+        getWindow().setReenterTransition(fade);
+        getWindow().setExitTransition(slide);
 
         getWindow().setSharedElementExitTransition(new ChangeImageTransform());
         getWindow().setSharedElementReenterTransition(new ChangeImageTransform());
@@ -214,22 +217,22 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK){
-            if ((System.currentTimeMillis() - time > 1000)){
-                Toast.makeText(this,"再按一次退出",Toast.LENGTH_SHORT).show();
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if ((System.currentTimeMillis() - time > 1000)) {
+                Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
                 time = System.currentTimeMillis();
-            }else {
+            } else {
                 onDestroy();
             }
             return true;
-        }else {
+        } else {
             return super.onKeyDown(keyCode, event);
         }
     }
 
     @Override
     protected void onDestroy() {
-        stopService(new Intent(this,MediaPlayerService.class));
+        stopService(new Intent(this, MediaPlayerService.class));
         unbindService(mServiceConnection);
         super.onDestroy();
     }
