@@ -19,14 +19,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"
-            android:background="@android:color/darker_gray"
-            android:layout_toRightOf="@+id/img_album"
-            android:layout_marginLeft="5dp"
-            />
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="@android:color/darker_gray"
+            android:background="@color/line"
             android:layout_toRightOf="@+id/img_album"
             android:layout_alignParentBottom="true"
             android:layout_marginLeft="5dp"

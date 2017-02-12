@@ -200,15 +200,14 @@ public class MainActivity extends BaseActivity {
 
 
     private void setupWindowAnimation() {
-        Slide slide = new Slide();
-        slide.setSlideEdge(Gravity.TOP);
-        slide.setDuration(1000);
+        Explode explode = new Explode();
+        explode.setDuration(1000);
         Fade fade = new Fade();
         fade.setDuration(500);
 
 
         getWindow().setReenterTransition(fade);
-        getWindow().setExitTransition(slide);
+        getWindow().setExitTransition(explode);
 
         getWindow().setSharedElementExitTransition(new ChangeImageTransform());
         getWindow().setSharedElementReenterTransition(new ChangeImageTransform());
