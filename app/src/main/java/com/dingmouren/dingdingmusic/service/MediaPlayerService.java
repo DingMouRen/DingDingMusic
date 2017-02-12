@@ -20,6 +20,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -32,6 +33,7 @@ import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.bean.MusicBean;
 import com.dingmouren.dingdingmusic.notification.MusicNotification;
+import com.dingmouren.dingdingmusic.utils.NetworkUtil;
 import com.dingmouren.dingdingmusic.utils.SPUtil;
 import com.jiongbull.jlog.JLog;
 
@@ -249,6 +251,12 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
      * @param musicUrl
      */
     private void play(String musicUrl) {
+        //给予无网络提示
+        if (!NetworkUtil.isAvailable(MyApplication.mContext)){
+            if (bean.getType() != Integer.valueOf(Constant.MUSIC_LOCAL)){
+                Toast.makeText(MyApplication.mContext,"没有网络了哟，请检查网络设置",Toast.LENGTH_SHORT).show();
+            }
+        }
         JLog.e(TAG,"play(String musicUrl)--musicUrl" + musicUrl);
         if (null == mediaPlayer) return;
         mediaPlayer.reset();//停止音乐后，不重置的话就会崩溃
@@ -300,6 +308,7 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
             mediaPlayer.seekTo(currentTime);
         }
         musicNotification.onUpdateMusicNotification(bean, mediaPlayer.isPlaying());
+
     }
 
     /**
@@ -344,6 +353,7 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
      * 播放
      */
     private void playSong(int newPosition,int isOnClick) {
+
         JLog.e(TAG, "playSong()");
         if (null == musicsList && 0 == musicsList.size()) return;//数据为空直接返回
         if (position != newPosition && newPosition < musicsListSize){//由滑动操作传递过来的歌曲position，如果跟当前的播放的不同的话，就将MediaPlayer重置

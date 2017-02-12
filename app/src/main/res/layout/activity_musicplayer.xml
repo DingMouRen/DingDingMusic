@@ -129,7 +129,8 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:background="@drawable/notification_selector"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginLeft="50dp"
+            android:layout_centerVertical="true"
             android:src="@mipmap/no_collected"
             />
 
@@ -139,15 +140,18 @@
             android:layout_height="50dp"
             android:background="@drawable/notification_selector"
             android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
             android:src="@mipmap/pause" />
 
         <ImageButton
             android:id="@+id/btn_share"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginRight="32dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginRight="50dp"
             android:layout_alignParentRight="true"
             android:background="@drawable/notification_selector"
+            android:layout_centerVertical="true"
+            android:scaleType="centerCrop"
             android:src="@mipmap/share" />
     </RelativeLayout>
 </android.support.percent.PercentRelativeLayout>

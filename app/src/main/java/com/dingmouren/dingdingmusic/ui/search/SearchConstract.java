@@ -1,5 +1,7 @@
 package com.dingmouren.dingdingmusic.ui.search;
 
+import android.widget.TextView;
+
 import com.dingmouren.dingdingmusic.base.BasePresenter;
 import com.dingmouren.dingdingmusic.base.BaseView;
 import com.dingmouren.dingdingmusic.bean.MusicBean;

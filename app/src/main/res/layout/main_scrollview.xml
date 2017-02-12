@@ -1,74 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:scrollbars="vertical"
-   >
+    android:scrollbars="vertical">
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/appbar_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@android:color/black"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                app:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:elevation="1dp"
-                android:layout_gravity="center"
-                >
+        android:layout_height="wrap_content"
+        >
 
-                <com.mancj.materialsearchbar.MaterialSearchBar
-                    android:id="@+id/search_bar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    />
-            </android.support.v7.widget.Toolbar>
-        </android.support.design.widget.AppBarLayout>
+        <com.mancj.materialsearchbar.MaterialSearchBar
+            android:id="@+id/search_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:background="@android:color/black"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            app:hint="@string/search_bar_hint"
+            />
+
         <ImageView
             android:id="@+id/img_randomn"
             android:layout_width="match_parent"
             android:layout_height="@dimen/main_content_item_height"
+            android:layout_below="@+id/search_bar"
             android:gravity="center"
-            android:src="@mipmap/random"
             android:scaleType="centerCrop"
-            android:layout_below="@+id/appbar_layout"
-            />
+            android:src="@mipmap/random" />
+
         <ImageView
             android:id="@+id/img_jk"
             android:layout_width="match_parent"
             android:layout_height="@dimen/main_content_item_height"
             android:layout_below="@+id/img_randomn"
-            android:src="@mipmap/jk"
             android:scaleType="centerCrop"
-            android:transitionName="share_jk"
-            />
+            android:src="@mipmap/jk"
+            android:transitionName="share_jk" />
+
         <ImageView
             android:id="@+id/img_rock"
             android:layout_width="match_parent"
             android:layout_height="@dimen/main_content_item_height"
             android:layout_below="@+id/img_jk"
             android:background="#000000"
-            android:src="@mipmap/rock"
             android:scaleType="centerCrop"
+            android:src="@mipmap/rock"
             android:transitionName="share_rock"
 
             />
+
         <ImageView
             android:id="@+id/img_volkslied"
             android:layout_width="match_parent"
             android:layout_height="@dimen/main_content_item_height"
             android:layout_below="@+id/img_rock"
-            android:src="@mipmap/volkslied"
             android:scaleType="centerCrop"
-            android:transitionName="share_volkslied"
-            />
+            android:src="@mipmap/volkslied"
+            android:transitionName="share_volkslied" />
     </RelativeLayout>
 </ScrollView>

@@ -1,6 +1,11 @@
 package com.dingmouren.dingdingmusic.ui.search;
 
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.dingmouren.dingdingmusic.Constant;
+import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.api.ApiManager;
 import com.dingmouren.dingdingmusic.bean.MusicBean;
 import com.dingmouren.dingdingmusic.bean.SearchBean;
@@ -40,6 +45,7 @@ public class SearchPresenter implements SearchConstract.Presenter {
     private  void loadError(Throwable throwable) {
         throwable.printStackTrace();
         JLog.e(TAG,throwable.getMessage());
+        Toast.makeText(MyApplication.mContext,"没有网络了哟，请检查网络设置",Toast.LENGTH_SHORT).show();
     }
 
     private void parseData(List<SearchBean> list){

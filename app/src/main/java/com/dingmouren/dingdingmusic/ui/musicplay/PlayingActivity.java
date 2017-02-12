@@ -240,11 +240,11 @@ public class PlayingActivity extends BaseActivity {
 
     private void showIsLike() {
         JLog.e(TAG,"showLike:" + songNamePlaying +"--"+ singerNamePlaying);
-        if (null == songNamePlaying || null == singerNamePlaying) return;
+        if (null == songNamePlaying || null == singerNamePlaying || null == mList) return;
         List<MusicBean> list = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder()
                 .where(MusicBeanDao.Properties.Singername.eq(singerNamePlaying),
                         MusicBeanDao.Properties.Songname.eq(songNamePlaying)).list();
-        if (null != list){
+        if (null != list && 0 <list.size()){
             boolean isCollected = list.get(0).getIsCollected();
             if (isCollected){
                 Glide.with(this).load(R.mipmap.collected).crossFade().into(mBtnLike);
@@ -311,7 +311,7 @@ public class PlayingActivity extends BaseActivity {
             shareSongName = mList.get(mPositionPlaying).getSongname();
             shareSingerName = mList.get(mPositionPlaying).getSingername();
             shareUrl = mList.get(mPositionPlaying).getUrl();
-            shareContent = shareSongName + "\n" + "--" + shareSingerName + "\n" + shareUrl;
+            shareContent = shareSongName  + "--" + shareSingerName + "\n" + shareUrl;
         }
         if ("".equals(shareContent)) {
             Snackbar.make(mRootLayout, "分享失败", Snackbar.LENGTH_SHORT).show();
