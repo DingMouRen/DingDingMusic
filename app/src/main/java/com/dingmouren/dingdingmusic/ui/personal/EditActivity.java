@@ -29,22 +29,13 @@ public class EditActivity extends BaseActivity {
 
     @Override
     public void init(Bundle savedInstanceState) {
-        setTransition();
     }
 
-    private void setTransition() {
-        Slide slide1 = new Slide();
-        slide1.setSlideEdge(Gravity.TOP);
-        getWindow().setExitTransition(slide1);
-
-        Slide slide2 = new Slide();
-        slide2.setSlideEdge(Gravity.BOTTOM);
-        getWindow().setEnterTransition(slide2);
-    }
 
     @Override
     public void initView() {
         mBtnConfirm.setOnClickListener(view -> changeName());
+        overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
     }
 
 
