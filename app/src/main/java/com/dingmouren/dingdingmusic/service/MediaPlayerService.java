@@ -638,12 +638,18 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         }
     };
 
+    /**
+     * 放弃音频焦点
+     */
     private void abandonFocus() {
        if (null != onAudioFocusChangeListener){
            mAudioManager.abandonAudioFocus(onAudioFocusChangeListener);
        }
     }
 
+    /**
+     * 申请音频焦点
+     */
     private void requestAudioFocus(){
         JLog.e(TAG,"请求音频焦点requestAudioFocus");
         if (null != onAudioFocusChangeListener){

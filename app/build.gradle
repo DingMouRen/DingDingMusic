@@ -68,6 +68,12 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.0.0'
     /*图片选择*/
     compile 'com.github.YancyYe:GalleryPick:1.1.4'
+    /*友盟*/
+    compile 'com.umeng.analytics:analytics:latest.integration'
+    /*内存泄漏检测*/
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
+    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
 }
 //数据库版本以及Dao的相关设置
 greendao{

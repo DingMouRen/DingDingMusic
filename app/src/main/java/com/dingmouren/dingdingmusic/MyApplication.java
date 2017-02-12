@@ -6,6 +6,7 @@ import android.content.Context;
 import com.dingmouren.greendao.DaoMaster;
 import com.dingmouren.greendao.DaoSession;
 import com.jiongbull.jlog.JLog;
+import com.squareup.leakcanary.LeakCanary;
 
 import org.greenrobot.greendao.AbstractDaoMaster;
 import org.greenrobot.greendao.database.Database;
@@ -23,6 +24,15 @@ public class MyApplication extends Application {
         this.mContext = this.getApplicationContext();
         initGreenDao();//初始化数据库
         JLog.init(this).setDebug(BuildConfig.DEBUG);
+        initLeakCanary();//初始化内存泄漏检测库
+    }
+
+    private void initLeakCanary() {
+        if (LeakCanary.isInAnalyzerProcess(this)){
+            JLog.e("一定是发生了什么？");
+            return;
+        }
+        LeakCanary.install(this);
     }
 
     private void initGreenDao() {
