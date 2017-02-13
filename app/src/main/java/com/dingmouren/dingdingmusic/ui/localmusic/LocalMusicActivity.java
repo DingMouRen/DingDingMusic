@@ -31,6 +31,7 @@ import com.dingmouren.dingdingmusic.service.MediaPlayerService;
 import com.dingmouren.dingdingmusic.ui.musicplay.PlayingActivity;
 import com.jiongbull.jlog.JLog;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import butterknife.BindView;
@@ -51,6 +52,8 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
     private LocalMusicConstract.Presenter mPresenter;
     private LocalMusicAdapter mAdapter;
     private Messenger mServiceMessenger;
+    Messenger mMessengerClient;
+    private MyHandler myHandler;
     @Override
     public int setLayoutResourceID() {
         return R.layout.activity_localmusic;
@@ -59,6 +62,8 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
     @Override
     public void init(Bundle savedInstanceState) {
         bindService(new Intent(this, MediaPlayerService.class),mServiceConnection,BIND_AUTO_CREATE);
+        myHandler = new MyHandler(this);
+        mMessengerClient = new Messenger(myHandler);
     }
 
 
@@ -153,19 +158,6 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
         }
     };
 
-    Messenger mMessengerClient = new Messenger(new Handler(){
-        @Override
-        public void handleMessage(Message msgFromService) {
-            switch (msgFromService.what){
-                case Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING://通过Bundle传递对象,显示正在播放的本地歌曲
-                    Bundle bundle = msgFromService.getData();
-                    mAdapter.showPlaying((MusicBean) bundle.getSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING));
-                    mAdapter.notifyDataSetChanged();
-                    break;
-            }
-            super.handleMessage(msgFromService);
-        }
-    });
 
     /**
      * 播放被点击的歌曲
@@ -220,5 +212,27 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
     public void onBackPressed() {
             Animator animator = createRevealAnimator(true, mRootLayout.getWidth()/2, mRootLayout.getHeight()/2);
             animator.start();
+    }
+
+    static class MyHandler extends Handler{
+        private WeakReference<LocalMusicActivity> weakActivity;
+        public MyHandler(LocalMusicActivity activity) {
+            weakActivity = new WeakReference<LocalMusicActivity>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msgFromService) {
+            LocalMusicActivity activity = weakActivity.get();
+            if (null == activity) return;
+            switch (msgFromService.what){
+                case Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING://通过Bundle传递对象,显示正在播放的歌曲
+                    JLog.e(TAG,"收到消息了");
+                    Bundle bundle = msgFromService.getData();
+                    activity.mAdapter.showPlaying((MusicBean) bundle.getSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING));
+                    activity.mAdapter.notifyDataSetChanged();
+                    break;
+            }
+            super.handleMessage(msgFromService);
+        }
     }
 }

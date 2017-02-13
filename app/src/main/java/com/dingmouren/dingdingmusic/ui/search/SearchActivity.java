@@ -16,6 +16,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dingmouren.dingdingmusic.Constant;
 import com.dingmouren.dingdingmusic.MyApplication;
@@ -23,6 +24,8 @@ import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.base.BaseActivity;
 import com.dingmouren.dingdingmusic.bean.MusicBean;
 import com.dingmouren.dingdingmusic.bean.SearchBean;
+import com.dingmouren.dingdingmusic.listener.MyOnSearchActionListener;
+import com.dingmouren.dingdingmusic.listener.MyOnSeekBarChangeListeger;
 import com.dingmouren.dingdingmusic.ui.musicplay.PlayingActivity;
 import com.jiongbull.jlog.JLog;
 import com.mancj.materialsearchbar.MaterialSearchBar;
@@ -39,17 +42,23 @@ import butterknife.BindView;
 
 public class SearchActivity extends BaseActivity  implements SearchConstract.View{
     private static final String TAG = SearchActivity.class.getName();
-    @BindView(R.id.search_bar)  MaterialSearchBar mSearchBar;
+    @BindView(R.id.search_bar) public MaterialSearchBar mSearchBar;
     @BindView(R.id.recycler) RecyclerView mRecycler;
     @BindView(R.id.tv_empty) TextView mTvEmpty;
 
     private SearchAdapter mAdapter;
-    private SearchPresenter mPresenter;
+    public SearchPresenter mPresenter;
     public MusicBean mMusicBean;
     public List<MusicBean> mList;
+    private MyOnSearchActionListener myOnSearchActionListener;
     @Override
     public int setLayoutResourceID() {
         return R.layout.activity_search;
+    }
+
+    @Override
+    public void init(Bundle savedInstanceState) {
+        myOnSearchActionListener = new MyOnSearchActionListener(this);
     }
 
     @Override
@@ -71,44 +80,7 @@ public class SearchActivity extends BaseActivity  implements SearchConstract.Vie
 
         mAdapter.setOnItemClickListener(bean -> playSong(bean));
 
-        mSearchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
-            @Override
-            public void onSearchStateChanged(boolean b) {
-                JLog.e(TAG,"搜索--onSearchStateChanged");
-                if (TextUtils.isEmpty(mSearchBar.getText().trim())){
-                    finish();
-                }
-            }
-
-            @Override
-            public void onSearchConfirmed(CharSequence charSequence) {
-                JLog.e(TAG,"搜索--onSearchConfirmed--"+ charSequence);
-                mPresenter.requestData(String.valueOf(charSequence));
-                hideKeyBoard();
-            }
-
-            @Override
-            public void onButtonClicked(int i) {
-                JLog.e(TAG,"搜索--onButtonClicked");
-            }
-        });
-
-        mSearchBar.addTextChangeListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                JLog.e(TAG,"搜索--beforeTextChanged");
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                JLog.e(TAG,"搜索--onTextChanged");
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                JLog.e(TAG,"搜索--afterTextChanged");
-            }
-        });
+        mSearchBar.setOnSearchActionListener(myOnSearchActionListener);
     }
 
 
@@ -158,15 +130,7 @@ public class SearchActivity extends BaseActivity  implements SearchConstract.Vie
         }
     }
 
-    /**
-     * 隐藏软件盘
-     */
-    private void hideKeyBoard() {
-        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (null != inputMethodManager){
-            inputMethodManager.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(),0);
-        }
-    }
+
 
     @Override
     protected void onDestroy() {

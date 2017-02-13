@@ -29,6 +29,7 @@ import com.dingmouren.dingdingmusic.ui.musicplay.PlayingActivity;
 import com.dingmouren.greendao.MusicBeanDao;
 import com.jiongbull.jlog.JLog;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import butterknife.BindView;
@@ -46,6 +47,8 @@ public class RockActivity extends BaseActivity {
     private List<MusicBean> mList;
     private RockAdapter mAdapter;
     private Messenger mServiceMessenger;
+    Messenger mMessengerClient;
+    private MyHandler myHandler;
     @Override
     public int setLayoutResourceID() {
         return R.layout.activity_rock;
@@ -55,6 +58,8 @@ public class RockActivity extends BaseActivity {
     public void init(Bundle savedInstanceState) {
         setTransiton();
         bindService(new Intent(this, MediaPlayerService.class),mServiceConnection,BIND_AUTO_CREATE);
+        myHandler = new MyHandler(this);
+        mMessengerClient = new Messenger(myHandler);
     }
     private void setTransiton() {
         getWindow().setEnterTransition(new Fade());
@@ -116,20 +121,6 @@ public class RockActivity extends BaseActivity {
         }
     };
 
-    Messenger mMessengerClient = new Messenger(new Handler(){
-        @Override
-        public void handleMessage(Message msgFromService) {
-            switch (msgFromService.what){
-                case Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING://通过Bundle传递对象,显示正在播放的歌曲
-                    JLog.e(TAG,"收到消息了");
-                    Bundle bundle = msgFromService.getData();
-                    mAdapter.showPlaying((MusicBean) bundle.getSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING));
-                    mAdapter.notifyDataSetChanged();
-                    break;
-            }
-            super.handleMessage(msgFromService);
-        }
-    });
 
     /**
      * 播放被点击的歌曲
@@ -142,5 +133,27 @@ public class RockActivity extends BaseActivity {
         JLog.e(TAG,"点击Rock一首音乐");
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
 
+    }
+
+    static class MyHandler extends Handler{
+        private WeakReference<RockActivity> weakActivity;
+        public MyHandler(RockActivity activity) {
+            weakActivity = new WeakReference<RockActivity>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msgFromService) {
+            RockActivity activity = weakActivity.get();
+            if (null == activity) return;
+            switch (msgFromService.what){
+                case Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING://通过Bundle传递对象,显示正在播放的歌曲
+                    JLog.e(TAG,"收到消息了");
+                    Bundle bundle = msgFromService.getData();
+                    activity.mAdapter.showPlaying((MusicBean) bundle.getSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING));
+                    activity.mAdapter.notifyDataSetChanged();
+                    break;
+            }
+            super.handleMessage(msgFromService);
+        }
     }
 }

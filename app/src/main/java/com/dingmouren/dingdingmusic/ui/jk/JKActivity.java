@@ -32,6 +32,7 @@ import com.dingmouren.dingdingmusic.ui.musicplay.PlayingActivity;
 import com.dingmouren.greendao.MusicBeanDao;
 import com.jiongbull.jlog.JLog;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import butterknife.BindView;
@@ -50,6 +51,8 @@ public class JKActivity extends BaseActivity implements JKConstract.View{
     private List<MusicBean> mList;
     private Messenger mServiceMessenger;
     private JKPresenter mPresenter;
+    Messenger mMessengerClient;
+    private MyHandler myHandler;
     @Override
     public int setLayoutResourceID() {
         return R.layout.activity_jk;
@@ -59,6 +62,8 @@ public class JKActivity extends BaseActivity implements JKConstract.View{
     public void init(Bundle savedInstanceState) {
         setTransiton();
         bindService(new Intent(this, MediaPlayerService.class),mServiceConnection,BIND_AUTO_CREATE);
+        myHandler = new MyHandler(this);
+        mMessengerClient = new Messenger(myHandler);
     }
 
     private void setTransiton() {
@@ -132,20 +137,6 @@ public class JKActivity extends BaseActivity implements JKConstract.View{
         }
     };
 
-    Messenger mMessengerClient = new Messenger(new Handler(){
-        @Override
-        public void handleMessage(Message msgFromService) {
-            switch (msgFromService.what){
-                case Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING://通过Bundle传递对象,显示正在播放的歌曲
-                    JLog.e(TAG,"收到消息了");
-                    Bundle bundle = msgFromService.getData();
-                    mAdapter.showPlaying((MusicBean) bundle.getSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING));
-                    mAdapter.notifyDataSetChanged();
-                    break;
-            }
-            super.handleMessage(msgFromService);
-        }
-    });
 
     /**
      * 播放被点击的歌曲
@@ -157,5 +148,27 @@ public class JKActivity extends BaseActivity implements JKConstract.View{
         intent.putExtra("flag",Constant.MUSIC_KOREA);
         JLog.e(TAG,"点击JK一首音乐");
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+    }
+
+    static class MyHandler extends Handler{
+        private WeakReference<JKActivity> weakActivity;
+        public MyHandler(JKActivity activity) {
+            weakActivity = new WeakReference<JKActivity>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msgFromService) {
+            JKActivity activity = weakActivity.get();
+            if (null == activity) return;
+            switch (msgFromService.what){
+                case Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING://通过Bundle传递对象,显示正在播放的歌曲
+                    JLog.e(TAG,"收到消息了");
+                    Bundle bundle = msgFromService.getData();
+                    activity.mAdapter.showPlaying((MusicBean) bundle.getSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING));
+                    activity.mAdapter.notifyDataSetChanged();
+                    break;
+            }
+            super.handleMessage(msgFromService);
+        }
     }
 }

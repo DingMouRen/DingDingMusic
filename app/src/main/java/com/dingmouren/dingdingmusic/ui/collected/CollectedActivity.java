@@ -36,6 +36,7 @@ import com.jiongbull.jlog.JLog;
 
 import org.w3c.dom.Text;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import butterknife.BindView;
@@ -51,6 +52,7 @@ public class CollectedActivity extends BaseActivity {
     @BindView(R.id.tv_empty)TextView mTvEmpty;
     @BindView(R.id.container) RelativeLayout mRootLayout;
     private CollectedAdapter mAdapter;
+    private MyRunnable myRunnable;
     @Override
     public int setLayoutResourceID() {
         return R.layout.activity_collected;
@@ -58,6 +60,7 @@ public class CollectedActivity extends BaseActivity {
 
     @Override
     public void init(Bundle savedInstanceState) {
+        myRunnable = new MyRunnable(this);
     }
 
     @Override
@@ -72,16 +75,10 @@ public class CollectedActivity extends BaseActivity {
         mRecycler.setAdapter(mAdapter);
 
         //揭露动画
-        mRootLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                mRootLayout.setVisibility(View.VISIBLE);
-                Animator animator = createRevealAnimator(false,0,0);
-                animator.start();
-
-            }
-        });
+        mRootLayout.post(myRunnable);
     }
+
+
 
     @Override
     public void initListener() {
@@ -104,6 +101,9 @@ public class CollectedActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
+        if (null != mRootLayout){
+            mRootLayout.removeAllViews();
+        }
         super.onDestroy();
         MyApplication.getRefWatcher().watch(this);
     }
@@ -162,5 +162,22 @@ public class CollectedActivity extends BaseActivity {
     public void onBackPressed() {
         Animator animator = createRevealAnimator(true, mRootLayout.getWidth()/2, mRootLayout.getHeight()/2);
         animator.start();
+    }
+
+    static class MyRunnable implements Runnable{
+        private WeakReference<CollectedActivity> weakActivity;
+        public MyRunnable(CollectedActivity activity) {
+            weakActivity = new WeakReference<CollectedActivity>(activity);
+        }
+
+        @Override
+        public void run() {
+            CollectedActivity activity = weakActivity.get();
+            if (null != activity) {
+                activity.mRootLayout.setVisibility(View.VISIBLE);
+                Animator animator = activity.createRevealAnimator(false, 0, 0);
+                animator.start();
+            }
+        }
     }
 }

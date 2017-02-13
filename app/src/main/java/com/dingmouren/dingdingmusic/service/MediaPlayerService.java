@@ -40,6 +40,7 @@ import com.jiongbull.jlog.JLog;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -85,6 +86,9 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
     private Messenger mMessengerMainActivity;
     //音频管理对象
     private AudioManager mAudioManager;
+    //
+    public Messenger mServiceMessenger;
+    private MyHandler myHandler;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -99,7 +103,7 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         mediaPlayer.setOnCompletionListener(this);
         mediaPlayer.setOnErrorListener(this);
         //注册广播,用于跟通知栏进行通信
-        musicBroadCast = new MusicBroadCast();
+        musicBroadCast = new MusicBroadCast(this);
         IntentFilter filter = new IntentFilter();
         filter.addAction(MUSIC_NOTIFICATION_ACTION_PLAY);
         filter.addAction(MUSIC_NOTIFICATION_ACTION_NEXT);
@@ -108,6 +112,9 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         //初始化音频管理对象
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         requestAudioFocus();
+        //初始化服务端的Messenger
+        myHandler = new MyHandler(this);
+        mServiceMessenger = new Messenger(myHandler);
 
     }
 
@@ -151,89 +158,96 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         MyApplication.getRefWatcher().watch(this);
     }
 
-    Messenger mServiceMessenger = new Messenger(new Handler() {
+    static class MyHandler extends Handler {
+        private WeakReference<MediaPlayerService> weakService;
+        public MyHandler(MediaPlayerService service) {
+            weakService = new WeakReference<MediaPlayerService>(service);
+        }
+
         @Override
         public void handleMessage(Message msgFromClient) {
+            MediaPlayerService service = weakService.get();
+            if (null == service) return;
             switch (msgFromClient.what) {
                 case Constant.PLAYING_ACTIVITY:
-                    mMessengerPlayingActivity = msgFromClient.replyTo;
-                    JLog.e(TAG,"mMessengerPlayingActivity初始化--positon:"+ position +" currentTime:"+currentTime+" isPlaying:"+mediaPlayer.isPlaying()+" isLooping:"+ mediaPlayer.isLooping());
+                    service.mMessengerPlayingActivity = msgFromClient.replyTo;
+                    JLog.e(TAG,"mMessengerPlayingActivity初始化--positon:"+ service.position +" currentTime:"+service.currentTime+" isPlaying:"+service.mediaPlayer.isPlaying()+" isLooping:"+ service.mediaPlayer.isLooping());
                     if (0 != msgFromClient.arg1){
-                        currentTime = msgFromClient.arg1;
+                        service.currentTime = msgFromClient.arg1;
                     }
                     //将现在播放的歌曲发送给PlayingActivity
-                    updateSongName();
+                    service.updateSongName();
                     break;
                 case Constant.PLAYING_ACTIVITY_PLAY:
-                    playSong(position,msgFromClient.arg1);
+                    service.playSong(service.position,msgFromClient.arg1);
                     JLog.e(TAG,"点击播放/暂停按钮时执行playSong()");
                     break;
                 case Constant.PLAYING_ACTIVITY_NEXT://顺序播放模式下，自动播放下一曲，
-                    nextSong();
+                    service.nextSong();
                     break;
                 case Constant.PLAYING_ACTIVITY_SINGLE://是否单曲循环
                     int playMode = (int) SPUtil.get(MyApplication.mContext,Constant.SP_PLAY_MODE,0);
                     if (0 == playMode){
-                        mediaPlayer.setLooping(true);
+                        service.mediaPlayer.setLooping(true);
                         SPUtil.put(MyApplication.mContext,Constant.SP_PLAY_MODE,1);
-                        sendPlayModeMsgToPlayingActivity();
+                        service.sendPlayModeMsgToPlayingActivity();
                     }else if (1 == playMode){
-                        mediaPlayer.setLooping(false);
+                        service.mediaPlayer.setLooping(false);
                         SPUtil.put(MyApplication.mContext,Constant.SP_PLAY_MODE,0);
-                        sendPlayModeMsgToPlayingActivity();
+                        service.sendPlayModeMsgToPlayingActivity();
                     }
                     break;
                 case Constant.PLAYING_ACTIVITY_CUSTOM_PROGRESS://在用户拖动进度条的位置播放
                     int percent = msgFromClient.arg1;
-                    currentTime = percent * mediaPlayer.getDuration() / 100;
-                    mediaPlayer.seekTo(currentTime);
+                    service.currentTime = percent * service.mediaPlayer.getDuration() / 100;
+                    service.mediaPlayer.seekTo(service.currentTime);
                     break;
                 case Constant.LOCAL_MUSIC_ACTIVITY:
-                    mMessengerLocalMusicActivity = msgFromClient.replyTo;
-                    updateSongPosition(mMessengerLocalMusicActivity);
+                    service.mMessengerLocalMusicActivity = msgFromClient.replyTo;
+                    service.updateSongPosition(service.mMessengerLocalMusicActivity);
                     break;
                 case Constant.JK_MUSIC_ACTIVITY:
-                    mMessengerJKMusicActivity = msgFromClient.replyTo;
-                    updateSongPosition(mMessengerJKMusicActivity);
+                    service.mMessengerJKMusicActivity = msgFromClient.replyTo;
+                    service.updateSongPosition(service.mMessengerJKMusicActivity);
                     break;
                 case Constant.ROCK_MUSIC_ACTIVITY:
-                    mMessengerRockMusicActivity = msgFromClient.replyTo;
-                    updateSongPosition(mMessengerRockMusicActivity);
+                    service.mMessengerRockMusicActivity = msgFromClient.replyTo;
+                    service.updateSongPosition(service.mMessengerRockMusicActivity);
                     break;
                 case Constant.VOLKSLIED_MUSIC_ACTIVITY:
-                    mMessengerVolksliedMusicActivity = msgFromClient.replyTo;
-                    updateSongPosition(mMessengerVolksliedMusicActivity);
+                    service.mMessengerVolksliedMusicActivity = msgFromClient.replyTo;
+                    service.updateSongPosition(service.mMessengerVolksliedMusicActivity);
                     break;
                 case Constant.MAIN_ACTIVITY:
-                    mMessengerMainActivity = msgFromClient.replyTo;
+                    service.mMessengerMainActivity = msgFromClient.replyTo;
                     break;
                 case Constant.PLAYING_ACTIVITY_PLAYING_POSITION:
                     int newPosition = msgFromClient.arg1;
-                        playSong(newPosition,-1);
+                    service.playSong(newPosition,-1);
                     JLog.e(TAG,"上一首或下一首执行playSong()");
                     break;
                 case Constant.PLAYING_ACTIVITY_INIT:
                     Bundle songsData = msgFromClient.getData();
-                    musicsList.clear();
+                    service.musicsList.clear();
                     List<MusicBean> clientList = (List<MusicBean>) songsData.getSerializable(Constant.PLAYING_ACTIVITY_DATA_KEY);
-                    if (0 == musicsList.size() && null != clientList) {//当歌曲集合没有数据的时候
-                        musicsList.addAll(clientList);
+                    if (0 == service.musicsList.size() && null != clientList) {//当歌曲集合没有数据的时候
+                        service.musicsList.addAll(clientList);
                     }
-                    if (null != musicsList) musicsListSize = musicsList.size();
-                    if (null != musicsList) {
-                        JLog.e(TAG, "musicsList--" + musicsList.toString());
-                        JLog.e(TAG, "musicsListSize--" + musicsListSize);
+                    if (null != service.musicsList) service.musicsListSize = service.musicsList.size();
+                    if (null != service.musicsList) {
+                        JLog.e(TAG, "musicsList--" + service.musicsList.toString());
+                        JLog.e(TAG, "musicsListSize--" + service.musicsListSize);
                         JLog.e(TAG, "接收到来自PlayingActivity客户端的数据"  );
                     }
-                    position = msgFromClient.arg1;
-                    JLog.e(TAG,"positon:"+position);
-                    playCustomSong(position);
+                    service.position = msgFromClient.arg1;
+                    JLog.e(TAG,"positon:"+service.position);
+                    service.playCustomSong(service.position);
                     break;
 
             }
             super.handleMessage(msgFromClient);
         }
-    });
+    }
 
     /**
      * 将播放器的播放模式返回给PlayingActivity
@@ -571,9 +585,13 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
     /**
      * 广播接收者:与通知栏进行通信，通知栏控制歌曲的播放、下一首取、取消通知栏（停止音乐播放）
      */
-    private class MusicBroadCast extends BroadcastReceiver {
+    static class MusicBroadCast extends BroadcastReceiver {
         private final String TAG_BRAODCAST = MusicBroadCast.class.getName();
         private int valueFromNotification = 0;//来自通知的extra中的值
+        private WeakReference<MediaPlayerService> weakService;
+        public MusicBroadCast(MediaPlayerService service) {
+            weakService = new WeakReference<MediaPlayerService>(service);
+        }
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -593,16 +611,18 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
          */
         private void musicNotificationService(int value) {
             Log.e(TAG_BRAODCAST, "musicNotificationService");
+            MediaPlayerService service = weakService.get();
+            if (null == service) return;
             switch (value) {
                 case 30001:
-                    playSong(position,0x40001); //播放or暂停
+                    service.playSong(service.position,0x40001); //播放or暂停
                     break;
                 case 30002:
-                    nextSong();//下一首
+                    service.nextSong();//下一首
                     break;
                 case 30003:
-                    musicNotification.onCancelMusicNotification();//关闭通知栏
-                    stop();//停止音乐
+                    service.musicNotification.onCancelMusicNotification();//关闭通知栏
+                    service.stop();//停止音乐
                     break;
             }
         }

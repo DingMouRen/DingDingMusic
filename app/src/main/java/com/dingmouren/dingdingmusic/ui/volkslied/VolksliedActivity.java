@@ -29,6 +29,7 @@ import com.dingmouren.dingdingmusic.ui.rock.RockAdapter;
 import com.dingmouren.greendao.MusicBeanDao;
 import com.jiongbull.jlog.JLog;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import butterknife.BindView;
@@ -46,6 +47,8 @@ public class VolksliedActivity extends BaseActivity {
     private List<MusicBean> mList;
     private VolksliedAdapter mAdapter;
     private Messenger mServiceMessenger;
+    Messenger mMessengerClient;
+    private MyHandler myHandler;
 
     @Override
     public int setLayoutResourceID() {
@@ -56,6 +59,8 @@ public class VolksliedActivity extends BaseActivity {
     public void init(Bundle savedInstanceState) {
         setTransiton();
         bindService(new Intent(this, MediaPlayerService.class),mServiceConnection,BIND_AUTO_CREATE);
+        myHandler = new MyHandler(this);
+        mMessengerClient = new Messenger(myHandler);
     }
     private void setTransiton() {
         getWindow().setEnterTransition(new Fade());
@@ -119,20 +124,6 @@ public class VolksliedActivity extends BaseActivity {
         }
     };
 
-    Messenger mMessengerClient = new Messenger(new Handler(){
-        @Override
-        public void handleMessage(Message msgFromService) {
-            switch (msgFromService.what){
-                case Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING://通过Bundle传递对象,显示正在播放的歌曲
-                    JLog.e(TAG,"收到消息了");
-                    Bundle bundle = msgFromService.getData();
-                    mAdapter.showPlaying((MusicBean) bundle.getSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING));
-                    mAdapter.notifyDataSetChanged();
-                    break;
-            }
-            super.handleMessage(msgFromService);
-        }
-    });
 
     /**
      * 播放被点击的歌曲
@@ -145,5 +136,27 @@ public class VolksliedActivity extends BaseActivity {
         JLog.e(TAG,"点击民谣一首音乐");
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
 
+    }
+
+    static class MyHandler extends Handler{
+        private WeakReference<VolksliedActivity> weakActivity;
+        public MyHandler(VolksliedActivity activity) {
+            weakActivity = new WeakReference<VolksliedActivity>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msgFromService) {
+            VolksliedActivity activity = weakActivity.get();
+            if (null == activity) return;
+            switch (msgFromService.what){
+                case Constant.MEDIA_PLAYER_SERVICE_SONG_PLAYING://通过Bundle传递对象,显示正在播放的歌曲
+                    JLog.e(TAG,"收到消息了");
+                    Bundle bundle = msgFromService.getData();
+                    activity.mAdapter.showPlaying((MusicBean) bundle.getSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING));
+                    activity.mAdapter.notifyDataSetChanged();
+                    break;
+            }
+            super.handleMessage(msgFromService);
+        }
     }
 }
