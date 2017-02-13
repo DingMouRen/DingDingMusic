@@ -43,6 +43,7 @@ import com.dingmouren.dingdingmusic.ui.volkslied.VolksliedActivity;
 import com.dingmouren.greendao.MusicBeanDao;
 import com.jiongbull.jlog.JLog;
 import com.mancj.materialsearchbar.MaterialSearchBar;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.List;
 

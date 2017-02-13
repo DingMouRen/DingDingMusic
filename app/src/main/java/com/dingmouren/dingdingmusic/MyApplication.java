@@ -7,6 +7,7 @@ import com.dingmouren.greendao.DaoMaster;
 import com.dingmouren.greendao.DaoSession;
 import com.jiongbull.jlog.JLog;
 import com.squareup.leakcanary.LeakCanary;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import org.greenrobot.greendao.AbstractDaoMaster;
 import org.greenrobot.greendao.database.Database;
@@ -25,6 +26,7 @@ public class MyApplication extends Application {
         initGreenDao();//初始化数据库
         JLog.init(this).setDebug(BuildConfig.DEBUG);
         initLeakCanary();//初始化内存泄漏检测库
+        CrashReport.initCrashReport(getApplicationContext());//异常统计
     }
 
     private void initLeakCanary() {

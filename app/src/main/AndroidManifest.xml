@@ -7,6 +7,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_LOGS" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/dingding_icon"
@@ -71,6 +73,22 @@
             android:launchMode="singleTask"/>
         <service android:name=".service.MediaPlayerService"/>
 
+        <!-- 配置bugly APP ID -->
+        <meta-data
+            android:name="BUGLY_APPID"
+            android:value="020b9ac994" />
+        <!-- 配置bugly APP版本号 -->
+        <meta-data
+            android:name="BUGLY_APP_VERSION"
+            android:value="1.0.0" />
+        <!-- 配置bugly APP渠道号 -->
+       <!-- <meta-data
+            android:name="BUGLY_APP_CHANNEL"
+            android:value="<APP_Channel>" />-->
+        <!-- 配置Bugly调试模式（true或者false）-->
+        <meta-data
+            android:name="BUGLY_ENABLE_DEBUG"
+            android:value="true" />
 
     </application>
 
