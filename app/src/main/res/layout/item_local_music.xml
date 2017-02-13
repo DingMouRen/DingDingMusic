@@ -10,12 +10,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:background="?android:attr/selectableItemBackground"
+
         >
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
             >
         <TextView
             android:id="@+id/tv_song_name"

@@ -5,7 +5,6 @@ import android.animation.Animator;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.os.Build;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -90,7 +89,7 @@ public class PersonalCenterActivity extends BaseActivity {
             }
         });
 
-        initHeader();//初始化用户头像
+
     }
 
     @Override
@@ -257,10 +256,4 @@ public class PersonalCenterActivity extends BaseActivity {
         public void onError() {
         }
     };
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        MyApplication.getRefWatcher().watch(this);
-    }
 }

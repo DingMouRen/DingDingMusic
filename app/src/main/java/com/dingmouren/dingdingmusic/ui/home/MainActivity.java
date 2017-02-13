@@ -218,7 +218,7 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if ((System.currentTimeMillis() - time > 1500)) {
+            if ((System.currentTimeMillis() - time > 2000)) {
                 Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
                 time = System.currentTimeMillis();
             } else {
