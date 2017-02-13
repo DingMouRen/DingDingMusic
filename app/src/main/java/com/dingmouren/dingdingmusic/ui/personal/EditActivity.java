@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.dingmouren.dingdingmusic.Constant;
+import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.base.BaseActivity;
 import com.dingmouren.dingdingmusic.utils.SPUtil;
@@ -55,5 +56,11 @@ public class EditActivity extends BaseActivity {
         }else {
             Toast.makeText(this,"昵称不能为空",Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        MyApplication.getRefWatcher().watch(this);
     }
 }

@@ -235,5 +235,6 @@ public class MainActivity extends BaseActivity {
         stopService(new Intent(this, MediaPlayerService.class));
         unbindService(mServiceConnection);
         super.onDestroy();
+        MyApplication.getRefWatcher().watch(this);
     }
 }

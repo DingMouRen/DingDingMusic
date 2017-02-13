@@ -106,6 +106,7 @@ public class JKActivity extends BaseActivity implements JKConstract.View{
     protected void onDestroy() {
         unbindService(mServiceConnection);
         super.onDestroy();
+        MyApplication.getRefWatcher().watch(this);
     }
 
     ServiceConnection mServiceConnection = new ServiceConnection() {

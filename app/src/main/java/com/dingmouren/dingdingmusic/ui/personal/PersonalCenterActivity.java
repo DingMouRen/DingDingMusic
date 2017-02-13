@@ -5,12 +5,14 @@ import android.animation.Animator;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -87,6 +89,8 @@ public class PersonalCenterActivity extends BaseActivity {
                 }
             }
         });
+
+        initHeader();//初始化用户头像
     }
 
     @Override
@@ -130,6 +134,15 @@ public class PersonalCenterActivity extends BaseActivity {
     private void changeName() {
         startActivity(new Intent(this,EditActivity.class));
     }
+
+    /**
+     * 初始化用户头像
+     */
+    private void initHeader(){
+        if (!TextUtils.isEmpty((String)SPUtil.get(this,Constant.HEADER_IMG_PATH,"")))
+            Glide.with(this).load((String)SPUtil.get(this, Constant.HEADER_IMG_PATH, "")).into(mImgHeader);
+    }
+
     /**
      * 揭露动画
      */
@@ -244,4 +257,10 @@ public class PersonalCenterActivity extends BaseActivity {
         public void onError() {
         }
     };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        MyApplication.getRefWatcher().watch(this);
+    }
 }

@@ -23,6 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.dingmouren.dingdingmusic.Constant;
+import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.base.BaseActivity;
 import com.dingmouren.dingdingmusic.bean.MusicBean;
@@ -125,6 +126,7 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
     protected void onDestroy() {
         unbindService(mServiceConnection);
         super.onDestroy();
+        MyApplication.getRefWatcher().watch(this);
     }
 
 

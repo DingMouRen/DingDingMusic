@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import com.dingmouren.dingdingmusic.Constant;
+import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.base.BaseActivity;
 import com.dingmouren.dingdingmusic.bean.MusicBean;
@@ -165,5 +166,11 @@ public class SearchActivity extends BaseActivity  implements SearchConstract.Vie
         if (null != inputMethodManager){
             inputMethodManager.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(),0);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        MyApplication.getRefWatcher().watch(this);
     }
 }

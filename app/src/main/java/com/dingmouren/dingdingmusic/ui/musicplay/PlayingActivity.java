@@ -606,5 +606,6 @@ public class PlayingActivity extends BaseActivity {
         unbindService(mServiceConnection);
         JLog.e(TAG, "onDestroy");
         super.onDestroy();
+        MyApplication.getRefWatcher().watch(this);
     }
 }

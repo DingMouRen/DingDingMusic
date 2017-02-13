@@ -161,4 +161,5 @@ public class MusicNotification extends Notification {
 //        notificationManager.cancel(NOTIFICATION_ID);
         mService.stopForeground(true);
     }
+
 }

@@ -105,6 +105,7 @@ public class CollectedActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        MyApplication.getRefWatcher().watch(this);
     }
 
 

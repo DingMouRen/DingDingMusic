@@ -148,6 +148,7 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         if (null != musicNotification) musicNotification.onCancelMusicNotification();
 
         super.onDestroy();
+        MyApplication.getRefWatcher().watch(this);
     }
 
     Messenger mServiceMessenger = new Messenger(new Handler() {

@@ -6,6 +6,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.base.BaseFragment;
 
@@ -43,5 +44,11 @@ public class AlbumImgFragment extends BaseFragment {
         if (null != mAlbumUrl){
             Glide.with(this).load(mAlbumUrl).centerCrop().crossFade().diskCacheStrategy(DiskCacheStrategy.NONE)/*.placeholder(R.mipmap.native_1)*/.into(mImgAlbum);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        MyApplication.getRefWatcher().watch(this);
     }
 }

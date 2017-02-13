@@ -54,7 +54,7 @@ public class SplashActivity extends BaseActivity {
     @Override
     public void initView() {
         mTvAuthor.setText("@钉某人");
-        mTvAuthor.setTextColor(Color.WHITE);
+        mTvAuthor.setTextColor(Color.BLACK);
 
         ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f,1.3f,1.0f,1.3f,Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         scaleAnimation.setDuration(3000);
@@ -89,5 +89,11 @@ public class SplashActivity extends BaseActivity {
             Observable.interval(1000, 1500, TimeUnit.MILLISECONDS).limit(9)
                     .subscribe(aLong -> mRequestMusicUtil.requestMusic(topics[aLong.intValue()]));
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        MyApplication.getRefWatcher().watch(this);
     }
 }
