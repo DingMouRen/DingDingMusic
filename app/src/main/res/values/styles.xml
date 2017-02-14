@@ -72,4 +72,11 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
+    <style name="AboutActivityTheme" parent="AppTheme">
+        <item name="colorPrimary">@color/colorLightBar</item>
+        <item name="colorPrimaryDark">@color/colorLightStatus</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
 </resources>

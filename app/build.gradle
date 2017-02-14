@@ -78,8 +78,11 @@ dependencies {
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
-
+    /*关于*/
+    compile 'com.github.daniel-stoneuk:material-about-library:1.7.1'
 }
+
+
 //数据库版本以及Dao的相关设置
 greendao{
     schemaVersion 1 //数据库schema版本

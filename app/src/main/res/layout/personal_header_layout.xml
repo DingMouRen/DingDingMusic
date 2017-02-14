@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/personal_appbar_height"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/colorPrimary"
+    android:background="@color/playing_activity_song_bac"
     >
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/img_header"

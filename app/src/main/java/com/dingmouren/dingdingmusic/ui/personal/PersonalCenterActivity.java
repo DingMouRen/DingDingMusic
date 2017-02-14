@@ -5,6 +5,7 @@ import android.animation.Animator;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -24,6 +25,7 @@ import com.dingmouren.dingdingmusic.Constant;
 import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.base.BaseActivity;
+import com.dingmouren.dingdingmusic.ui.about.AboutActivity;
 import com.dingmouren.dingdingmusic.ui.collected.CollectedActivity;
 import com.dingmouren.dingdingmusic.ui.home.MainActivity;
 import com.dingmouren.dingdingmusic.ui.localmusic.LocalMusicActivity;
@@ -36,10 +38,13 @@ import com.yancy.gallerypick.inter.IHandlerCallBack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
+import rx.Observable;
+import rx.Subscriber;
 
 /**
  * Created by dingmouren on 2017/1/17.
@@ -60,9 +65,33 @@ public class PersonalCenterActivity extends BaseActivity {
     private GalleryConfig mGalleryConfig;//图片选择器的配置
     private List<String> mNavHeaderImgPaths = new ArrayList<>();//记录已选的图片
     private String mName;
+    private Observable observable;
+    private Subscriber subscriber;
     @Override
     public int setLayoutResourceID() {
         return R.layout.activity_personal;
+    }
+
+    @Override
+    public void init(Bundle savedInstanceState) {
+        observable = Observable.just(1).delay(1, TimeUnit.SECONDS);
+        subscriber = new Subscriber<Integer>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+                finish();
+            }
+        };
+
     }
 
     @Override
@@ -111,20 +140,34 @@ public class PersonalCenterActivity extends BaseActivity {
         super.onResume();
     }
 
-    @OnClick({R.id.card_local_music,R.id.card_like,R.id.img_setting})
+    @Override
+    protected void onDestroy() {
+        if (subscriber.isUnsubscribed()){
+            subscriber.unsubscribe();
+        }
+        super.onDestroy();
+    }
+
+    @OnClick({R.id.card_local_music,R.id.card_like,R.id.img_setting,R.id.card_about})
     public void onClick(View view){
         switch (view.getId()){
             case R.id.card_local_music:
                 Intent intent = new Intent(PersonalCenterActivity.this,LocalMusicActivity.class);
                 startActivity(intent);
-                new Handler().postDelayed(()-> finish(),1000);
+//                new Handler().postDelayed(()-> finish(),1000);
+                delayFinish();
                 break;
             case R.id.card_like:
                 Intent intent1 = new Intent(PersonalCenterActivity.this,CollectedActivity.class);
                 startActivity(intent1);
-                new Handler().postDelayed(()-> finish(),1000);
+                delayFinish();
                 break;
             case R.id.img_setting:
+                break;
+            case R.id.card_about:
+                Intent intent2 = new Intent(PersonalCenterActivity.this,AboutActivity.class);
+                startActivity(intent2);
+                delayFinish();
                 break;
         }
     }
@@ -132,6 +175,10 @@ public class PersonalCenterActivity extends BaseActivity {
 
     private void changeName() {
         startActivity(new Intent(this,EditActivity.class));
+    }
+
+    private void delayFinish(){
+        observable.subscribe(subscriber);
     }
 
     /**

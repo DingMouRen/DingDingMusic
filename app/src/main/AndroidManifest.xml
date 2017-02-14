@@ -71,6 +71,11 @@
         <activity android:name=".ui.volkslied.VolksliedActivity"
             android:theme="@style/VolkiliedActivityTheme"
             android:launchMode="singleTask"/>
+
+        <activity android:name=".ui.about.AboutActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/AboutActivityTheme"
+            />
         <service android:name=".service.MediaPlayerService"/>
 
         <!-- 配置bugly APP ID -->

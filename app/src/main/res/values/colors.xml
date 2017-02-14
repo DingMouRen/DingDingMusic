@@ -11,4 +11,7 @@
     <color name="color_bg_black">#353333</color>
     <color name="windowBackground">#f4f2f2</color>
     <color name="gallery_blue">#01ffc1</color>
+    <color name="colorLightBar">#FFFFFF</color>
+    <color name="colorLightStatus">#9E9E9E</color>
+
 </resources>
