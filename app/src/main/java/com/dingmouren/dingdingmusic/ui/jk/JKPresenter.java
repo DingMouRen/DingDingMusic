@@ -42,12 +42,7 @@ public class JKPresenter implements JKConstract.Presenter {
         if (null != topic && null != list) {
             for (int i = 0; i < list.size(); i++) {
                 list.get(i).setType(Integer.parseInt(topic));
-                if (0 == MyApplication.getDaoSession().getMusicBeanDao().queryBuilder()
-                        .where(MusicBeanDao.Properties.Songname.eq(list.get(i).getSongname()),
-                                MusicBeanDao.Properties.Singername.eq(list.get(i).getSingername())).count()) {
-                    MyApplication.getDaoSession().getMusicBeanDao().insert(list.get(i));
-                    JLog.e(TAG,""+i);
-                }
+                    MyApplication.getDaoSession().getMusicBeanDao().insertOrReplace(list.get(i));
             }
         }
     }
