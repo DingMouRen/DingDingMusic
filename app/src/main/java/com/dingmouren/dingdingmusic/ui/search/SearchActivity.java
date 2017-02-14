@@ -108,7 +108,6 @@ public class SearchActivity extends BaseActivity  implements SearchConstract.Vie
      * 播放被点击的歌曲
      */
     private void playSong(SearchBean bean){
-        try {
             if (null != bean){
                 mMusicBean = new MusicBean();
                 mList = new ArrayList<>();
@@ -119,15 +118,14 @@ public class SearchActivity extends BaseActivity  implements SearchConstract.Vie
                 mMusicBean.setSongname(bean.getSongname());
                 mMusicBean.setSingername(bean.getSingername());
                 mList.add(mMusicBean);
-                Intent intent = new Intent(this, PlayingActivity.class);
-                intent.putExtra(Constant.SEARCH_ACTIVITY_DATA_KEY, (Serializable) mList);
-                intent.putExtra("flag",Constant.MUSIC_SEARCH);
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
-                new Handler().postDelayed(()-> finish(),800);
+                if (null != mList && 0 < mList.size()) {
+                    Intent intent = new Intent(this, PlayingActivity.class);
+                    intent.putExtra(Constant.SEARCH_ACTIVITY_DATA_KEY, (Serializable) mList);
+                    intent.putExtra("flag", Constant.MUSIC_SEARCH);
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+                    new Handler().postDelayed(() -> finish(), 800);
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 
