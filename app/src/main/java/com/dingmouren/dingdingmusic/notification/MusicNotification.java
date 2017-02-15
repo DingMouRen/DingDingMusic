@@ -16,6 +16,7 @@ import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.bean.MusicBean;
 import com.dingmouren.dingdingmusic.service.MediaPlayerService;
+import com.dingmouren.dingdingmusic.ui.musicplay.PlayingActivity;
 import com.dingmouren.dingdingmusic.utils.ImageUtils;
 import com.jiongbull.jlog.JLog;
 
@@ -49,7 +50,7 @@ public class MusicNotification extends Notification {
     private final int MUSIC_NOTIFICATION_VALUE_PLAY = 30001;
     private final int MUSIC_NOTIFICATION_VALUE_NEXT = 30002;
     private final int MUSIC_NOTIFICATION_VALUE_CLOSE =30003;
-    private Intent playIntent = null,nextIntent = null,closeIntent = null;//播放、下一首、关闭的意图对象
+    private Intent playIntent = null,nextIntent = null,closeIntent = null,backIntent = null;//播放、下一首、关闭的意图对象
     private MediaPlayerService mService;
     /**
      * 设置通知管理器
@@ -81,6 +82,8 @@ public class MusicNotification extends Notification {
         nextIntent.setAction(MUSIC_NOTIFICATION_ACTION_NEXT);
         closeIntent = new Intent();
         closeIntent.setAction(MUSIC_NOTIFICATION_ACTION_CLOSE);
+
+        backIntent = new Intent(MyApplication.mContext, PlayingActivity.class);
     }
 
     /**
@@ -113,6 +116,9 @@ public class MusicNotification extends Notification {
         closeIntent.putExtra("type",MUSIC_NOTIFICATION_VALUE_CLOSE);
         PendingIntent pendingCloseIntent = PendingIntent.getBroadcast(context,REQUEST_CODE,closeIntent,PendingIntent.FLAG_UPDATE_CURRENT);
         remoteViews.setOnClickPendingIntent(R.id.img_close,pendingCloseIntent);
+        //4.点击通知返回App
+        PendingIntent pendingBackIntent = PendingIntent.getActivity(MyApplication.mContext,REQUEST_CODE,backIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteViews.setOnClickPendingIntent(R.id.notification_contanier,pendingBackIntent);
 
         builder.setContent(remoteViews)
                 .setOngoing(true)//表示正在运行的通知，常用于音乐播放或者文件下载
