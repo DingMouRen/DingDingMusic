@@ -11,6 +11,8 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -33,9 +35,12 @@ import com.dingmouren.greendao.MusicBeanDao;
 import com.jiongbull.jlog.JLog;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
+import rx.Observable;
 
 /**
  * Created by dingmouren on 2017/2/7.
@@ -46,13 +51,15 @@ public class JKActivity extends BaseActivity implements JKConstract.View{
     @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.collapsing) CollapsingToolbarLayout mCollapsing;
     @BindView(R.id.recycler) RecyclerView mRecycler;
-
+    @BindView(R.id.swipe_refersh) SwipeRefreshLayout mSwipeRefresh;
+    @BindView(R.id.coordinator_jk) CoordinatorLayout mRootLayout;
     private JKAdapter mAdapter;
     private List<MusicBean> mList;
     private Messenger mServiceMessenger;
     private JKPresenter mPresenter;
     Messenger mMessengerClient;
     private MyHandler myHandler;
+    private MyRunnbale myRunnbale;
     @Override
     public int setLayoutResourceID() {
         return R.layout.activity_jk;
@@ -63,6 +70,7 @@ public class JKActivity extends BaseActivity implements JKConstract.View{
         setTransiton();
         bindService(new Intent(this, MediaPlayerService.class),mServiceConnection,BIND_AUTO_CREATE);
         myHandler = new MyHandler(this);
+        myRunnbale = new MyRunnbale(this);
         mMessengerClient = new Messenger(myHandler);
     }
 
@@ -88,28 +96,45 @@ public class JKActivity extends BaseActivity implements JKConstract.View{
         mRecycler.setHasFixedSize(true);
         mRecycler.setAdapter(mAdapter);
 
-//        mPresenter = new JKPresenter((JKConstract.View)this);
+        mPresenter = new JKPresenter((JKConstract.View)this);
 
     }
 
+    @Override
+    public void initListener() {
+        mSwipeRefresh.setOnRefreshListener(()-> mPresenter.requestData());
+    }
 
     @Override
     public void initData() {
-//        mPresenter.requestData();
-        setData(null);
-    }
-
-    @Override
-    public void setData(List<MusicBean> list) {
         mList = MyApplication.getDaoSession().getMusicBeanDao().queryBuilder().where(MusicBeanDao.Properties.Type.eq(Constant.MUSIC_KOREA)).list();
         if (null != mList) {
             mAdapter.setList(mList);
             mAdapter.notifyDataSetChanged();
         }
     }
+
+    @Override
+    public void setData(List<MusicBean> list) {
+            Collections.shuffle(list);
+            mAdapter.setList(list);
+            mAdapter.notifyDataSetChanged();
+            setRefresh(false);
+    }
+
+    @Override
+    public void setRefresh(boolean refresh) {
+        if (refresh){
+            mSwipeRefresh.setRefreshing(true);
+        }else {
+            myHandler.postDelayed(myRunnbale,1500);
+        }
+    }
+
     @Override
     protected void onDestroy() {
         unbindService(mServiceConnection);
+        mRootLayout.removeAllViews();
         super.onDestroy();
         MyApplication.getRefWatcher().watch(this);
     }
@@ -169,6 +194,21 @@ public class JKActivity extends BaseActivity implements JKConstract.View{
                     break;
             }
             super.handleMessage(msgFromService);
+        }
+    }
+
+    static class MyRunnbale implements Runnable{
+        private WeakReference<JKActivity> weakActivity;
+        public MyRunnbale(JKActivity activity) {
+            weakActivity = new WeakReference<JKActivity>(activity);
+        }
+
+        @Override
+        public void run() {
+            JKActivity activity = weakActivity.get() ;
+            if (activity != null) {
+                activity.mSwipeRefresh.setRefreshing(false);
+            }
         }
     }
 }

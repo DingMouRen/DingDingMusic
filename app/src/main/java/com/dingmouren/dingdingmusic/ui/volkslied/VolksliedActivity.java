@@ -11,7 +11,9 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -30,6 +32,7 @@ import com.dingmouren.greendao.MusicBeanDao;
 import com.jiongbull.jlog.JLog;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -38,17 +41,22 @@ import butterknife.BindView;
  * Created by mouren on 2017/2/7.
  */
 
-public class VolksliedActivity extends BaseActivity {
+public class VolksliedActivity extends BaseActivity implements VolksliedConstract.View{
     private static final String TAG = VolksliedActivity.class.getName();
     @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.collapsing) CollapsingToolbarLayout mCollapsing;
     @BindView(R.id.recycler) RecyclerView mRecycler;
+    @BindView(R.id.swipe_refersh)SwipeRefreshLayout mSwipeRefresh;
+    @BindView(R.id.coordinator_vol)CoordinatorLayout mRootLayout;
+
 
     private List<MusicBean> mList;
     private VolksliedAdapter mAdapter;
     private Messenger mServiceMessenger;
     Messenger mMessengerClient;
     private MyHandler myHandler;
+    private MyRunnbale myRunnbale;
+    private VolksliedPresenter mPresenter;
 
     @Override
     public int setLayoutResourceID() {
@@ -60,6 +68,7 @@ public class VolksliedActivity extends BaseActivity {
         setTransiton();
         bindService(new Intent(this, MediaPlayerService.class),mServiceConnection,BIND_AUTO_CREATE);
         myHandler = new MyHandler(this);
+        myRunnbale = new MyRunnbale(this);
         mMessengerClient = new Messenger(myHandler);
     }
     private void setTransiton() {
@@ -83,6 +92,14 @@ public class VolksliedActivity extends BaseActivity {
         mRecycler.setLayoutManager(new LinearLayoutManager(this));
         mRecycler.setHasFixedSize(true);
         mRecycler.setAdapter(mAdapter);
+
+        mPresenter = new VolksliedPresenter((VolksliedConstract.View)this);
+    }
+
+
+    @Override
+    public void initListener() {
+        mSwipeRefresh.setOnRefreshListener(()-> mPresenter.requestData());
     }
 
     @Override
@@ -95,8 +112,18 @@ public class VolksliedActivity extends BaseActivity {
     }
 
     @Override
+    public void setData(List<MusicBean> list) {
+        Collections.shuffle(list);
+        mAdapter.setList(list);
+        mAdapter.notifyDataSetChanged();
+        setRefresh(false);
+
+    }
+
+    @Override
     protected void onDestroy() {
         unbindService(mServiceConnection);
+        mRootLayout.removeAllViews();
         super.onDestroy();
         MyApplication.getRefWatcher().watch(this);
     }
@@ -138,6 +165,18 @@ public class VolksliedActivity extends BaseActivity {
 
     }
 
+
+
+    @Override
+    public void setRefresh(boolean refresh) {
+        if (refresh){
+            mSwipeRefresh.setRefreshing(true);
+        }else {
+            myHandler.postDelayed(myRunnbale,1500);
+        }
+
+    }
+
     static class MyHandler extends Handler{
         private WeakReference<VolksliedActivity> weakActivity;
         public MyHandler(VolksliedActivity activity) {
@@ -157,6 +196,21 @@ public class VolksliedActivity extends BaseActivity {
                     break;
             }
             super.handleMessage(msgFromService);
+        }
+    }
+
+    static class MyRunnbale implements Runnable{
+        private WeakReference<VolksliedActivity> weakActivity;
+        public MyRunnbale(VolksliedActivity activity) {
+            weakActivity = new WeakReference<VolksliedActivity>(activity);
+        }
+
+        @Override
+        public void run() {
+            VolksliedActivity activity = weakActivity.get() ;
+            if (activity != null) {
+                activity.mSwipeRefresh.setRefreshing(false);
+            }
         }
     }
 }
