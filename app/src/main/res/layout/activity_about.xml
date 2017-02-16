@@ -46,4 +46,12 @@
         android:textSize="15sp"
         android:text="版本号：1.0.0\n\n开发者：钉某人\n\nGitHub  :  https://github.com/DingMouRen\n\nCSDN    :  http://blog.csdn.net/xiaochuanding\n\nQQ        ： 1341520108"
         />
+    <ImageView
+        android:id="@+id/img_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/tip"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="32dp"
+        />
 </LinearLayout>

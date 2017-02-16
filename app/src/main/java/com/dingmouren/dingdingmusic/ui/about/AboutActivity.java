@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.base.BaseActivity;
@@ -15,6 +16,7 @@ import com.dingmouren.dingdingmusic.ui.collected.CollectedActivity;
 import java.lang.ref.WeakReference;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 
 /**
  * Created by dingmouren on 2017/2/14.
@@ -48,6 +50,11 @@ public class AboutActivity extends BaseActivity {
     @Override
     public void initData() {
 
+    }
+
+    @OnClick(R.id.img_tip)
+    public void onClick(View view){
+        Toast.makeText(this,"打赏",Toast.LENGTH_SHORT).show();
     }
 
     @Override
