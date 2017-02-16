@@ -66,7 +66,6 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void init(Bundle savedInstanceState) {
-        startService(new Intent(this, MediaPlayerService.class));//开启MediaPlayerService服务
         bindService(new Intent(this, MediaPlayerService.class), mServiceConnection, BIND_AUTO_CREATE);
     }
 
@@ -232,7 +231,6 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        stopService(new Intent(this, MediaPlayerService.class));
         unbindService(mServiceConnection);
         super.onDestroy();
         MyApplication.getRefWatcher().watch(this);
