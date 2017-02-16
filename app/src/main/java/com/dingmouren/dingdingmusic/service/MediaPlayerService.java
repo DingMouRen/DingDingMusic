@@ -157,12 +157,11 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
             mediaPlayer.release();
             mediaPlayer = null;
         }
-        //取消注册的广播
-        if (null != musicBroadCast) unregisterReceiver(musicBroadCast);
-
         //取消通知
         if (null != musicNotification) musicNotification.onCancelMusicNotification();
 
+        if (null != mSreenOffReceiver) unregisterReceiver(mSreenOffReceiver);//注销锁屏的广播
+        if (null != musicBroadCast) unregisterReceiver(musicBroadCast);//注销通知的广播
         super.onDestroy();
         MyApplication.getRefWatcher().watch(this);
     }
