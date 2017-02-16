@@ -2,6 +2,7 @@ package com.dingmouren.dingdingmusic.listener;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.dingmouren.dingdingmusic.ui.search.SearchActivity;
@@ -34,6 +35,7 @@ public class MyOnSearchActionListener implements MaterialSearchBar.OnSearchActio
     public void onSearchConfirmed(CharSequence charSequence) {
         SearchActivity activity = weakActivity.get();
         if (null == activity) return;
+        activity.mProgressBar.setVisibility(View.VISIBLE);
         activity.mPresenter.requestData(String.valueOf(charSequence));
         if (null != inputMethodManager){
             inputMethodManager.hideSoftInputFromWindow(activity.getWindow().getDecorView().getWindowToken(),0);

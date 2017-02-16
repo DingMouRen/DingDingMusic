@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +46,7 @@ public class SearchActivity extends BaseActivity  implements SearchConstract.Vie
     @BindView(R.id.search_bar) public MaterialSearchBar mSearchBar;
     @BindView(R.id.recycler) RecyclerView mRecycler;
     @BindView(R.id.tv_empty) TextView mTvEmpty;
+    @BindView(R.id.progressbar)public ProgressBar mProgressBar;
 
     private SearchAdapter mAdapter;
     public SearchPresenter mPresenter;
@@ -100,6 +102,7 @@ public class SearchActivity extends BaseActivity  implements SearchConstract.Vie
         }
         mAdapter.setList(list);
         mAdapter.notifyDataSetChanged();
+        mProgressBar.setVisibility(View.INVISIBLE);
     }
 
 

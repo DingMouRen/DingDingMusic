@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/dingding_icon"
@@ -71,11 +72,16 @@
         <activity android:name=".ui.volkslied.VolksliedActivity"
             android:theme="@style/VolkiliedActivityTheme"
             android:launchMode="singleTask"/>
-
+        <!--关于-->
         <activity android:name=".ui.about.AboutActivity"
             android:launchMode="singleTask"
             android:theme="@style/AboutActivityTheme"
             />
+        <!--锁屏-->
+        <activity android:name=".ui.lock.LockActivity"
+            android:theme="@style/LockActivityTheme"/>
+
+        <!--音乐播放核心类-->
         <service android:name=".service.MediaPlayerService"/>
 
         <!-- 配置bugly APP ID -->
