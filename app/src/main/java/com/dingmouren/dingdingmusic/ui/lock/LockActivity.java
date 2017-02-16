@@ -178,7 +178,7 @@ public class LockActivity extends BaseActivity {
                     Bundle bundle = msgFromService.getData();
                     mBean = (MusicBean) bundle.getSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING);
                     activity.mTvSongName.setText(mBean.getSongname());
-                    Glide.with(activity).load(mBean.getAlbumpic_big()).centerCrop().diskCacheStrategy(DiskCacheStrategy.NONE).placeholder(R.mipmap.dingding_icon).into(activity.mImgAlbum);
+                    Glide.with(activity).load(mBean.getAlbumpic_big()).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).placeholder(R.mipmap.dingding_icon).into(activity.mImgAlbum);
                     Glide.with(MyApplication.mContext)//底部的模糊效果
                             .load(mBean.getAlbumpic_big())
                             .bitmapTransform(new BlurTransformation(activity, 99))

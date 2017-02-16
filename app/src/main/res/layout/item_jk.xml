@@ -35,11 +35,10 @@
         >
         <TextView
             android:id="@+id/tv_songname"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="发如雪"
             android:textSize="13sp"
-            android:maxLines="1"
             android:layout_marginRight="50dp"
             android:ellipsize="marquee"
             android:fadingEdge="horizontal"
@@ -47,6 +46,7 @@
             android:focusableInTouchMode="true"
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
+            android:singleLine="true"
             />
         <TextView
             android:id="@+id/tv_singername"

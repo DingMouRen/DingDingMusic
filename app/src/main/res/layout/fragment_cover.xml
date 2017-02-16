@@ -34,9 +34,15 @@
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:background="@color/playing_activity_song_bac"
         android:padding="@dimen/playing_activity_singer_padding"
-        android:maxLines="2"
         android:textColor="@android:color/white"
         android:textSize="@dimen/playing_activity_song_size"
+        android:ellipsize="marquee"
+        android:fadingEdge="horizontal"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
         />
 
     <TextView
