@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.transition.Fade;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -71,6 +72,11 @@ public class LockActivity extends BaseActivity {
     public void initView() {
         mRootLayout.setTouchView(getWindow().getDecorView());
         mRootLayout.setOnSildingFinishListener(()-> finish());
+        setTransition();
+    }
+
+    private void setTransition() {
+        getWindow().setExitTransition(new Fade());
     }
 
     @Override
@@ -135,6 +141,7 @@ public class LockActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         mRootLayout.removeAllViews();
+        unbindService(mServiceConnection);
         super.onDestroy();
     }
 
