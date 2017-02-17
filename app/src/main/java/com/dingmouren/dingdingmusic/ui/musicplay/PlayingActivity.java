@@ -58,8 +58,8 @@ public class PlayingActivity extends BaseActivity {
     private static final String TAG = PlayingActivity.class.getName();
 
     @BindView(R.id.seek_bar) public SeekBar mSeekBar;
-    @BindView(R.id.tv_song_name)TextView mTvSongName;
-    @BindView(R.id.tv_singer)TextView mTvSinger;
+//    @BindView(R.id.tv_song_name)TextView mTvSongName;
+//    @BindView(R.id.tv_singer)TextView mTvSinger;
     @BindView(R.id.album_viewpager)ViewPager mAlbumViewPager;
     @BindView(R.id.btn_playorpause)ImageButton mBtnPlay;
     @BindView(R.id.btn_single)ImageButton mPlayMode;
@@ -478,8 +478,9 @@ public class PlayingActivity extends BaseActivity {
             mRootLayout.removeCallbacks(myRunnable);
             mRootLayout.removeAllViews();
         }
+        System.gc();
         super.onDestroy();
-        MyApplication.getRefWatcher().watch(this);
+//        MyApplication.getRefWatcher().watch(this);
     }
 
     static class MyRunnable implements Runnable{
@@ -524,8 +525,8 @@ public class PlayingActivity extends BaseActivity {
                     activity.mList.clear();
                     activity.mList.addAll((List<MusicBean>) bundle.getSerializable(Constant.MEDIA_PLAYER_SERVICE_MODEL_PLAYING));
                     if (null != activity.mList && 0 < activity.mList.size()) {
-                        activity.mTvSongName.setText(activity.mList.get(msgFromService.arg1).getSongname());
-                        activity.mTvSinger.setText(activity.mList.get(msgFromService.arg1).getSingername());
+//                        activity.mTvSongName.setText(activity.mList.get(msgFromService.arg1).getSongname());
+//                        activity.mTvSinger.setText(activity.mList.get(msgFromService.arg1).getSingername());
 
                         //更新专辑图片
                         activity.mAlbumFragmentAdapater.addList(activity.mList);

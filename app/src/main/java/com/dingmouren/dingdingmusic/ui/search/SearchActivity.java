@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +46,7 @@ public class SearchActivity extends BaseActivity  implements SearchConstract.Vie
     @BindView(R.id.search_bar) public MaterialSearchBar mSearchBar;
     @BindView(R.id.recycler) RecyclerView mRecycler;
     @BindView(R.id.tv_empty) TextView mTvEmpty;
+    @BindView(R.id.progressbar)public ProgressBar mProgressBar;
 
     private SearchAdapter mAdapter;
     public SearchPresenter mPresenter;
@@ -100,6 +102,7 @@ public class SearchActivity extends BaseActivity  implements SearchConstract.Vie
         }
         mAdapter.setList(list);
         mAdapter.notifyDataSetChanged();
+        mProgressBar.setVisibility(View.INVISIBLE);
     }
 
 
@@ -108,7 +111,6 @@ public class SearchActivity extends BaseActivity  implements SearchConstract.Vie
      * 播放被点击的歌曲
      */
     private void playSong(SearchBean bean){
-        try {
             if (null != bean){
                 mMusicBean = new MusicBean();
                 mList = new ArrayList<>();
@@ -119,15 +121,14 @@ public class SearchActivity extends BaseActivity  implements SearchConstract.Vie
                 mMusicBean.setSongname(bean.getSongname());
                 mMusicBean.setSingername(bean.getSingername());
                 mList.add(mMusicBean);
-                Intent intent = new Intent(this, PlayingActivity.class);
-                intent.putExtra(Constant.SEARCH_ACTIVITY_DATA_KEY, (Serializable) mList);
-                intent.putExtra("flag",Constant.MUSIC_SEARCH);
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
-                new Handler().postDelayed(()-> finish(),800);
+                if (null != mList && 0 < mList.size()) {
+                    Intent intent = new Intent(this, PlayingActivity.class);
+                    intent.putExtra(Constant.SEARCH_ACTIVITY_DATA_KEY, (Serializable) mList);
+                    intent.putExtra("flag", Constant.MUSIC_SEARCH);
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+                    new Handler().postDelayed(() -> finish(), 800);
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 
@@ -135,6 +136,6 @@ public class SearchActivity extends BaseActivity  implements SearchConstract.Vie
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        MyApplication.getRefWatcher().watch(this);
+//        MyApplication.getRefWatcher().watch(this);
     }
 }

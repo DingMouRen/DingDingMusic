@@ -18,3 +18,21 @@
 #bugly
 -dontwarn com.tencent.bugly.**
 -keep public class com.tencent.bugly.**{*;}
+# glide
+   -keep public class * implements com.bumptech.glide.module.GlideModule
+    -keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
+      **[] $VALUES;
+      public *;
+    }
+# greenDao 3
+-keepclassmembers class * extends org.greenrobot.greendao.AbstractDao {
+public static java.lang.String TABLENAME;
+}
+-keep class **$Properties
+#If you do not use SQLCipher:
+-dontwarn org.greenrobot.greendao.database.**
+#If you do not use RxJava:
+#-dontwarn rx.**
+
+#java8
+-dontwarn java.lang.invoke.*

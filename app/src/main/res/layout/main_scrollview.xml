@@ -36,7 +36,8 @@
             android:layout_below="@+id/img_randomn"
             android:scaleType="centerCrop"
             android:src="@mipmap/jk"
-            android:transitionName="share_jk" />
+            android:transitionName="share_jk"
+            />
 
         <ImageView
             android:id="@+id/img_rock"

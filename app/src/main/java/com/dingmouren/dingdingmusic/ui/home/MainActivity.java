@@ -57,7 +57,7 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.search_bar) MaterialSearchBar mSearchBar;
 
     private Messenger mServiceMessenger;
-    private long time = 0;//双击退出时用的时间标记
+    private long exitTime ;//双击退出时用的时间标记
 
     @Override
     public int setLayoutResourceID() {
@@ -66,7 +66,6 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void init(Bundle savedInstanceState) {
-        startService(new Intent(this, MediaPlayerService.class));//开启MediaPlayerService服务
         bindService(new Intent(this, MediaPlayerService.class), mServiceConnection, BIND_AUTO_CREATE);
     }
 
@@ -217,24 +216,23 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if ((System.currentTimeMillis() - time > 2000)) {
-                Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
-                time = System.currentTimeMillis();
+        if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN){
+            if((System.currentTimeMillis()-exitTime) > 2000){
+                Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                exitTime = System.currentTimeMillis();
             } else {
-                onDestroy();
+                finish();
+                System.exit(0);
             }
             return true;
-        } else {
-            return super.onKeyDown(keyCode, event);
         }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
     protected void onDestroy() {
-        stopService(new Intent(this, MediaPlayerService.class));
         unbindService(mServiceConnection);
         super.onDestroy();
-        MyApplication.getRefWatcher().watch(this);
+//        MyApplication.getRefWatcher().watch(this);
     }
 }

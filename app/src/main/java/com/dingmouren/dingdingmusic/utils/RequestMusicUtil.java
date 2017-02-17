@@ -24,7 +24,7 @@ public class RequestMusicUtil {
     public  void requestMusic(String topic) {
         ApiManager.getApiManager().getQQMusicApiService()
                 .getQQMusic(Constant.QQ_MUSIC_APP_ID, Constant.QQ_MUSIC_SIGN, topic)
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(qqMusicBodyQQMusicResult -> parseData(topic,  qqMusicBodyQQMusicResult.getShowapi_res_body().getPagebean().getSonglist()),this::loadError);
     }

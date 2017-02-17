@@ -34,6 +34,7 @@ import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.bean.MusicBean;
 import com.dingmouren.dingdingmusic.notification.MusicNotification;
+import com.dingmouren.dingdingmusic.receiver.ScreenOffReceiver;
 import com.dingmouren.dingdingmusic.utils.NetworkUtil;
 import com.dingmouren.dingdingmusic.utils.SPUtil;
 import com.jiongbull.jlog.JLog;
@@ -84,11 +85,15 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
     private Messenger mMessengerVolksliedMusicActivity;
     //MainActivity的Messenger对象
     private Messenger mMessengerMainActivity;
+    //LockActivity的Messenger对象
+    private Messenger mMessengerLockActivity;
     //音频管理对象
     private AudioManager mAudioManager;
     //
     public Messenger mServiceMessenger;
     private MyHandler myHandler;
+    //息屏的广播
+    private ScreenOffReceiver mSreenOffReceiver;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -115,7 +120,11 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         //初始化服务端的Messenger
         myHandler = new MyHandler(this);
         mServiceMessenger = new Messenger(myHandler);
-
+        //注册息屏的监听广播
+        mSreenOffReceiver = new ScreenOffReceiver();
+        IntentFilter filter1 = new IntentFilter();
+        filter1.addAction(Intent.ACTION_SCREEN_OFF);
+        registerReceiver(mSreenOffReceiver,filter1);
     }
 
 
@@ -148,14 +157,13 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
             mediaPlayer.release();
             mediaPlayer = null;
         }
-        //取消注册的广播
-        if (null != musicBroadCast) unregisterReceiver(musicBroadCast);
-
         //取消通知
         if (null != musicNotification) musicNotification.onCancelMusicNotification();
 
+        if (null != mSreenOffReceiver) unregisterReceiver(mSreenOffReceiver);//注销锁屏的广播
+        if (null != musicBroadCast) unregisterReceiver(musicBroadCast);//注销通知的广播
         super.onDestroy();
-        MyApplication.getRefWatcher().watch(this);
+//        MyApplication.getRefWatcher().watch(this);
     }
 
     static class MyHandler extends Handler {
@@ -205,6 +213,19 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
                 case Constant.LOCAL_MUSIC_ACTIVITY:
                     service.mMessengerLocalMusicActivity = msgFromClient.replyTo;
                     service.updateSongPosition(service.mMessengerLocalMusicActivity);
+                    break;
+                case Constant.LOCK_ACTIVITY:
+                    service.mMessengerLockActivity = msgFromClient.replyTo;
+                    service.updateSongPosition(service.mMessengerLockActivity);
+                    break;
+                case Constant.LOCK_ACTIVITY_PRE:
+                    service.preSong();
+                    break;
+                case Constant.LOCK_ACTIVITY_PLAY:
+                    service.playSong(service.position,msgFromClient.arg1);
+                    break;
+                case Constant.LOCK_ACTIVITY_NEXT:
+                    service.nextSong();
                     break;
                 case Constant.JK_MUSIC_ACTIVITY:
                     service.mMessengerJKMusicActivity = msgFromClient.replyTo;
@@ -277,6 +298,9 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
                 Toast.makeText(MyApplication.mContext,"没有网络了哟，请检查网络设置",Toast.LENGTH_SHORT).show();
             }
         }
+        if (null != mMessengerLockActivity) {
+            updateSongPosition(mMessengerLockActivity);
+        }
         JLog.e(TAG,"play(String musicUrl)--musicUrl" + musicUrl);
         if (null == mediaPlayer) return;
         mediaPlayer.reset();//停止音乐后，不重置的话就会崩溃
@@ -324,6 +348,8 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         }else if (bean.getType() == Integer.valueOf(Constant.MUSIC_VOLKSLIED)) {
             updateSongPosition(mMessengerVolksliedMusicActivity);
         }
+        //发送正在播放的歌曲发送给LockActivity
+        updateSongPosition(mMessengerLockActivity);
         if (currentTime > 0) {
             mediaPlayer.seekTo(currentTime);
         }
@@ -563,18 +589,26 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
      * 发送播放器是否在播放的状态，更新PlayingActivity的UI
      */
     private void sendIsPlayingMsg(){
+        JLog.e("lala","发送播放状态的消息");
         if (null != mMessengerPlayingActivity) {
-            Message msgToClient = Message.obtain();
+            Message msgToClient = Message.obtain();//发送给PlayingActivity
             msgToClient.arg1 = mediaPlayer.isPlaying() ? 1 : 0;//1表示在播放，0 表示没有播放
             msgToClient.what = Constant.MEDIA_PLAYER_SERVICE_IS_PLAYING;
             Message msgToMain = Message.obtain();//发给MainActivity
             msgToMain.arg1 = mediaPlayer.isPlaying() ? 1 : 0;//1表示在播放，0 表示没有播放
             msgToMain.what = Constant.MEDIA_PLAYER_SERVICE_IS_PLAYING;
+            Message msgToLock = Message.obtain();//发送给LockActivity
+            msgToLock.arg1 = mediaPlayer.isPlaying() ? 1 : 0;//1表示在播放，0 表示没有播放
+            msgToLock.what = Constant.MEDIA_PLAYER_SERVICE_IS_PLAYING;
             try {
                 mMessengerPlayingActivity.send(msgToClient);
                 if (null != mMessengerMainActivity) {
                     mMessengerMainActivity.send(msgToMain);
                 }
+                if (null != mMessengerLockActivity){
+                    mMessengerLockActivity.send(msgToLock);
+                }
+
             } catch (RemoteException e) {
                 e.printStackTrace();
             }

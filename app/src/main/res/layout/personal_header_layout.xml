@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/personal_appbar_height"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/colorPrimary"
+    android:background="@color/playing_activity_song_bac"
     >
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/img_header"
@@ -44,12 +44,13 @@
             />
     </LinearLayout>
     <ImageView
-        android:id="@+id/img_setting"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:src="@mipmap/setting"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        />
+    android:id="@+id/img_setting"
+    android:layout_width="30dp"
+    android:layout_height="30dp"
+    android:src="@mipmap/setting"
+    android:layout_alignParentRight="true"
+    android:layout_marginTop="@dimen/activity_horizontal_margin"
+    android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:visibility="gone"
+    />
 </RelativeLayout>

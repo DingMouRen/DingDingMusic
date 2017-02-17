@@ -35,6 +35,11 @@ public class  Constant {
     public static final int MAIN_ACTIVITY = 0x80001;
     //CollectedActivity
     public static final int COLLECTED_ACTIVITY = 0x90001;
+    //LockActivity
+    public static final int LOCK_ACTIVITY = 0x100001;
+    public static final int LOCK_ACTIVITY_PRE = 0x100002;
+    public static final int LOCK_ACTIVITY_NEXT = 0x100003;
+    public static final int LOCK_ACTIVITY_PLAY = 0x100004;
     //QQMusicApi相关
     public static final String QQ_MUSIC_APP_ID = "31475";
     public static final String QQ_MUSIC_SIGN = "86625d192d6745879b781b4282826522";
@@ -68,5 +73,8 @@ public class  Constant {
     public static final String HEADER_IMG_PATH = "header_img_path";
 
     public static final String USER_NAME = "user_name";
+
+    //锁屏
+    public static final String NOTIFY_SCREEN_OFF = "notify_screen_off";
 
 }

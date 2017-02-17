@@ -10,7 +10,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 25
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -78,8 +78,13 @@ dependencies {
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
-
+    /*关于*/
+    compile 'com.github.daniel-stoneuk:material-about-library:1.7.1'
+    /*微信*/
+    compile 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:1.0.2'
 }
+
+
 //数据库版本以及Dao的相关设置
 greendao{
     schemaVersion 1 //数据库schema版本
