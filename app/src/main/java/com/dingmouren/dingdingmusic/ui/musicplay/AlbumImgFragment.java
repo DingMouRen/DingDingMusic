@@ -68,7 +68,7 @@ public class AlbumImgFragment extends BaseFragment {
     @Override
     public void initData() {
         if (null != mBean){
-            Glide.with(MyApplication.mContext).load(mBean.getAlbumpic_big()).centerCrop().crossFade().diskCacheStrategy(DiskCacheStrategy.NONE)/*.placeholder(R.mipmap.native_1)*/.into(mImgAlbum);
+            Glide.with(MyApplication.mContext).load(mBean.getAlbumpic_big()).asBitmap().centerCrop().diskCacheStrategy(DiskCacheStrategy.NONE).into(mImgAlbum);
            /* ApiManager.getApiManager().getQQMusicApiService().searchLyric(Constant.QQ_MUSIC_APP_ID,Constant.QQ_MUSIC_SIGN,String.valueOf(mBean.getSongid()))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -108,6 +108,6 @@ public class AlbumImgFragment extends BaseFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-//        MyApplication.getRefWatcher().watch(this);
+        MyApplication.getRefWatcher().watch(this);
     }
 }

@@ -136,6 +136,6 @@ public class SearchActivity extends BaseActivity  implements SearchConstract.Vie
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        MyApplication.getRefWatcher().watch(this);
+        MyApplication.getRefWatcher().watch(this);
     }
 }

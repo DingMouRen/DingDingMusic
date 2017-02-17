@@ -27,7 +27,7 @@ public class MyApplication extends Application {
         this.mContext = this.getApplicationContext();
         initGreenDao();//初始化数据库
         JLog.init(this).setDebug(BuildConfig.DEBUG);
-//        mRefWatcher = LeakCanary.install(this);//使用RefWathcer检测内存泄漏
+        mRefWatcher = LeakCanary.install(this);//使用RefWathcer检测内存泄漏
         CrashReport.initCrashReport(getApplicationContext());//异常统计
     }
 

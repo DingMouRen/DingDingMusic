@@ -105,7 +105,7 @@ public class CollectedActivity extends BaseActivity {
             mRootLayout.removeAllViews();
         }
         super.onDestroy();
-//        MyApplication.getRefWatcher().watch(this);
+        MyApplication.getRefWatcher().watch(this);
     }
 
 

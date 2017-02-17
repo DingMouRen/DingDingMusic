@@ -82,7 +82,7 @@ public class VolksliedAdapter extends RecyclerView.Adapter<VolksliedAdapter.View
             if (null != bean){
                 tvSongName.setText(bean.getSongname());
                 tvSingerName.setText(bean.getSingername());
-                Glide.with(mContext).load(bean.getAlbumpic_small()).diskCacheStrategy(DiskCacheStrategy.SOURCE).placeholder(R.mipmap.notification_img_holder).into(imgAlbum);
+                Glide.with(mContext).load(bean.getAlbumpic_small()).asBitmap().diskCacheStrategy(DiskCacheStrategy.SOURCE).placeholder(R.mipmap.notification_img_holder).into(imgAlbum);
             }
             if (null != bean && null != playingBean) {
                 if (!bean.getSongname().equals(playingBean.getSongname()) && bean.getSongid() !=playingBean.getSongid()) {//先设置没有播放的歌曲的样式，随后设置正在播放歌曲的样式，有点覆盖的意思
