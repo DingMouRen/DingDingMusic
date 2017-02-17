@@ -120,7 +120,7 @@ public class RockActivity extends BaseActivity implements RockConstract.View{
         unbindService(mServiceConnection);
         mRootLayout.removeAllViews();
         super.onDestroy();
-        MyApplication.getRefWatcher().watch(this);
+//        MyApplication.getRefWatcher().watch(this);
     }
     ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
