@@ -7,12 +7,13 @@
         android:id="@+id/img_album"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
+        android:visibility="visible"
         />
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize"
+        android:visibility="gone"
         >
         <TextView
             android:id="@+id/tv_lyric"

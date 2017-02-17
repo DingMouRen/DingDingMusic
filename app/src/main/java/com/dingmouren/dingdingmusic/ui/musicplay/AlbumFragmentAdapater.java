@@ -26,7 +26,7 @@ public class AlbumFragmentAdapater extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         String url = null == mList.get(position).getAlbumpic_big() ? "" :mList.get(position).getAlbumpic_big();
-        return AlbumImgFragment.newInstance(url);
+        return AlbumImgFragment.newInstance(url,mList.get(position).getSongid());
     }
 
     @Override
