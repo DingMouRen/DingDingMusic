@@ -83,4 +83,16 @@
             />
 
     </com.dingmouren.dingdingmusic.view.SildingFinishLayout>
+    <com.dingmouren.dingdingmusic.view.CustomTextView
+        android:layout_centerHorizontal="true"
+        android:text=">>> 滑动解锁"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:layout_marginBottom="30dp"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/lock_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+
+        />
 </RelativeLayout>

@@ -298,6 +298,9 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
                 Toast.makeText(MyApplication.mContext,"没有网络了哟，请检查网络设置",Toast.LENGTH_SHORT).show();
             }
         }
+        if (null != mMessengerLockActivity) {
+            updateSongPosition(mMessengerLockActivity);
+        }
         JLog.e(TAG,"play(String musicUrl)--musicUrl" + musicUrl);
         if (null == mediaPlayer) return;
         mediaPlayer.reset();//停止音乐后，不重置的话就会崩溃
