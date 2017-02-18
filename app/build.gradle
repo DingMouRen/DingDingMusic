@@ -80,8 +80,6 @@ dependencies {
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
     /*关于*/
     compile 'com.github.daniel-stoneuk:material-about-library:1.7.1'
-    /*微信*/
-    compile 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:1.0.2'
 }
 
 
