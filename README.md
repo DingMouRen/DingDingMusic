@@ -1,6 +1,6 @@
-###**¶¡¶¡ÒôÀÖ**
-####Rxjava + retrofit + okhttp + glide + greendao 3.0 MVPÏîÄ¿
-####Ê¹ÓÃµ½ÁË5.0×ª³¡¶¯»­  ¹²ÏíÔªËØ  ½ÒÂ¶¶¯»­£¬Ğ§¹ûìÅ¿á
-![image](https://github.com/DingMouRen/DingDingMusic/raw/master/imgs/p1.png)  
-![image](https://github.com/DingMouRen/DingDingMusic/raw/master/imgs/p2.png) <br><br>
-![image](https://github.com/DingMouRen/DingDingMusic/raw/master/imgs/img.gif) 
+###**ä¸ä¸éŸ³ä¹**
+####Rxjava + retrofit + okhttp + glide + greendao 3.0 MVPé¡¹ç›®
+####ä½¿ç”¨åˆ°äº†5.0è½¬åœºåŠ¨ç”»  å…±äº«å…ƒç´   æ­éœ²åŠ¨ç”»ï¼Œæ•ˆæœç‚«é…·
+![image](https://github.com/DingMouRen/DingDingMusic/raw/master/imgs/img.gif) <br><br>
+![image](https://github.com/DingMouRen/DingDingMusic/raw/master/imgs/p1.png)![image](https://github.com/DingMouRen/DingDingMusic/raw/master/imgs/p2.png)  
+
