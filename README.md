@@ -11,4 +11,4 @@
 ####8.播放模式：单曲循环  顺序循环
 ![image](https://github.com/DingMouRen/DingDingMusic/raw/master/imgs/img.gif) <br><br>
 ![image](https://github.com/DingMouRen/DingDingMusic/raw/master/imgs/p1.png)   ![image](https://github.com/DingMouRen/DingDingMusic/raw/master/imgs/p2.png)  <br><br>
-歌曲api来自showapi
+歌曲api来自qq音乐
