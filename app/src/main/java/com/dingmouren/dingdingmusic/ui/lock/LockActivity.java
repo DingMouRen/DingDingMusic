@@ -142,6 +142,9 @@ public class LockActivity extends BaseActivity {
     protected void onDestroy() {
         mRootLayout.removeAllViews();
         unbindService(mServiceConnection);
+        if (null != myHandler){
+            myHandler = null;
+        }
         super.onDestroy();
     }
 

@@ -130,6 +130,9 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
     @Override
     protected void onDestroy() {
         unbindService(mServiceConnection);
+        if (null != myHandler){
+            myHandler = null;
+        }
         super.onDestroy();
         MyApplication.getRefWatcher().watch(this);
     }

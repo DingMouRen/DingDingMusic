@@ -135,6 +135,13 @@ public class JKActivity extends BaseActivity implements JKConstract.View{
     protected void onDestroy() {
         unbindService(mServiceConnection);
         mRootLayout.removeAllViews();
+        if (myRunnbale != null){
+            myRunnbale = null;
+        }
+        if (myHandler != null) {
+            myHandler = null;
+        }
+
         super.onDestroy();
         MyApplication.getRefWatcher().watch(this);
     }

@@ -62,6 +62,7 @@ public class AboutActivity extends BaseActivity {
         if (null != mRootLayout){
             mRootLayout.removeAllViews();
         }
+        myRunnable = null;
         super.onDestroy();
     }
 

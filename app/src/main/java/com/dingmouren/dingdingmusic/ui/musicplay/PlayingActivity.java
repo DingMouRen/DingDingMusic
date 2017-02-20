@@ -478,6 +478,12 @@ public class PlayingActivity extends BaseActivity {
             mRootLayout.removeCallbacks(myRunnable);
             mRootLayout.removeAllViews();
         }
+        if (null != myHandler){
+            myHandler = null;
+        }
+        if (null != myRunnable){
+            myRunnable = null;
+        }
         System.gc();
         super.onDestroy();
         MyApplication.getRefWatcher().watch(this);
