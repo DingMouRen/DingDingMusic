@@ -7,6 +7,8 @@
 ####4.锁屏功能，自定义锁屏布局，同步显示正在播放的歌曲，控制歌曲的暂停播放  上一首 下一首
 ####5.搜索歌曲功能
 ####6.音频焦点的处理
+####7.分享功能
+####8.播放模式：单曲循环  顺序循环
 ![image](https://github.com/DingMouRen/DingDingMusic/raw/master/imgs/img.gif) <br><br>
 ![image](https://github.com/DingMouRen/DingDingMusic/raw/master/imgs/p1.png)   ![image](https://github.com/DingMouRen/DingDingMusic/raw/master/imgs/p2.png)  <br><br>
 歌曲api来自showapi
