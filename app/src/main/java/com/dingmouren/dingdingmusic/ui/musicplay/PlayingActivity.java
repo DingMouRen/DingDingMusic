@@ -479,6 +479,7 @@ public class PlayingActivity extends BaseActivity {
             mRootLayout.removeAllViews();
         }
         if (null != myHandler){
+            myHandler.removeCallbacksAndMessages(null);//移除消息队列中所有的消息和所有的Runnable
             myHandler = null;
         }
         if (null != myRunnable){

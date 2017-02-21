@@ -120,6 +120,7 @@ public class RockActivity extends BaseActivity implements RockConstract.View{
         unbindService(mServiceConnection);
         mRootLayout.removeAllViews();
         if (null != myHandler){
+            myHandler.removeCallbacksAndMessages(null);
             myHandler = null;
         }
         if (null != myRunnbale){

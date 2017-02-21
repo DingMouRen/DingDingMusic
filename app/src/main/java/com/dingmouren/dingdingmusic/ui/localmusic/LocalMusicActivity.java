@@ -131,6 +131,7 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
     protected void onDestroy() {
         unbindService(mServiceConnection);
         if (null != myHandler){
+            myHandler.removeCallbacksAndMessages(null);
             myHandler = null;
         }
         super.onDestroy();

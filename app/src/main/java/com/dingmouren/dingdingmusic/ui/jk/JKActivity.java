@@ -139,6 +139,7 @@ public class JKActivity extends BaseActivity implements JKConstract.View{
             myRunnbale = null;
         }
         if (myHandler != null) {
+            myHandler.removeCallbacksAndMessages(null);
             myHandler = null;
         }
 

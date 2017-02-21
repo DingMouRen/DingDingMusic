@@ -143,6 +143,7 @@ public class LockActivity extends BaseActivity {
         mRootLayout.removeAllViews();
         unbindService(mServiceConnection);
         if (null != myHandler){
+            myHandler.removeCallbacksAndMessages(null);
             myHandler = null;
         }
         super.onDestroy();

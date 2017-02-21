@@ -125,6 +125,7 @@ public class VolksliedActivity extends BaseActivity implements VolksliedConstrac
         unbindService(mServiceConnection);
         mRootLayout.removeAllViews();
         if (null != myHandler){
+            myHandler.removeCallbacksAndMessages(null);
             myHandler = null;
         }
         if (null != myRunnbale){
