@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
+import rx.Subscriber;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
@@ -94,6 +95,9 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
     private MyHandler myHandler;
     //息屏的广播
     private ScreenOffReceiver mSreenOffReceiver;
+    //
+    private Observable mObservable;
+    private Subscriber mSubscriber;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -125,6 +129,24 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
         IntentFilter filter1 = new IntentFilter();
         filter1.addAction(Intent.ACTION_SCREEN_OFF);
         registerReceiver(mSreenOffReceiver,filter1);
+        mObservable = Observable.interval(1,1, TimeUnit.SECONDS, Schedulers.computation());
+        mSubscriber = new Subscriber() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Object o) {
+                sendUpdateProgressMsg();
+            }
+        };
+
     }
 
 
@@ -162,6 +184,9 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
 
         if (null != mSreenOffReceiver) unregisterReceiver(mSreenOffReceiver);//注销锁屏的广播
         if (null != musicBroadCast) unregisterReceiver(musicBroadCast);//注销通知的广播
+        if (mSubscriber.isUnsubscribed()){
+            mSubscriber.unsubscribe();
+        }
         super.onDestroy();
 //        MyApplication.getRefWatcher().watch(this);
     }
@@ -499,12 +524,13 @@ public class MediaPlayerService extends Service implements OnPreparedListener, O
      */
     private void updateSeekBarProgress(boolean playing) {
         JLog.e(TAG,"updateSeekBarProgress更新进度条");
-        Observable.interval(1,1, TimeUnit.SECONDS, Schedulers.computation()).subscribe(new Action1<Long>() {
+        mObservable.subscribe(mSubscriber);
+        /*Observable.interval(1,1, TimeUnit.SECONDS, Schedulers.computation()).subscribe(new Action1<Long>() {
             @Override
             public void call(Long aLong) {
                 sendUpdateProgressMsg();
             }
-        });
+        });*/
     }
 
     //发送更新进度的消息
