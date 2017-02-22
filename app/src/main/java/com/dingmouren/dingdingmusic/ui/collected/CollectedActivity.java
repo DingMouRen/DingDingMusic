@@ -108,7 +108,7 @@ public class CollectedActivity extends BaseActivity {
             myRunnable = null;
         }
         super.onDestroy();
-        MyApplication.getRefWatcher().watch(this);
+//        MyApplication.getRefWatcher().watch(this);
     }
 
 

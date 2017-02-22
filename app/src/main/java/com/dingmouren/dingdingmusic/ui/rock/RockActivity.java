@@ -127,7 +127,7 @@ public class RockActivity extends BaseActivity implements RockConstract.View{
             myRunnbale = null;
         }
         super.onDestroy();
-        MyApplication.getRefWatcher().watch(this);
+//        MyApplication.getRefWatcher().watch(this);
     }
     ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override

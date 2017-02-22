@@ -233,6 +233,6 @@ public class MainActivity extends BaseActivity {
     protected void onDestroy() {
         unbindService(mServiceConnection);
         super.onDestroy();
-        MyApplication.getRefWatcher().watch(this);
+//        MyApplication.getRefWatcher().watch(this);
     }
 }

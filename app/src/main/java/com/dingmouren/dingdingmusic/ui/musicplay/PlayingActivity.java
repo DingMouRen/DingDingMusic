@@ -487,7 +487,7 @@ public class PlayingActivity extends BaseActivity {
         }
         System.gc();
         super.onDestroy();
-        MyApplication.getRefWatcher().watch(this);
+//        MyApplication.getRefWatcher().watch(this);
     }
 
     static class MyRunnable implements Runnable{

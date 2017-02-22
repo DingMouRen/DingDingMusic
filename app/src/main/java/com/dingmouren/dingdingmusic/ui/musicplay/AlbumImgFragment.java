@@ -108,6 +108,6 @@ public class AlbumImgFragment extends BaseFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        MyApplication.getRefWatcher().watch(this);
+//        MyApplication.getRefWatcher().watch(this);
     }
 }

@@ -135,7 +135,7 @@ public class LocalMusicActivity extends BaseActivity implements LocalMusicConstr
             myHandler = null;
         }
         super.onDestroy();
-        MyApplication.getRefWatcher().watch(this);
+//        MyApplication.getRefWatcher().watch(this);
     }
 
 

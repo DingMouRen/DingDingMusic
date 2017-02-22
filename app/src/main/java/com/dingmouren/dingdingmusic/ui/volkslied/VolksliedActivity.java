@@ -132,7 +132,7 @@ public class VolksliedActivity extends BaseActivity implements VolksliedConstrac
             myRunnbale = null;
         }
         super.onDestroy();
-        MyApplication.getRefWatcher().watch(this);
+//        MyApplication.getRefWatcher().watch(this);
     }
 
     ServiceConnection mServiceConnection = new ServiceConnection() {
