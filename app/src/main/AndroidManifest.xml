@@ -79,6 +79,7 @@
             />
         <!--锁屏-->
         <activity android:name=".ui.lock.LockActivity"
+            android:launchMode="singleTask"
             android:theme="@style/LockActivityTheme"/>
 
         <!--音乐播放核心类-->
