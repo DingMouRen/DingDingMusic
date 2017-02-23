@@ -77,4 +77,6 @@ public class  Constant {
     //锁屏
     public static final String NOTIFY_SCREEN_OFF = "notify_screen_off";
 
+    public static final String KEY = "aex02165daudxbmtrsul63c";
+
 }

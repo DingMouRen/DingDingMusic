@@ -2,6 +2,7 @@ package com.dingmouren.dingdingmusic.ui.about;
 
 import android.animation.Animator;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -9,14 +10,19 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.dingmouren.dingdingmusic.Constant;
+import com.dingmouren.dingdingmusic.MyApplication;
 import com.dingmouren.dingdingmusic.R;
 import com.dingmouren.dingdingmusic.base.BaseActivity;
 import com.dingmouren.dingdingmusic.ui.collected.CollectedActivity;
+import com.dingmouren.dingdingmusic.utils.AlipayUtil;
 
 import java.lang.ref.WeakReference;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+
+import static com.dingmouren.dingdingmusic.MyApplication.mContext;
 
 /**
  * Created by dingmouren on 2017/2/14.
@@ -54,7 +60,11 @@ public class AboutActivity extends BaseActivity {
 
     @OnClick(R.id.img_tip)
     public void onClick(View view){
-        Toast.makeText(this,"打赏",Toast.LENGTH_SHORT).show();
+        if (AlipayUtil.hasInstalledAlipayClient(mContext)) {
+            AlipayUtil.startAlipayClient(AboutActivity.this, Constant.KEY);
+        } else {
+            Snackbar.make(mToolbar,"没有安装支付宝客户端",Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     @Override
