@@ -10,6 +10,6 @@ Rxjava + retrofit + okhttp + glide + greendao 3.0 MVP项目<br>
 7.分享功能<br>
 8.播放模式：单曲循环  顺序循环<br>
 
-![image](https://github.com/DingMouRen/DingDingMusic/raw/master/imgs/img.gif) <br><br>
-![image](https://github.com/DingMouRen/DingDingMusic/raw/master/imgs/p1.png)   ![image](https://github.com/DingMouRen/DingDingMusic/raw/master/imgs/p2.png)  <br><br>
+![image](https://github.com/DingMouRen/DingDingMusic/raw/master/imgs/img.png) <br><br>
+
 歌曲api来自qq音乐
